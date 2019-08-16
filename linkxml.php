@@ -8,45 +8,30 @@ function sanitize(&$r) {
 
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
 
-$xml = simplexml_load_file("branches.xml") or die(file_put_contents('branches.xml', "<?xml version=\'1.0\'?><accounts></accounts>"));
+if (!file_exists('branches.xml'))
+    file_put_contents('branches.xml', "<?xml version=\'1.0\'?><accounts></accounts>");
 
-foreach ($xml->children() as $row) {
+$xml = simplexml_load_file('branches.xml');
+
+$affectedRow = 0;
+$i = 0;
+foreach ($xml[$i]->children() as $row) {}
+        
     foreach ($row as $k => $v)
         sanitize($v);
-    $no = (strlen($row["store_no"]) > 0) ? $row["store_no"] : "";
-    $busi = (strlen($row["business"]) > 0) ? $row["business"] : "";
-    $username = (strlen($row["email"]) > 0) ? $row["email"] : "";
-    $password = (strlen($row["password"]) > 0) ? $row["password"] : "";
-    $t_addr = (strlen($row["address"]) > 0) ? $row["address"] : "";
-    $ph = (strlen($row["phone"]) > 0) ? $row["phone"] : "";
-    $email = (strlen($row["store_email"]) > 0) ? $row["store_email"] : "NULL";
-
-    $affectedRow = 0;
-
-    $city = ""; $st = "";
-    if ($t_addr != null) {
-        $index = 0;
-        $holder = str_getcsv($t_addr);
-        $index++;
-        if (count($holder) >= 5)
-            $index++;
-        $city = trim(($holder[$index++]));
-        $st = trim(($holder[$index++]));
-    }
-    
     $timeTarget = 0.045; // 45 milliseconds 
 
     $cost = 8;
     do {
         $cost++;
         $start = microtime(true);
-        $password = password_hash($password, PASSWORD_BCRYPT, ["cost" => $cost]);
+        $password1 = password_hash($password, PASSWORD_BCRYPT, ['cost' => $cost]);
         $end = microtime(true);
     } while (($end - $start) < $timeTarget);
     
-    $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,addr_str,password,phone,email,city,state)
-        VALUES (null,"' . $busi . '","' . $no . '","' . 
-        $username . '","' . $t_addr . '","' . $password . '","' . $ph . '","' . $email . '","' . $city . '","' . $state . '")';
+    $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,addr_str,city,state,password,phone,email)
+        VALUES (null,"' . $row['business'] . '","' . $row['store_no'] . '","' . 
+        $row['email'] . '","' . $row['address'] . '","' . $row['city'] . '","' . $row['state'] . '","' . $password1 . '","' . $row['phone'] . '","' . $row['store_email'] . '")';
     
     $result = mysqli_query($conn, $sql);
     if (! empty($result)) {
@@ -55,6 +40,9 @@ foreach ($xml->children() as $row) {
         $error_message = mysqli_error($conn) . "\n";
         echo $error_message;
     }
+    if ($i == sizeof($xml))
+        break;
+    $i++;
 }
 ?>
 Insert XML Data to MySql Table Output

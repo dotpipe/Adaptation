@@ -6,17 +6,15 @@ if (!isset($_SESSION))
     file_put_contents('branches.xml', '<?xml version=\'1.0\'?><accounts></accounts>');
   $xml = simplexml_load_file('branches.xml');
   
-    $list = $xml->link;
+    $list = $xml->links;
     $arr = [];
     foreach ($_POST as $k=>$v) {
       $arr[$k] = $v;
     }
     for ($i = 0; $i < count($list); $i++) {
-  	if ($list[$i]['no'] == $arr['no'] && $list[$i]['addr'] == $arr['addr']) {
-  		
-  		header("Location: ./");
-  
-  	}
+    	if ($list[$i]['store_no'] == $arr['store_no'] && $list[$i]['address'] == $arr['address']) {
+    		header("Location: ./");
+    	}
     }
     $dom = new \DomDocument();
     $dom->load('branches.xml');
@@ -24,7 +22,7 @@ if (!isset($_SESSION))
     $z = $dom->getElementsByTagName("accounts");
     $x = $dom->getElementsByTagName("accounts")[0];
   
-    $tmp = $dom->createElement("link");
+    $tmp = $dom->createElement("links");
     foreach ($_POST as $k=>$v) {
       $tmp->setAttribute($k,$v);
     }

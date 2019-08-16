@@ -1,11 +1,22 @@
 <?php
+
+function updateChatFile($conn) {
+    $filename = $_COOKIE['chatfile'];
+    $sql = 'UPDATE chat SET `before` = `chat.last`, last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
+    $results = $conn->query($sql);
+}
+
+//$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+
+$conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
+
     if (!isset($_SESSION))
         session_start();
-    $filename = './xml/' . md5($_COOKIE['id']) . ".xml";
     
-    setcookie('chatfile','./xml/' . md5($_COOKIE['id']) . ".xml");
+    $filename = './xml/' . $_COOKIE['chatfile'] . ".xml";
+
     if (!file_exists($filename))
-        file_put_contents($filename, '<?xml version="1.0"?><messages></messages>');
+        file_put_contents($filename, '<?xml version=\'1.0\'?><messages></messages>');
 
     $dom = new \DomDocument();
     $dom->load($filename);
@@ -24,4 +35,5 @@
    $x->appendChild($tmp);
    $dom->appendChild($x);
    $dom->save($filename);
+   updateChatFile($conn);
 ?>

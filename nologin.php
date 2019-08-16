@@ -1,3 +1,3 @@
-<?php setcookie("login","false"); header("Location: index.php"); ?>
+<?php unset($_COOKIE); setcookie("login","false"); header("Location: index.php"); ?>
 
 

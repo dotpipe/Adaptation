@@ -9,7 +9,7 @@ $menu = "";
 	  $menu .= '<ul onclick=menuList(\'storechat.php\');>Cheri</ul>';
 	  $menu .= '<ul onclick="menuList(\'preorder.php\');">Preorder</ul>';
 	  $menu .= '<ul onclick=menuList(\'inbox.php\');>Inbox</ul>';
-	  $menu .= '<ul><a href="nologin.php" style=\'color:white;text-decoration:none;font-size:18px;\'>Logout</a></ul></li>';
+	  $menu .= '<ul><a href=\'nologin.php\' style=\'color:white;text-decoration:none;font-size:18px;\'>Logout</a></ul></li>';
 	}
 	else {
 	  $menu = '<h3 onclick="menuList(\'menu.php\');">Menu</h3><li>';

@@ -2,6 +2,10 @@
 	header("X-Content-Type-Options: nosniff");
 	header("Content-Type: text/html");
 	session_start();
+	if (!isset($_COOKIE['vartime']))
+		setcookie("vartime", 1);
+	else if (isset($_COOKIE['remember']))
+		setcookie("vartime",24*60);
 	
 	//if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') 
 	  //  header("Location: https://www.diads.co/");

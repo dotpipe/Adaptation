@@ -9,8 +9,10 @@ function sanitize(&$r) {
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 $affectedRow = 0;
-
-$xml = simplexml_load_file("stores.xml") or die(file_put_contents("stores.xml", "<?xml version=\'1.0\'?><markers></markers>"));
+if (!file_exists('stores.xml'))
+    file_put_contents("stores.xml", "<?xml version=\'1.0\'?><markers></markers>");
+    
+$xml = simplexml_load_file("stores.xml");
 
 foreach ($xml->children() as $row) {
     foreach ($row as $k => $v)
@@ -46,7 +48,7 @@ foreach ($xml->children() as $row) {
         flags,joined_on,left_on,avg_hrs_day,avg_ads_hr,reviews,review_tally,username,password,alias,city,state)
             VALUES (null,"' . $name . '",0,0,"'
              . $img_dir . '",0,CURRENT_TIMESTAMP,null,0,0,0,0,"' . $username . '","' . $password . '","' . $alias
-             . '","' . $city . '","' . $state . '")';
+             . '","' . $city . '","' . $st . '")';
     
     $result = mysqli_query($conn, $sql);
 
