@@ -15,11 +15,11 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     
     $filename = './xml/' . $_COOKIE['chatfile'] . ".xml";
 
-    if (!file_exists($filename))
-        file_put_contents($filename, '<?xml version=\'1.0\'?><messages></messages>');
+    if (!file_exists('./xml/' . $filename))
+        file_put_contents('./xml/' . $filename, '<?xml version=\'1.0\'?><messages></messages>');
 
     $dom = new \DomDocument();
-    $dom->load($filename);
+    $dom->load('./xml/' . $filename);
 
     $z = $dom->getElementsByTagName("messages");
     $x = $dom->getElementsByTagName("messages")[0];
@@ -34,6 +34,6 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
   $tmp->appendChild($tmpy);
    $x->appendChild($tmp);
    $dom->appendChild($x);
-   $dom->save($filename);
+   $dom->save('./xml/' . $filename);
    updateChatFile($conn);
 ?>

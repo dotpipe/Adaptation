@@ -1,10 +1,10 @@
 <?php
     $filename = './xml/' . md5($_COOKIE['id']) . ".xml";
-    if (!file_exists($filename))
-        file_put_contents($filename, '<?xml version="1.0"?><preorder></preorder>');
+    if (!file_exists('./xml/' . $filename))
+        file_put_contents('./xml/' . $filename, '<?xml version="1.0"?><preorder></preorder>');
 
     $dom = new \DomDocument();
-    $dom->load($filename);
+    $dom->load('./xml/' . $filename);
 
     $z = $dom->getElementsByTagName("preorder");
     $x = $dom->getElementsByTagName("preorder")[0];
@@ -35,5 +35,5 @@
         $x->appendChild($v);
     }
     $dom->appendChild($x);
-    $dom->save($filename);
+    $dom->save('./xml/' . $filename);
 ?>
