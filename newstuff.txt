@@ -1,0 +1,61 @@
+This is what we bring:
+
+-If we bring in 4 people per ad per hour, then we've made them
+  a lot of money beyond their store revenues without.
+
+-The 5th star in the average is for perfect reviews.
+  If it is broken, it'll go to a rounded up review of stars,
+    even if that means 4 stars.
+
+-Analytics, that on review, if person is physically near to
+  the business, review will go to database and we will count
+    it as one of our users used the app during the store visit.
+
+This is what we do:
+
+-For each 10 stores you bring, being an affiliate
+  you get $50 once they do $10 in advertising.
+  
+-Each ad is marked for a certain time to begin
+  and to end. The $1 will be taken each hour,
+    from the beginning.
+
+-If $1 cannot be taken from the account of the
+  store, then the ad will not be listed.
+
+-If there is no advertisement for that time period,
+  remove marker.
+
+-No refunds. Once ad is in paid for and placed,
+  ad(s) are there for the hour.
+
+-No money is in escrow.
+
+-Recreate XML file every 15 minutes. All markers still on the map
+  will be advertising that hour.
+
+-Every 15 minutes new ads will be listed,
+  reload user maps.
+
+-On click of a marker load ads to bottom square.
+
+-Timing is everything.
+
+-Ads can be templated. 1 picture per ad. Or so many together
+  fitting in the 400x400px box. Stores will just upload them.
+
+-A gallery of their pictures will be kept up by the stores.
+  These are unseen by the users, except what's being advertised.
+    Stores, may delete, resize, crop, and do whatever else to them.
+
+-Report Flags will be available on ads.
+
+-Only legal businesses may be advertised on the program.
+  They will need to identify themselves.
+
+-Each ad will have the store name with them, and a slogan.
+  If the prefer they can go without the slogan and name.
+    If they opt out, they will need a picture ad. Picture ads
+      that do not opt out, will have they name/slogan on top
+        of their ads.
+
