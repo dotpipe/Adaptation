@@ -2,9 +2,9 @@
 if (!isset($_SESSION))
     session_start();
     
-  if (!file_exists('./xml/' . md5($_COOKIE['myid']) . '.xml'))
-    file_put_contents('./xml/' . md5($_COOKIE['myid']) . '.xml', '<?xml version=\'1.0\'?><accounts></accounts>');
-  $xml = simplexml_load_file('./xml/' . md5($_COOKIE['myid']) . '.xml');
+  if (!file_exists('branches.xml'))
+    file_put_contents('branches.xml', '<?xml version=\'1.0\'?><accounts></accounts>');
+  $xml = simplexml_load_file('branches.xml');
   
     $list = $xml->link;
     $arr = [];
@@ -19,12 +19,10 @@ if (!isset($_SESSION))
   	}
     }
     $dom = new \DomDocument();
-    $dom->load('./xml/' . md5($_COOKIE['myid']) . '.xml');
+    $dom->load('branches.xml');
   
     $z = $dom->getElementsByTagName("accounts");
     $x = $dom->getElementsByTagName("accounts")[0];
-    $y = $z->childNodes;
-    $n = "";
   
     $tmp = $dom->createElement("link");
     foreach ($_POST as $k=>$v) {
@@ -32,6 +30,6 @@ if (!isset($_SESSION))
     }
      $x->appendChild($tmp);
      $dom->appendChild($x);
-     $dom->save('./xml/' . md5($_COOKIE['myid']) . '.xml');
+     $dom->save('branches.xml');
   header("Location: ./linkxml.php");
   ?>

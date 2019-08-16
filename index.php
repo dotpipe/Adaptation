@@ -273,7 +273,7 @@
 	<?php
 	$menu = "";
 	if (isset($_COOKIE) && isset($_COOKIE['login']) && $_COOKIE['login'] == "true") {
-	  $menu = '<h3 onclick="menuList(\'menu.php\');">Menu</h3><li>';
+	  $menu = '<h3 onclick=menuList(\'menu.php\');>Menu</h3><li>';
 	  $menu .= '<b style="font-size:18px;color:lightgray" onclick="javascript:mapView()">';
 	  $menu .= 'Click to Toggle Map</b><ul onclick=menuList(\'linkclient.php\');>Link Account!</ul>';
 	  $menu .= '<ul onclick=menuList(\'storechat.php\');>Cheri</ul>';

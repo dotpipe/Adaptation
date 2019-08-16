@@ -2,22 +2,6 @@
 var datarray = [];
 var ADDR;
 
-function login() {
-  if (localStorage.getItem("iam") != undefined) {
-    setCookie("PHPSESSID",localStorage.getItem("iam"));
-    setCookie("iam",localStorage.getItem("iam"));
-  }
-  else
-    localStorage.setItem("iam",getCookie("PHPSESSID"));
-  if (document.getElementById("remember").value == true)
-    localStorage.setItem("remember", true);
-  else
-    localStorage.setItem("remember", false);
-  setCookie("iam", localStorage.getItem("iam"));
-  menuList('menu.php');
-  setCookie("count",0);
-}
-
 function loginUnsuccessful() {
   var y = getCookie("count");
   y++;

@@ -8,29 +8,45 @@ function sanitize(&$r) {
 
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
 
-$xml = simplexml_load_file('./xml/' . md5($_COOKIE['myid']) . ".xml") or die(file_put_contents('./xml/' . md5($_COOKIE['myid']) . ".xml", "<?xml version=\'1.0\'?><accounts></accounts>"));
+$xml = simplexml_load_file("branches.xml") or die(file_put_contents('branches.xml', "<?xml version=\'1.0\'?><accounts></accounts>"));
 
 foreach ($xml->children() as $row) {
     foreach ($row as $k => $v)
         sanitize($v);
-    $no = (strlen($row["store_no"]) > 0) ? $row["name"] : "";
-    $busi = (strlen($row["store_name"]) > 0) ? $row["store_name"] : "";
+    $no = (strlen($row["store_no"]) > 0) ? $row["store_no"] : "";
+    $busi = (strlen($row["business"]) > 0) ? $row["business"] : "";
     $username = (strlen($row["email"]) > 0) ? $row["email"] : "";
     $password = (strlen($row["password"]) > 0) ? $row["password"] : "";
-    $t_addr = (strlen($row["addr_str"]) > 0) ? $row["addr_str"] : "";
+    $t_addr = (strlen($row["address"]) > 0) ? $row["address"] : "";
     $ph = (strlen($row["phone"]) > 0) ? $row["phone"] : "";
     $email = (strlen($row["store_email"]) > 0) ? $row["store_email"] : "NULL";
 
     $affectedRow = 0;
-    $options = array(
-        'cost' => 12,
-        'threads' => 2
-        );
-    $password = password_hash($password, PASSWORD_ARGON2ID, $options);
-        
-    $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,addr_str,password,phone,email)
+
+    $city = ""; $st = "";
+    if ($t_addr != null) {
+        $index = 0;
+        $holder = str_getcsv($t_addr);
+        $index++;
+        if (count($holder) >= 5)
+            $index++;
+        $city = trim(($holder[$index++]));
+        $st = trim(($holder[$index++]));
+    }
+    
+    $timeTarget = 0.045; // 45 milliseconds 
+
+    $cost = 8;
+    do {
+        $cost++;
+        $start = microtime(true);
+        $password = password_hash($password, PASSWORD_BCRYPT, ["cost" => $cost]);
+        $end = microtime(true);
+    } while (($end - $start) < $timeTarget);
+    
+    $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,addr_str,password,phone,email,city,state)
         VALUES (null,"' . $busi . '","' . $no . '","' . 
-        $username . '","' . $t_addr . '","' . $password . '","' . $ph . '","' . $email . '")';
+        $username . '","' . $t_addr . '","' . $password . '","' . $ph . '","' . $email . '","' . $city . '","' . $state . '")';
     
     $result = mysqli_query($conn, $sql);
     if (! empty($result)) {
