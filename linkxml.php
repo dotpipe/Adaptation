@@ -15,7 +15,7 @@ $xml = simplexml_load_file('branches.xml');
 
 $affectedRow = 0;
 $i = 0;
-foreach ($xml[$i]->children() as $row) {}
+foreach ($xml[$i]->children() as $row) {
         
     foreach ($row as $k => $v)
         sanitize($v);
@@ -31,7 +31,7 @@ foreach ($xml[$i]->children() as $row) {}
     
     $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,addr_str,city,state,password,phone,email)
         VALUES (null,"' . $row['business'] . '","' . $row['store_no'] . '","' . 
-        $row['email'] . '","' . $row['address'] . '","' . $row['city'] . '","' . $row['state'] . '","' . $password1 . '","' . $row['phone'] . '","' . $row['store_email'] . '")';
+        $row['email'] . '","' . $row['address'] . ', ' . $row['city'] . ', ' . $row['state'] . '","' . $row['city'] . '","' . $row['state'] . '","' . $password1 . '","' . $row['phone'] . '","' . $row['store_email'] . '")';
     
     $result = mysqli_query($conn, $sql);
     if (! empty($result)) {

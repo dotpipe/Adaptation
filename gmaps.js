@@ -40,7 +40,7 @@ function startChat() {
           fillChat(this);
       }
   };
-  xhttp.open("GET", getCookie("chatfile"), true);
+  xhttp.open("GET", "./xml/" + getCookie("chatfile"), true);
   xhttp.send();
   
   }
@@ -54,7 +54,8 @@ function startChat() {
     y = z.childNodes;
     yLen = y.length;
     for (i = 0; i < yLen; i++) { 
-        if (y[i].getAttribute("user") == getCookie("iam")) {
+      console.log("user")
+        if (y[i].getAttribute("user") == getCookie("myname")) {
           txt += '<div style="opacity:0.5;background:gray;color:white;width:100%">';
           txt += y[i].childNodes[0].nodeValue + '</div>';
         }
@@ -135,26 +136,35 @@ function collectXML (position) {
 
   var input;
   var autocomplete;
-  if (null != document.getElementById('addr')) {
+  //if (null != document.getElementById('addr')) {
     input = document.getElementById('addr');
 
     autocomplete = new google.maps.places.Autocomplete(input);
 
     // Specify just the place data fields that you need.
     autocomplete.setFields(['place_id', 'geometry', 'name', 'formatted_address']);
-  }
+  //}
   var infowindow = new google.maps.InfoWindow();
   var infowindowContent = document.getElementById('infowindow-content');
   infowindow.setContent(infowindowContent);
 
   // Change this depending on the name of your PHP or XML file
-  downloadUrl('stores.xml', function(data) {
+  downloadUrl('branches.xml', function(data) {
     var xml = data.responseXML;
-    var markers = xml.documentElement.getElementsByTagName('marker');
+    var markers = xml.documentElement.getElementsByTagName('links');
     Array.prototype.forEach.call(markers, function(markerElem) {
-      var id = markerElem.getAttribute('id');
-      var name = markerElem.getAttribute('name');
+      var name = markerElem.getAttribute('manager');
+      var no = markerElem.getAttribute('store_no');
+      console.log("ae" + no);
       var address = markerElem.getAttribute('address');
+      if (!address.includes(markerElem.getAttribute('city')))
+        address = address + ", " + markerElem.getAttribute('city');
+      if (!address.includes(markerElem.getAttribute('state')))
+        address = address + ", " + markerElem.getAttribute('state');
+      if (!address.includes(markerElem.getAttribute('zip')))
+        address = address + ", " + markerElem.getAttribute('zip');
+      if (!address.includes(markerElem.getAttribute('country')))
+        address = address + ", " + markerElem.getAttribute('country');
       var biz = markerElem.getAttribute('business');
       var type = markerElem.getAttribute('type');
       var point = new google.maps.LatLng(
@@ -178,25 +188,15 @@ function collectXML (position) {
           map: map,
           position: results[0].geometry.location
         });
-        var x = encodeURI(biz + ", " + address);
-        var y = x;
+        var x = encodeURI(biz);
+        var y = encodeURI(no);
         marker.addListener('click', function() {
           
-        var infowindow = new google.maps.InfoWindow({
-          content: "<p onclick=focusStore(\"" + y + "\");><u>" + name + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br><u>" + biz + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br><u>" + type + "</u>&nbsp;&nbsp;&nbsp;&nbsp;</p><br>",
+         var infowindow = new google.maps.InfoWindow({
+            content: "<p onclick=focusStore(\"" + x + "\",\"" + y + "\");><u>" + name + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br><u>" + biz + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br>"
 
-        });
+          });
           infowindow.open(map, marker);
-          fetch('test.php', function() {})
-            .then(function(response){
-              return response.json();
-            })
-            .then(function(myJson) {
-              console.log(JSON.stringify(myJson));
-              //mapView();
-              //call in code to get deals here
-            });
-              
         });
       }
     });
@@ -205,17 +205,20 @@ function collectXML (position) {
 });
 }
 
-function focusStore(address) {
-  setCookie("addy", address);
-  fetch('getstore.php?a=' + getCookie("addy"), function() {})
-    .then(function(){
-      return;
-    })
-    .then(function() {
-      //console.log(JSON.stringify(myJson));
+function focusStore(name,no) {
+  var request = window.ActiveXObject ?
+    new ActiveXObject('Microsoft.XMLHTTP') :
+    new XMLHttpRequest;
+
+  request.onreadystatechange = function() {
+    if (request.readyState == 4) {
+      
+    }
+  };
+
+  request.open('GET', "getstore.php?a=" + name + "&b=" + no, true);
+  request.send(null);
       menuList('preorder.php');
-      //call in code to get deals here
-    });
 }
 
 function downloadUrl(url, callback) {
@@ -296,14 +299,6 @@ function createMarker(place) {
   });
 
   google.maps.event.addListener(marker, 'click', function() {
-    fetch('test.php')
-    .then(function(response) {
-      console.log(response);
-      return response.json();
-    })
-    .then(function(myJson) {
-      console.log(JSON.stringify(myJson));
-    });
     infowindow.setContent(place.name);
     infowindow.open(map, this);
     });
@@ -442,12 +437,9 @@ function move() {
   function menuList(i) {
     fetch(i, function() {})
       .then(function(response){
-        return response.json();
+      return response.json();
       })
       .then(function(j) {
-        console.log(getCookie("login"));
-        if (document.cookie.count == 3)
-          return;
         fillMenu(JSON.stringify(j));
       });
       if (i === "newclient.php")

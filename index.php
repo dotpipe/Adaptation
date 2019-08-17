@@ -244,7 +244,7 @@
 	</script>
 	<script src="gmaps.js"></script>
 	
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC6nPPAMCGMzGcTS-HOkT1FXCJ3AqwV2V4&libraries=places&callback=honey"
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3DYtYBqKTgqG46VTRhlGGx-_nD6Vw4yc&libraries=places&callback=honey"
 	  async defer></script>
 	  <meta content="Diads is your best place to advertise. Get Followers, Preordering, Reviews from customers and much more." name="description">
 	</head>

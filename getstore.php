@@ -1,18 +1,33 @@
 <?php
 function makeChatFile($conn) {
-    if (!isset($_COOKIE['chatfile']))
-        return;
-    $filename = $_COOKIE['chatfile'];
-    $sql = 'INSERT INTO chat(id, start, aim, filename,last) VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store_id'] . '","' . $filename . '",null)';
+    setcookie("chatfile","&nbsp;");
+    $temp = "";
+    
+    foreach($conn->query('SELECT LAST_INSERT_ROW() FROM chat WHERE 1') as $row) {
+        $temp = $row['LAST_INSERT_ROW()'] + 1;
+    }
+    
+    foreach($conn->query('SELECT id, start, aim, filename FROM chat WHERE 1') as $row) {
+        if (($row['aim'] == $_COOKIE['store_id'] || $row['start'] == $_COOKIE['store_id'])
+            && ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail'])) {
+                setcookie('chatfile', md5($temp) . ".xml");
+                if (!file_exists("./xml/" . $_COOKIE['chatfile']))
+                    file_put_contents("./xml/" . $_COOKIE['chatfile'], '<?xml version=\'1.0\'?><messages></messages>');
+                return;
+            }
+    }
+    
+       
+    $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered) VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store_id'] . '","' . md5($temp) . ".xml" . '",CURRENT_TIMESTAMP,null)';
+    $sqlt = str_replace('"',"\'", $sql);
     $results = $conn->query($sql);
+    makeChatFile($conn);
 }
-$x = urldecode($_GET['addy']);
-$y = str_getcsv($x,",");
-
 //$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-$conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
+$conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die(json_encode("Error: Cannot create connection"));
 
+setcookie("store"," from stores!");
 $z = [];
 if (mysqli_connect_errno()) {
     exit();
@@ -21,36 +36,28 @@ for ($i = 0 ; $i < count($y) ; $i++)
     $z[] = trim($y[$i]);
 
 $results = "";
+$sql = "SELECT `franchise`.`store_name`, `franchise`.`email`, `franchise`.`store_no`, `franchise`.`owner_id`, `franchise`.`email`, `ad_revs`.`alias` FROM `franchise`, `ad_revs` WHERE `franchise`.`store_name` = \"" . $_GET['a'] . "\" AND `franchise`.`store_no` = \"" . $_GET['b'] . "\"";
 
-if (count($z) == 6)
-    $results = $conn->query("SELECT ad_revs.store_uniq, franchise.store_name, franchise.store_no, ad_revs.store_creditor, franchise.addr_str, franchise.city, franchise.state, franchise.owner_id, franchise.alias, chat.filename FROM franchise, ad_revs, chat WHERE franchise.addr_str like \"" . $_GET['a'] . "\" AND franchise.city like \"" . $z[3] . "\" AND state like \"" . $z[4] . "\"") or die(mysqli_error());
-else if (count($z) == 5)
-    $results = $conn->query("SELECT ad_revs.store_uniq, franchise.store_name, franchise.store_no, ad_revs.store_creditor, franchise.addr_str, franchise.city, franchise.state, franchise.owner_id, franchise.alias, chat.filename FROM franchise, ad_revs, chat WHERE franchise.addr_str like \"" . $_GET['a'] . "\" AND franchise.city like \"" . $z[2] . "\" AND state like \"" . $z[3] . "\"") or die(mysqli_error());
-else
-    $results = $conn->query("SELECT ad_revs.store_uniq, franchise.store_name, franchise.store_no, ad_revs.store_creditor, franchise.addr_str, franchise.city, franchise.state, franchise.owner_id, franchise.alias, chat.filename FROM franchise, ad_revs, chat WHERE franchise.addr_str like \"" . $_GET['a'] . "\" AND franchise.city like \"" . $z[3] . "\" AND state like \"" . $z[5] . "\"") or die(mysqli_error());
+$results = $conn->query($sql) or die(setcookie("store", mysql_error()));
 
     if ($results->num_rows > 0) {
         $rows = $results->fetch_assoc();
-        setcookie("stores",$rows['store_name']);
+        setcookie("store",$rows['store_name']);
         setcookie("store_no",$rows['store_no']);
-        if ($rows['email'] == null)
+        if (!isset($rows['email']) || $rows['email'] == null)
             setcookie("store_id",$rows['owner_id']);
         else 
             setcookie("store_id",$rows['email']);
         setcookie("contact",$rows['store_creditor']);
         setcookie("contact_alias",$rows['alias']);
-        if (!file_exists('./xml/' . md5($_COOKIE['myemail'] . ' oenq ' . $_COOKIE['store_id']) . ".xml")) {
-            file_put_contents('./xml/' . md5($_COOKIE['myemail'] . ' oenq ' . $_COOKIE['store_id']) . ".xml",'<?xml version=\'1.0\'?><messages></messages>');
-            makeChatFile($conn);
-        }
-        setcookie('chatfile','./xml/' . md5($_COOKIE['myemail'] . ' oenq ' . $_COOKIE['store_id']) . ".xml");
-        
+        makeChatFile($conn);
         if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml"))
             file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml",'<?xml version=\'1.0\'?><messages></messages>');
-        setcookie('inboxfile','./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");
+        setcookie('inboxfile',md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");
     }
-    else
-        setcookie("stores","");
+    else {
+        setcookie("store",$_GET['a'] . $_GET['b']);
+    }
     $results->close();
 $conn->close();
 

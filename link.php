@@ -12,7 +12,7 @@ if (!isset($_SESSION))
       $arr[$k] = $v;
     }
     for ($i = 0; $i < count($list); $i++) {
-    	if ($list[$i]['store_no'] == $arr['store_no'] && $list[$i]['address'] == $arr['address']) {
+    	if ($list[$i]['store_no'] == $arr['store_no'] && $list[$i]['business'] == $arr['business']) {
     		header("Location: ./");
     	}
     }
