@@ -2,6 +2,8 @@
 	header("X-Content-Type-Options: nosniff");
 	header("Content-Type: text/html");
 	session_start();
+	global $chats, $alias;
+	
 	if (!isset($_COOKIE['vartime']))
 		setcookie("vartime", 1);
 	else if (isset($_COOKIE['remember']))

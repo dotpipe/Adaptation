@@ -1,12 +1,11 @@
 <?php
 function findChatFile($con) {
-    setcookie("chatfile","&nbsp;");
     $temp = "";
 
     foreach($con->query('SELECT id, start, aim, filename FROM chat WHERE 1') as $row) {
         if (($row['aim'] == $_COOKIE['store_id'] || $row['start'] == $_COOKIE['store_id'])
             && ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail'])) {
-                setcookie('chatfile', md5($filename) . '.xml');
+                setcookie('chatfile', md5($filename));
                 if (!file_exists("./xml/" . $_COOKIE['chatfile']))
                     file_put_contents("./xml/" . $_COOKIE['chatfile'], '<?xml version=\'1.0\'?><messages></messages>');
                 return 1;
@@ -14,6 +13,7 @@ function findChatFile($con) {
     }
     return makeChatFile($con);
 }
+
 function makeChatFile($cnxn) {
     foreach($conn->query('SELECT LAST_INSERT_ROW() FROM chat WHERE 1') as $row) {
         $temp = $row['LAST_INSERT_ROW()'] + 1;
@@ -24,6 +24,7 @@ function makeChatFile($cnxn) {
     $results = $conn->query($sql);
     return 0;
 }
+
 //$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die(json_encode("Error: Cannot create connection"));

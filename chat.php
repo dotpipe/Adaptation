@@ -2,7 +2,7 @@
 
 function updateChatFile($conn) {
     $filename = $_COOKIE['chatfile'];
-    $sql = 'UPDATE chat SET `before` = `chat.last`, last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
+    $sql = 'UPDATE chat SET `before` = `chat.last`, `checked` = "0", last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
     $results = $conn->query($sql);
 }
 
@@ -35,5 +35,8 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
    $x->appendChild($tmp);
    $dom->appendChild($x);
    $dom->save('./xml/' . $filename);
+   
    updateChatFile($conn);
+   
+   listChats();
 ?>

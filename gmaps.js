@@ -2,6 +2,35 @@
 var datarray = [];
 var ADDR;
 
+function listConvo() {
+
+  var email = '<?=$chats;?>';
+  var alias = '<?=$alias;?>';
+  
+  console.log(JSON.stringify(alias));
+  if (email.length === 0)
+    return;
+  var x = document.getElementById("chatters");
+  while (x.hasChildNodes)
+    x.removeChild(x.firstChild);
+  var v = document.createElement("option");
+  v.setAttribute("value", "");
+  var txt = document.createElement("text");
+  txt.textContent = "User Queue";
+  v.appendChild(txt);
+  x.appendChild(v);
+  
+  setCookie("chats", email.length);
+  for (i = 0 ; i < email.length ; i++) {
+    var v = document.createElement("option");
+    v.setAttribute("value", email[i]);
+    var txt = document.createElement("text");
+    txt.textContent = alias[i];
+    v.appendChild(txt);
+    x.appendChild(v);
+  }
+}
+
 function loginUnsuccessful() {
   var y = getCookie("count");
   y++;
@@ -32,8 +61,6 @@ function unload() {
 }
 
 function startChat() {
-  if (getCookie("chatfile") == undefined)
-    return;
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
@@ -43,7 +70,18 @@ function startChat() {
   xhttp.open("GET", "./xml/" + getCookie("chatfile"), true);
   xhttp.send();
   
-  }
+  xhttp = null;
+  
+  xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          fillChat(this);
+      }
+  };
+  xhttp.open("GET", "chatxml.php", true);
+  xhttp.send();
+  
+}
 
   function fillChat(xml) {
     var y, z, i, yLen, xmlDoc, txt;
@@ -57,7 +95,7 @@ function startChat() {
       console.log(y[i].getAttribute("user") + " " + getCookie("myemail"));
         if (y[i].getAttribute("user") == getCookie("myemail")) {
           txt += '<div style="opacity:0.5;background:gray;color:white;width:100%">';
-          txt += y[i].childNodes[0].nodeValue + '</div>';
+          txt += "me: " + y[i].childNodes[0].nodeValue + '</div>';
         }
         else 
           txt += getCookie("contact_alias") + ": " + y[i].childNodes[0].nodeValue + "<br>";
@@ -69,7 +107,7 @@ function startChat() {
       document.getElementById("startchat").setAttribute("onmouseover","");
       t.scrollTop = t.childElementCount*18;
     }
-}
+  }
 
 function goChat(i,j) {
   if (j == 13) {
@@ -102,14 +140,14 @@ function glaze(address) {
     return;
   geocoder = new google.maps.Geocoder();
   geocoder.geocode({ 'address': address }, function(results, status) {
-  if (status == google.maps.GeocoderStatus.OK) {
-    //map.setCenter(results[0].geometry.location);
-    var marker = new google.maps.Marker({
-      map: map,
-      position: results[0].geometry.location
-    });
-  }
-});
+    if (status == google.maps.GeocoderStatus.OK) {
+      //map.setCenter(results[0].geometry.location);
+      var marker = new google.maps.Marker({
+        map: map,
+        position: results[0].geometry.location
+      });
+    }
+  });
 }
 
 function collectXML (position) {
@@ -153,7 +191,8 @@ function collectXML (position) {
       var type = markerElem.getAttribute('type');
       var point = new google.maps.LatLng(
           parseFloat(markerElem.getAttribute('lat')),
-          parseFloat(markerElem.getAttribute('long')));
+          parseFloat(markerElem.getAttribute('long'))
+          );
 
       var infowincontent = document.createElement('div');
       var strong = document.createElement('strong');
@@ -166,27 +205,27 @@ function collectXML (position) {
       infowincontent.appendChild(text);
       geocoder = new google.maps.Geocoder();
       geocoder.geocode({ 'address': address }, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        //map.setCenter(results[0].geometry.location);
-        var marker = new google.maps.Marker({
-          map: map,
-          position: results[0].geometry.location
-        });
-        var x = encodeURI(biz);
-        var y = encodeURI(no);
-        marker.addListener('click', function() {
-          
-         var infowindow = new google.maps.InfoWindow({
-            content: "<p onclick=focusStore(\"" + x + "\",\"" + y + "\");><u>" + name + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br><u>" + biz + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br>"
-
+        if (status == google.maps.GeocoderStatus.OK) {
+          //map.setCenter(results[0].geometry.location);
+          var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
           });
-          infowindow.open(map, marker);
-        });
-      }
+          var x = encodeURI(biz);
+          var y = encodeURI(no);
+          marker.addListener('click', function() {
+            
+           var infowindow = new google.maps.InfoWindow({
+              content: "<p onclick=focusStore(\"" + x + "\",\"" + y + "\");><u>" + name + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br><u>" + biz + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br>"
+  
+            });
+            infowindow.open(map, marker);
+          });
+        }
+      });
+      glaze(address);
     });
-    glaze(address);
   });
-});
 }
 
 function focusStore(name,no) {
