@@ -1,27 +1,28 @@
 <?php
-function makeChatFile($conn) {
+function findChatFile($con) {
     setcookie("chatfile","&nbsp;");
     $temp = "";
-    
+
+    foreach($con->query('SELECT id, start, aim, filename FROM chat WHERE 1') as $row) {
+        if (($row['aim'] == $_COOKIE['store_id'] || $row['start'] == $_COOKIE['store_id'])
+            && ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail'])) {
+                setcookie('chatfile', md5($filename) . '.xml');
+                if (!file_exists("./xml/" . $_COOKIE['chatfile']))
+                    file_put_contents("./xml/" . $_COOKIE['chatfile'], '<?xml version=\'1.0\'?><messages></messages>');
+                return 1;
+            }
+    }
+    return makeChatFile($con);
+}
+function makeChatFile($cnxn) {
     foreach($conn->query('SELECT LAST_INSERT_ROW() FROM chat WHERE 1') as $row) {
         $temp = $row['LAST_INSERT_ROW()'] + 1;
     }
     
-    foreach($conn->query('SELECT id, start, aim, filename FROM chat WHERE 1') as $row) {
-        if (($row['aim'] == $_COOKIE['store_id'] || $row['start'] == $_COOKIE['store_id'])
-            && ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail'])) {
-                setcookie('chatfile', md5($temp) . ".xml");
-                if (!file_exists("./xml/" . $_COOKIE['chatfile']))
-                    file_put_contents("./xml/" . $_COOKIE['chatfile'], '<?xml version=\'1.0\'?><messages></messages>');
-                return;
-            }
-    }
-    
-       
     $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered) VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store_id'] . '","' . md5($temp) . ".xml" . '",CURRENT_TIMESTAMP,null)';
     $sqlt = str_replace('"',"\'", $sql);
     $results = $conn->query($sql);
-    makeChatFile($conn);
+    return 0;
 }
 //$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
@@ -50,7 +51,7 @@ $results = $conn->query($sql) or die(setcookie("store", mysql_error()));
             setcookie("store_id",$rows['email']);
         setcookie("contact",$rows['store_creditor']);
         setcookie("contact_alias",$rows['alias']);
-        makeChatFile($conn);
+        while (!findChatFile($conn));
         if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml"))
             file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml",'<?xml version=\'1.0\'?><messages></messages>');
         setcookie('inboxfile',md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");

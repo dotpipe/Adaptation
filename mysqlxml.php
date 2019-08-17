@@ -1,9 +1,5 @@
 <?php
 
-function sanitize(&$r) {
-    $r = filter_var(strip_tags($r), FILTER_SANITIZE_STRING);
-}
-
 //$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
@@ -15,8 +11,6 @@ if (!file_exists('stores.xml'))
 $xml = simplexml_load_file("stores.xml");
 
 foreach ($xml->children() as $row) {
-    foreach ($row as $k => $v)
-        sanitize($v);
     $name = (strlen($row["name"]) > 0) ? $row["name"] : "";
     $busi = (strlen($row["business"]) > 0) ? $row["business"] : "";
     $no = (strlen($row["no"]) > 0) ? $row["no"] : "";
@@ -37,18 +31,16 @@ foreach ($xml->children() as $row) {
         $st = trim(($holder[$index++]));
     }
     //Encrypt Password
-    $options = array(
-        'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM),
-        'cost' => 12,
-      );
-    $password = password_hash($password, PASSWORD_BCRYPT, $options);
+    $options = [
+        'cost' => 10
+    ]; 
+    $password_hash = password_hash($password, PASSWORD_BCRYPT, $options);
     
-    $img_dir = md5($name . "4dis93" . $username) ;
+    $img_dir = md5($name . "4dis93" . $username);
     $sql = 'INSERT INTO ad_revs(store_uniq,store_creditor,ads_run,total_spent,img_dir,
-        flags,joined_on,left_on,avg_hrs_day,avg_ads_hr,reviews,review_tally,username,password,alias,city,state)
+        flags,joined_on,left_on,avg_hrs_day,avg_ads_hr,reviews,review_tally,username,password,alias)
             VALUES (null,"' . $name . '",0,0,"'
-             . $img_dir . '",0,CURRENT_TIMESTAMP,null,0,0,0,0,"' . $username . '","' . $password . '","' . $alias
-             . '","' . $city . '","' . $st . '")';
+             . $img_dir . '",0,CURRENT_TIMESTAMP,null,0,0,0,0,"' . $username . '","' . $password_hash . '","' . $alias . '")';
     
     $result = mysqli_query($conn, $sql);
 
@@ -67,4 +59,5 @@ if ($affectedRow > 0) {
     $message = $affectedRow . " records inserted";
     echo $message;
 }
+header("Location: ./index.php")
 ?>

@@ -32,14 +32,15 @@ $results = $conn->query('SELECT store_uniq, store_creditor, username, password, 
         setcookie("myalias",$rows['alias'],time()+60*60*$_COOKIE['vartime']);
         setcookie("login","true",time()+60*60*$_COOKIE['vartime']);
         echo "TRUE";
-        header("Location: ./");
         if (!isset($_COOKIE['count']) || isset($_COOKIE['count']))
             setcookie("count", 0);
         setcookie("lock", time()+1000);
+        
+        header("Location: ./");
     }
     else {
         if (!isset($_COOKIE['count']))
-            setcookie("count", 1);
+            setcookie("count", 0);
         if (isset($_COOKIE['count']))
             $_COOKIE['count']++;
         if ($_COOKIE['count'] >= 3)

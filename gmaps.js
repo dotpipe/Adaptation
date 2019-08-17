@@ -54,13 +54,13 @@ function startChat() {
     y = z.childNodes;
     yLen = y.length;
     for (i = 0; i < yLen; i++) { 
-      console.log("user")
-        if (y[i].getAttribute("user") == getCookie("myname")) {
+      console.log(y[i].getAttribute("user") + " " + getCookie("myemail"));
+        if (y[i].getAttribute("user") == getCookie("myemail")) {
           txt += '<div style="opacity:0.5;background:gray;color:white;width:100%">';
           txt += y[i].childNodes[0].nodeValue + '</div>';
         }
         else 
-          txt += y[i].childNodes[0].nodeValue + "<br>";
+          txt += getCookie("contact_alias") + ": " + y[i].childNodes[0].nodeValue + "<br>";
     }
     var t = document.getElementById("chatwindow");
     t.innerHTML = txt;
@@ -71,34 +71,18 @@ function startChat() {
     }
 }
 
-
 function goChat(i,j) {
-    if (j == 13) {
-      var x = document.getElementById("chatwindow");
-      var y = i.cloneNode();
-      x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
-      fetch("chat.php?a=" + y.value);
-      x.scrollTop = x.childElementCount*18;
-      i.value = "";
-    }
-    if (document.getElementById("chatwindow").innerHTML == "&nbsp;") {
-      //document.getElementById("chatwindow").innerHTML = "";
-      startChat();
-    }
-}
-
-function checkValue(t) {
-  if (t.value.length > 1)
-    return;
-  if (t.value.length != 0) {
-    var x = document.getElementsByClassName("bizreq");
-    for (i = 0 ; i < x.length ; i++)
-      x[i].required = "true";
+  if (j == 13) {
+    var x = document.getElementById("chatwindow");
+    var y = i.cloneNode();
+    x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
+    fetch("chat.php?a=" + y.value);
+    x.scrollTop = x.childElementCount*18;
+    i.value = "";
   }
-  else {
-    var x = document.getElementsByClassName("bizreq");
-    for (i = 0 ; i < x.length ; i++)
-      x[i].required = "false";
+  if (document.getElementById("chatwindow").innerHTML == "&nbsp;") {
+    //document.getElementById("chatwindow").innerHTML = "";
+    startChat();
   }
 }
 
@@ -392,29 +376,6 @@ function move() {
     var h = t.childNodes[1];
     //if (h.style.height !== undefined)
     console.log(h);
-  }
-
-  function mapView() {
-    var p = document.getElementById("page");
-    var t = document.getElementById("map");
-    var f = document.getElementById("following");
-    if (p.index != "-1") {
-      f.style.top = t.style.height + "px";
-      f.style.index = "-1";
-      f.style.style = "margin-top:" + t.style.height + "px;width:100%;z-index:-1;background:url('blacksand.jpg');position:static;";
-      p.index = "-1";
-
-      //t.style = "position:relative;z-index:1;";
-      t.parentNode.style = "z-index:-1;height:100%;overflow:none;position:fixed;width:100%;";
-    }
-    else {
-      f.style.index = "-1";
-      f.style.style = "margin-top:105px;width:100%;z-index:1;background:url('blacksand.jpg');position:static;";
-      p.index = "1";
-      //t.style = "position:relative;z-index:-2;";
-      t.parentNode.style = "z-index:1;height:100%;overflow:none;position:fixed;width:100%;";
-    }
-    //t.style.height = (0.50 * screen.height) + "px";
   }
 
   function menuslide() {

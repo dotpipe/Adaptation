@@ -7,8 +7,8 @@ $form .= '<i style="color:red">required</i> <b style="color:red">*</b> : </label
 $form .= '<input required id="email" type="email" name="email" placeholder="Email"> <b style="color:red">*</b><br>';
 $form .= '<input required id="name" type="text" name="name" placeholder="Contact Person"> <b style="color:red">*</b><br>';
 $form .= '<input required id="alias" type="text" name="alias" placeholder="Alias for Chat"> <b style="color:red">*</b><br>';
+$form .= '<input required id="phone" type="phone" name="phone" placeholder="Phone Number"> <b style="color:red">*</b><br>';
 $form .= '<input required id="password" type="password" name="password" placeholder="Password"> <b style="color:red">*</b><br>';
-$form .= '<input required class="bizreq" id="ph" style="background:white" name="phone" type="text" placeholder="Phone Number"> <b style="color:red">*</b><br>';
 $form .= '<button onclick="submit">Welcome!</button><br>';
 $form .= '</form></div>';
 

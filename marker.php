@@ -1,5 +1,5 @@
 <?php
-  $xml = simplexml_load_file("stores.xml");
+  $xml = simplexml_load_file("newusers.xml");
 
   $list = $xml->marker;
   $arr = [];
@@ -17,17 +17,17 @@
   $dom = new \DomDocument();
   $dom->load('stores.xml');
 
-  $z = $dom->getElementsByTagName("markers");
-  $x = $dom->getElementsByTagName("markers")[0];
+  $z = $dom->getElementsByTagName("users");
+  $x = $dom->getElementsByTagName("users")[0];
   $y = $z->childNodes;
   $n = "";
 
-  $tmp = $dom->createElement("marker");
+  $tmp = $dom->createElement("user");
   foreach ($_POST as $k=>$v) {
     $tmp->setAttribute($k,$v);
   }
    $x->appendChild($tmp);
    $dom->appendChild($x);
-   $dom->save("stores.xml");
+   $dom->save("newusers.xml");
 header("Location: ./mysqlxml.php");
 ?>

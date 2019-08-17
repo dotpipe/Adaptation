@@ -30,8 +30,8 @@ foreach ($xml[$i]->children() as $row) {
     } while (($end - $start) < $timeTarget);
     
     $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,addr_str,city,state,password,phone,email)
-        VALUES (null,"' . $row['business'] . '","' . $row['store_no'] . '","' . 
-        $row['email'] . '","' . $row['address'] . ', ' . $row['city'] . ', ' . $row['state'] . '","' . $row['city'] . '","' . $row['state'] . '","' . $password1 . '","' . $row['phone'] . '","' . $row['store_email'] . '")';
+        VALUES (null,"' . $row['business'] . '","' . $row['store_no'] . '","' . $row['email'] . '","' . $row['manager'] . '","' . 
+        $row['address'] . ', ' . $row['city'] . ', ' . $row['state'] . '","' . $row['city'] . '","' . $row['state'] . '","' . $password1 . '","' . $row['phone'] . '","' . $row['store_email'] . '")';
     
     $result = mysqli_query($conn, $sql);
     if (! empty($result)) {
