@@ -20,7 +20,6 @@ function makeChatFile($cnxn) {
     }
     
     $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered) VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store_id'] . '","' . md5($temp) . ".xml" . '",CURRENT_TIMESTAMP,null)';
-    $sqlt = str_replace('"',"\'", $sql);
     $results = $conn->query($sql);
     return 0;
 }
@@ -38,7 +37,7 @@ for ($i = 0 ; $i < count($y) ; $i++)
     $z[] = trim($y[$i]);
 
 $results = "";
-$sql = "SELECT `franchise`.`store_name`, `franchise`.`email`, `franchise`.`store_no`, `franchise`.`owner_id`, `franchise`.`email`, `ad_revs`.`alias` FROM `franchise`, `ad_revs` WHERE `franchise`.`store_name` = \"" . $_GET['a'] . "\" AND `franchise`.`store_no` = \"" . $_GET['b'] . "\"";
+$sql = "SELECT `franchise`.`store_name`, `franchise`.`email`, `franchise`.`store_no`, `franchise`.`owner_id`, `franchise`.`email`, `ad_revs`.`alias` FROM `franchise`, `ad_revs` WHERE (`franchise`.`owner_id` = `ad_revs`.`username` || `franchise`.`email` = `ad_revs`.`username`) AND `franchise`.`store_name` = \"" . $_GET['a'] . "\" AND `franchise`.`store_no` = \"" . $_GET['b'] . "\"";
 
 $results = $conn->query($sql) or die(setcookie("store", mysql_error()));
 
@@ -58,7 +57,7 @@ $results = $conn->query($sql) or die(setcookie("store", mysql_error()));
         setcookie('inboxfile',md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");
     }
     else {
-        setcookie("store",$_GET['a'] . $_GET['b']);
+        setcookie("store","from many stores!");
     }
     $results->close();
 $conn->close();

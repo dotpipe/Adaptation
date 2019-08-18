@@ -7,11 +7,9 @@
 	$arr[$k] = $v;
   }
   for ($i = 0; $i < count($list); $i++) {
-	if ($list[$i]['email'] == $arr['email']) {
-		
-		header("Location: ./");
-
-	}
+  	if ($list[$i]['email'] == $arr['email']) {
+  		header("Location: ./");
+  	}
   }
 
   $dom = new \DomDocument();

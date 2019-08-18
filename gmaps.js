@@ -2,33 +2,49 @@
 var datarray = [];
 var ADDR;
 
+function csvToArray(text) {
+  let p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
+  for (l of text) {
+      if ('"' === l) {
+          if (s && l === p) row[i] += l;
+          s = !s;
+      } else if (',' === l && s) l = row[++i] = '';
+      else if ('\n' === l && s) {
+          if ('\r' === p) row[i] = row[i].slice(0, -1);
+          row = ret[++r] = [l = '']; i = 0;
+      } else row[i] += l;
+      p = l;
+  }
+  return ret;
+};
+
 function listConvo() {
 
-  var email = '<?=$chats;?>';
-  var alias = '<?=$alias;?>';
+  var email = getCookie("chats");
+  var alias = getCookie("aliases");
+  email = csvToArray(email);
+  alias = csvToArray(alias);
   
-  console.log(JSON.stringify(alias));
   if (email.length === 0)
     return;
   var x = document.getElementById("chatters");
-  while (x.hasChildNodes)
+  var h = 0;
+  while (x.childElementCount > h++)
     x.removeChild(x.firstChild);
+  h = 0;
   var v = document.createElement("option");
   v.setAttribute("value", "");
-  var txt = document.createElement("text");
-  txt.textContent = "User Queue";
-  v.appendChild(txt);
-  x.appendChild(v);
-  
-  setCookie("chats", email.length);
-  for (i = 0 ; i < email.length ; i++) {
-    var v = document.createElement("option");
-    v.setAttribute("value", email[i]);
-    var txt = document.createElement("text");
-    txt.textContent = alias[i];
-    v.appendChild(txt);
-    x.appendChild(v);
+  v.setAttribute("label", "You have " + email.length + " people to chat with!");
+  x.add(v,0);
+  var y = [];
+  for (i = 0 ; i < email[0].length ; i++)
+    y.unshift(document.createElement("option"));
+  for (i = 0; i < y.length ; i++) {
+    y[i].setAttribute("value", email[0][i]);
+    y[i].setAttribute("label", alias[0][i]);
   }
+  for (i = 0 ; i < y.length ; i++)
+    x.add(y[i], i+1);
 }
 
 function loginUnsuccessful() {
@@ -73,12 +89,13 @@ function startChat() {
   xhttp = null;
   
   xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-          fillChat(this);
-      }
-  };
-  xhttp.open("GET", "chatxml.php", true);
+  xhttp.open("GET", "chatxml.php?a=1", true);
+  xhttp.send();
+  
+  xhttp = null;
+  
+  xhttp = new XMLHttpRequest();
+  xhttp.open("GET", "chatxml.php?a=2", true);
   xhttp.send();
   
 }
