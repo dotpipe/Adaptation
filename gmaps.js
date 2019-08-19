@@ -39,12 +39,11 @@ function listConvo() {
   }
   h = 0;
   var v = document.createElement("option");
-  v.setAttribute("value", "");
-  v.setAttribute("label", "You have " + files.length + " people to chat with!");
-  x.add(v,0);
+  
+  x.options[0] = new Option("You have " + files.length + " people to chat with!","");
   
   for (var i = 0; i < files.length ; i++) { 
-    x.options[i] = new Option(alias[i],files[i]);
+    x.options[i+1] = new Option(alias[i],files[i]);
   }
   
 }

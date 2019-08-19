@@ -8,8 +8,10 @@ function findMyFile($con) {
         while ($row = $results->fetch_assoc()) {
             if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
                 $files[] = $row['filename'];
-                if (!file_exists("./xml/" . $row['filename']))
+                if (!file_exists("./xml/" . $row['filename'])) {
                     file_put_contents("./xml/" . $row['filename'], '<?xml version=\'1.0\'?><messages></messages>');
+                    chmod('./xml/' . $row['filename'], 0666);
+                }
                 $con->query('UPDATE chat SET `checked` = 0 WHERE `filename` = "' . $row['filename'] . '"');
             }
         }
@@ -37,8 +39,10 @@ function makeMyFile($cnxn) {
     srand($temp);
     $temp += rand(1,25);
     
-    if (!file_exists("./xml/" . md5($temp) . ".xml"))
+    if (!file_exists("./xml/" . md5($temp) . ".xml")) {
         file_put_contents("./xml/" . md5($temp) . ".xml", '<?xml version=\'1.0\'?><messages></messages>');
+        chmod('./xml/' . md5($temp), 0666);
+    }
     $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES (null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';
 
     $results = $cnxn->query($sql);
@@ -79,8 +83,10 @@ $results = $conn->query($sql) or die(file_put_contents("test.txt", "idiaj"));
         setcookie("contact",$rows['store_creditor']);
         setcookie("contact_alias",$rows['alias']);
         while (!findChatFile($conn));
-        if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml"))
+        if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml")) {
             file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml",'<?xml version=\'1.0\'?><messages></messages>');
+            chmod('./inbox/' . md5($_COOKIE['store'] . $_COOKIE['store_no']), 0666);
+        }
         setcookie('inboxfile',md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");
     }
     else {

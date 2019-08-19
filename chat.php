@@ -15,8 +15,10 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     
     $filename = $_COOKIE['chatfile'];
 
-    if (!file_exists('./xml/' . $filename))
+    if (!file_exists('./xml/' . $filename)) {
         file_put_contents('./xml/' . $filename, '<?xml version=\'1.0\'?><messages></messages>');
+        chmod('./xml/' . $filename, 0666);
+    }
 
     $dom = new \DomDocument();
     $dom->load('./xml/' . $filename);
