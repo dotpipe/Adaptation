@@ -33,6 +33,7 @@ foreach ($alias as $k => $v)
 $r = json_encode($r);
 setcookie('aliases', $r);
 $r = [];
+$names = array_unique($names);
 foreach ($names as $k => $v)
     $r[] = $v;
 $r = json_encode($r);

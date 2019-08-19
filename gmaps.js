@@ -22,7 +22,6 @@ function listConvo() {
   while (x.childElementCount > h++) {
     x.removeChild(x.firstChild);
   }
-  h = 0;
   x.options[0] = new Option("You have " + files.length + " people to chat with!","");
   for (var i = 0; i < files.length ; i++) {
     x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),files[i]);
@@ -69,12 +68,15 @@ function getOption() {
   lbl = lbl.substring(1,lbl.length-1);
   
   var names = getCookie("names");
+  
+  names = names.substring(1,names.length-1);
+  names = names.split(",");
+  console.log(names);
   if (names.length > 0) {
-    names = names.substring(1,names.length-1);
-    names = names.split(",");
     names = names[x.selectedIndex].substr(1,names[x.selectedIndex].length-2);
   }
   console.log(str);
+  setCookie("indexNo", x.selectedIndex);
   setCookie("indexName", names);
   document.getElementById("contact").innerHTML = "Cheri with " + names;
   
@@ -85,6 +87,7 @@ function startChat(v) {
   url = "xml/" + getCookie("chatfile");
   if (v !== undefined)
     url = "xml/" + v;
+    console.log(url);
   if (url == "xml/")
     return;
   var xhttp = new XMLHttpRequest();
