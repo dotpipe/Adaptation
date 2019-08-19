@@ -25,11 +25,11 @@ foreach ($xml[$i]->children() as $row) {
     do {
         $cost++;
         $start = microtime(true);
-        $password1 = password_hash($password, PASSWORD_BCRYPT, ['cost' => $cost]);
+        $password1 = password_hash($row['password'], PASSWORD_BCRYPT, ['cost' => $cost]);
         $end = microtime(true);
     } while (($end - $start) < $timeTarget);
     
-    $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,addr_str,city,state,password,phone,email)
+    $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,manager,addr_str,city,state,password,phone,email)
         VALUES (null,"' . $row['business'] . '","' . $row['store_no'] . '","' . $row['email'] . '","' . $row['manager'] . '","' . 
         $row['address'] . ', ' . $row['city'] . ', ' . $row['state'] . '","' . $row['city'] . '","' . $row['state'] . '","' . $password1 . '","' . $row['phone'] . '","' . $row['store_email'] . '")';
     

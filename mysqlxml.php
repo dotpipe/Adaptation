@@ -5,10 +5,10 @@
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 $affectedRow = 0;
-if (!file_exists('stores.xml'))
-    file_put_contents("stores.xml", "<?xml version=\'1.0\'?><markers></markers>");
+if (!file_exists('newusers.xml'))
+    file_put_contents("newusers.xml", "<?xml version=\'1.0\'?><markers></markers>");
     
-$xml = simplexml_load_file("stores.xml");
+$xml = simplexml_load_file("newusers.xml");
 
 foreach ($xml->children() as $row) {
     $name = (strlen($row["name"]) > 0) ? $row["name"] : "";
@@ -37,9 +37,9 @@ foreach ($xml->children() as $row) {
     $password_hash = password_hash($password, PASSWORD_BCRYPT, $options);
     
     $img_dir = md5($name . "4dis93" . $username);
-    $sql = 'INSERT INTO ad_revs(store_uniq,store_creditor,ads_run,total_spent,img_dir,
+    $sql = 'INSERT INTO ad_revs(store_uniq,store_creditor,phone,ads_run,total_spent,img_dir,
         flags,joined_on,left_on,avg_hrs_day,avg_ads_hr,reviews,review_tally,username,password,alias)
-            VALUES (null,"' . $name . '",0,0,"'
+            VALUES (null,"' . $name . '","' . $ph . '",0,0,"'
              . $img_dir . '",0,CURRENT_TIMESTAMP,null,0,0,0,0,"' . $username . '","' . $password_hash . '","' . $alias . '")';
     
     $result = mysqli_query($conn, $sql);

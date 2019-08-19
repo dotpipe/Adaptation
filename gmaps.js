@@ -20,31 +20,33 @@ function csvToArray(text) {
 
 function listConvo() {
 
-  var email = getCookie("chats");
+  var files = getCookie("chatfiles");
   var alias = getCookie("aliases");
-  email = csvToArray(email);
-  alias = csvToArray(alias);
+  files = files.substring(1,files.length-1);
+  alias = alias.substring(1,alias.length-1);
   
-  if (email.length === 0)
+  files = files.split(",");
+  alias = alias.split(",");
+  
+  if (files.length === 0)
     return;
+  
   var x = document.getElementById("chatters");
   var h = 0;
-  while (x.childElementCount > h++)
+  
+  while (x.childElementCount > h++) {
     x.removeChild(x.firstChild);
+  }
   h = 0;
   var v = document.createElement("option");
   v.setAttribute("value", "");
-  v.setAttribute("label", "You have " + email.length + " people to chat with!");
+  v.setAttribute("label", "You have " + files.length + " people to chat with!");
   x.add(v,0);
-  var y = [];
-  for (i = 0 ; i < email[0].length ; i++)
-    y.unshift(document.createElement("option"));
-  for (i = 0; i < y.length ; i++) {
-    y[i].setAttribute("value", email[0][i]);
-    y[i].setAttribute("label", alias[0][i]);
+  
+  for (var i = 0; i < files.length ; i++) { 
+    x.options[i] = new Option(alias[i],files[i]);
   }
-  for (i = 0 ; i < y.length ; i++)
-    x.add(y[i], i+1);
+  
 }
 
 function loginUnsuccessful() {
@@ -76,26 +78,33 @@ function unload() {
     logout();
 }
 
-function startChat() {
+function getOption() {
+  var x = document.getElementById("chatters");
+  var str = x.options[x.selectedIndex].value
+  str = str.substring(1,str.length-1);
+  startChat(str);
+  setCookie("chatfile", str);
+}
+
+function startChat(v) {
+  url = "./xml/" + getCookie("chatfile");
+  if (v !== undefined)
+    url = "./xml/" + v;
+    console.log(url);
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
           fillChat(this);
       }
   };
-  xhttp.open("GET", "./xml/" + getCookie("chatfile"), true);
+  xhttp.open("GET", url, true);
   xhttp.send();
   
-  xhttp = null;
-  
+}
+
+function findOptions() {
   xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "chatxml.php?a=1", true);
-  xhttp.send();
-  
-  xhttp = null;
-  
-  xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "chatxml.php?a=2", true);
+  xhttp.open("GET", "chatxml.php", true);
   xhttp.send();
   
 }
@@ -104,24 +113,26 @@ function startChat() {
     var y, z, i, yLen, xmlDoc, txt;
     xmlDoc = xml.responseXML;
     txt = "";
+    if (getCookie("login") !== "true")
+      return;
     // Output all chat lines
     z = xmlDoc.getElementsByTagName("messages")[0];
     y = z.childNodes;
     yLen = y.length;
     for (i = 0; i < yLen; i++) { 
-      console.log(y[i].getAttribute("user") + " " + getCookie("myemail"));
+      console.log(y[i].getAttribute("user") + " " + getCookie(""));
         if (y[i].getAttribute("user") == getCookie("myemail")) {
           txt += '<div style="opacity:0.5;background:gray;color:white;width:100%">';
           txt += "me: " + y[i].childNodes[0].nodeValue + '</div>';
         }
-        else 
-          txt += getCookie("contact_alias") + ": " + y[i].childNodes[0].nodeValue + "<br>";
+        else {
+          txt += '<div style="opacity:0.5;background:black;color:white;width:100%">';
+          txt += getCookie("contact_alias") + ": " + y[i].childNodes[0].nodeValue + "</div><br>";
+        }
     }
     var t = document.getElementById("chatwindow");
     t.innerHTML = txt;
     if (document.getElementById("startchat").getAttribute("loaded") == "0") {
-      document.getElementById("startchat").setAttribute("loaded","1");
-      document.getElementById("startchat").setAttribute("onmouseover","");
       t.scrollTop = t.childElementCount*18;
     }
   }
@@ -136,7 +147,6 @@ function goChat(i,j) {
     i.value = "";
   }
   if (document.getElementById("chatwindow").innerHTML == "&nbsp;") {
-    //document.getElementById("chatwindow").innerHTML = "";
     startChat();
   }
 }

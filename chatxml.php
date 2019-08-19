@@ -5,38 +5,31 @@
 
 $con = mysqli_connect('localhost', 'root', '', 'adrs','3306') or die("Error: Can't connect");
 
-if ($_GET['a'] == "2") {
-    $x = []; $y = [];
+$files = [];
+$alias = [];
+$r = "";
+setcookie("chatfiles","");
+setcookie("aliases","");
+$results = $con->query('SELECT `alias`, `aim`, `start`, `filename`, `email`, `owner_id` `store_name` FROM `chat`, `franchise`, `ad_revs` WHERE (`franchise`.`owner_id` = `ad_revs`.`username` || `franchise`.`email` = `ad_revs`.`username`) AND `chat`.`checked` = 0 AND (`chat`.`aim` = "' . $_COOKIE['myemail'] . '" || `chat`.`start` = "' . $_COOKIE['myemail'] . '")');
     
-    foreach($con->query('SELECT * FROM chat WHERE `checked` = 0') as $row) {
-        if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
-    	    if ($row['aim'] == $_COOKIE['myemail'])
-    	        $new = $row['start'];
-    	    else
-    	        $new = $row['aim'];
-    	    $x[] = $new;
-    	    $x = array_unique($x);
-    	    foreach($con->query('SELECT * FROM `ad_revs` WHERE `ad_revs`.`username` = "' . $new . '"') as $rows){
-    	        $y[] = $rows['alias'];
-    	        $y = array_unique($y);
-    	    }
-    	}
+$num = $results->num_rows;
+if ($num > 0) {
+    while ($row = $results->fetch_assoc()) {
+        $files[] = $row['filename'];
+        $alias[] = ($row['aim'] == $_COOKIE['myemail']) ? $row['start'] : $row['aim'];
     }
-    
-        foreach ($x as $v) {
-            $fg[] = $v;
-            $fg = array_unique($fg);
-        }
-        foreach ($y as $v) {
-            $fgh[] = $v;
-            $fgh = array_unique($fgh);
-        }
-    
-    	setcookie("chats",json_encode($fg[0]));
-    	setcookie("aliases",json_encode($fgh[0]));
 }
-else {
-    $sql = "UPDATE chat SET `altered` = `last`, `last` = CURRENT_TIMESTAMP WHERE `filename` = '" . $_COOKIE['chatfile'] . "'";
-    $results = $con->query($sql) or die(file_put_contents("x.txt", mysqli_error()));
-}
+$r = [];
+$files = array_unique($files);
+foreach ($files as $k => $v)
+    $r[] = $v;
+$r = json_encode($r);
+setcookie('chatfiles', $r);
+$r = [];
+$alias = array_unique($alias);
+foreach ($alias as $k => $v)
+    $r[] = $v;
+$r = json_encode($r);
+setcookie('aliases', $r);
+
 ?>

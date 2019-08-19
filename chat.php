@@ -1,9 +1,9 @@
 <?php
 
-function updateChatFile($conn) {
+function updateChatFile($con) {
     $filename = $_COOKIE['chatfile'];
-    $sql = 'UPDATE chat SET `before` = `chat.last`, `checked` = "0", last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
-    $results = $conn->query($sql);
+    $sql = 'UPDATE `chat` SET `chat`.`altered` = `chat`.`last`, `chat`.`checked` = 0, last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
+    $results = $con->query($sql);
 }
 
 //$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -37,6 +37,5 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
    $dom->save('./xml/' . $filename);
    
    updateChatFile($conn);
-   
-   listChats();
+
 ?>
