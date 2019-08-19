@@ -2,7 +2,7 @@
     $filename = 'xml/' . md5($_COOKIE['id']) . ".xml";
     if (!file_exists('xml/' . $filename)) {
         file_put_contents('xml/' . $filename, '<?xml version="1.0"?><preorder></preorder>');
-        chmod('xml/' . $filename, 0666);
+        chmod('xml/' . $filename, 0644);
     }
 
     $dom = new \DomDocument();

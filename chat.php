@@ -1,7 +1,7 @@
 <?php
 
 function updateChatFile($con) {
-    $filename = $_COOKIE['chatfile'];
+    $filename = $_GET['b'];
     $sql = 'UPDATE `chat` SET `chat`.`altered` = `chat`.`last`, `chat`.`checked` = 0, last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
     $results = $con->query($sql);
 }
@@ -17,7 +17,7 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
 
     if (!file_exists('xml/' . $filename)) {
         file_put_contents('xml/' . $filename, '<?xml version=\'1.0\'?><messages></messages>');
-        chmod('xml/' . $filename, 0666);
+        chmod('xml/' . $filename, 0644);
     }
 
     $dom = new \DomDocument();

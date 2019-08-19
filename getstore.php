@@ -8,10 +8,11 @@ function findMyFile($con) {
         while ($row = $results->fetch_assoc()) {
             if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
                 $files[] = $row['filename'];
-                $alias[] = $row['alias'];
+                $alias[] = ($row['aim'] == $_COOKIE['myemail']) ? $row['start'] : $row['aim'];
+                $names[] = $row['alias'];
                 if (!file_exists("xml/" . $row['filename'])) {
                     file_put_contents("xml/" . $row['filename'], '<?xml version=\'1.0\'?><messages></messages>');
-                    chmod('xml/' . $row['filename'], 0666);
+                    chmod('xml/' . $row['filename'], 0644);
                 }
                 $con->query('UPDATE chat SET `checked` = 0 WHERE `filename` = "' . $row['filename'] . '"');
             }
@@ -20,11 +21,13 @@ function findMyFile($con) {
     if (sizeof($files) > 1) {
         setcookie("chatfiles", json_encode($files));
         setcookie("aliases", json_encode($alias));
+        setcookie("names", json_encode($names));
         return 1;
     }
     if (sizeof($files) == 1) {
         setcookie("chatfile", json_encode($files));
         setcookie("aliases", json_encode($alias));
+        setcookie("names", json_encode($names));
         return 1;
     }
     return makeMyFile($con);
@@ -45,14 +48,14 @@ function makeMyFile($cnxn) {
     
     if (!file_exists("xml/" . md5($temp) . ".xml")) {
         file_put_contents("xml/" . md5($temp) . ".xml", '<?xml version=\'1.0\'?><messages></messages>');
-        chmod('xml/' . md5($temp), 0666);
+        chmod('xml/' . md5($temp), 0644);
     }
     $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES (null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';
 
     $results = $cnxn->query($sql);
     $r[] = md5($temp);
     setcookie("chatfiles", json_encode($r));
-    return 1;
+    return findMyFile($cnxn);
 }
 
 if ($_COOKIE['login'] != "true")
@@ -89,7 +92,7 @@ $results = $conn->query($sql) or die(file_put_contents("test.txt", "idiaj"));
         while (!findMyFile($conn));
         if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml")) {
             file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml",'<?xml version=\'1.0\'?><messages></messages>');
-            chmod('./inbox/' . md5($_COOKIE['store'] . $_COOKIE['store_no']), 0666);
+            chmod('./inbox/' . md5($_COOKIE['store'] . $_COOKIE['store_no']), 0644);
         }
         setcookie('inboxfile',md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");
     }
