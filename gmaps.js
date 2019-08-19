@@ -25,7 +25,7 @@ function listConvo() {
   h = 0;
   x.options[0] = new Option("You have " + files.length + " people to chat with!","");
   for (var i = 0; i < files.length ; i++) {
-    x.options[i+1] = new Option(alias[i],files[i]);
+    x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),files[i]);
   }
 }
 
@@ -65,17 +65,20 @@ function getOption() {
   if (str == "")
     return;
   setCookie("chatfile", str);
-  startChat(str);
   var lbl = x.options[x.selectedIndex].label;
   lbl = lbl.substring(1,lbl.length-1);
   
   var names = getCookie("names");
-  names = names.substring(1,names.length-1);
-  
-  names = names.split(",");
-  names = names[x.selectedIndex].substr(1,names.length-2);
-  
+  if (names.length > 0) {
+    names = names.substring(1,names.length-1);
+    names = names.split(",");
+    names = names[x.selectedIndex].substr(1,names[x.selectedIndex].length-2);
+  }
+  console.log(str);
+  setCookie("indexName", names);
   document.getElementById("contact").innerHTML = "Cheri with " + names;
+  
+  startChat(str);
 }
 
 function startChat(v) {
@@ -132,7 +135,7 @@ function callPage(s) {
         }
         else {
           txt += '<div style="opacity:0.5;background:black;color:white;width:100%">';
-          txt += getCookie("contact_alias") + ": " + y[i].childNodes[0].nodeValue + "</div><br>";
+          txt += getCookie("indexName") + ": " + y[i].childNodes[0].nodeValue + "</div><br>";
         }
     }
     
@@ -144,19 +147,27 @@ function callPage(s) {
     
   }
 
+  function callChatWin(y) {
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
+    xhttp.send();  
+  
+  }
+  
 function goChat(i,j) {
   if (j == 13) {
     var x = document.getElementById("chatwindow");
     var y = i.cloneNode();
     x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
-    fetch("chat.php?a=" + y.value);
     x.scrollTop = x.childElementCount*18;
     i.value = "";
+    callChatWin(y.value);
   }
   if (document.getElementById("chatwindow").innerHTML == "&nbsp;") {
     startChat();
   }
 }
+
 
 function clearChat() {
   var x = document.getElementById("chatwindow");

@@ -13,7 +13,7 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     if (!isset($_SESSION))
         session_start();
     
-    $filename = $_COOKIE['chatfile'];
+    $filename = $_GET['b'];
 
     if (!file_exists('xml/' . $filename)) {
         file_put_contents('xml/' . $filename, '<?xml version=\'1.0\'?><messages></messages>');

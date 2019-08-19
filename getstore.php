@@ -86,7 +86,7 @@ $results = $conn->query($sql) or die(file_put_contents("test.txt", "idiaj"));
             setcookie("store_id",$rows['email']);
         setcookie("contact",$rows['store_creditor']);
         setcookie("contact_alias",$rows['alias']);
-        while (!findChatFile($conn));
+        while (!findMyFile($conn));
         if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml")) {
             file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml",'<?xml version=\'1.0\'?><messages></messages>');
             chmod('./inbox/' . md5($_COOKIE['store'] . $_COOKIE['store_no']), 0666);
