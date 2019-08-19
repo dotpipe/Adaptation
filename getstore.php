@@ -3,25 +3,29 @@ function findMyFile($con) {
     $temp = "";
     $files = [];
     setcookie("chatfiles","");
-    $results = $con->query('SELECT id, start, aim, filename FROM chat WHERE 1');
+    $results = $con->query('SELECT id, start, aim, filename, alias FROM ad_revs, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '")');
     if ($results->num_rows > 0) {
         while ($row = $results->fetch_assoc()) {
             if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
                 $files[] = $row['filename'];
-                if (!file_exists("./xml/" . $row['filename'])) {
-                    file_put_contents("./xml/" . $row['filename'], '<?xml version=\'1.0\'?><messages></messages>');
-                    chmod('./xml/' . $row['filename'], 0666);
+                $alias[] = $row['alias'];
+                if (!file_exists("xml/" . $row['filename'])) {
+                    file_put_contents("xml/" . $row['filename'], '<?xml version=\'1.0\'?><messages></messages>');
+                    chmod('xml/' . $row['filename'], 0666);
                 }
                 $con->query('UPDATE chat SET `checked` = 0 WHERE `filename` = "' . $row['filename'] . '"');
             }
         }
     }
     if (sizeof($files) > 1) {
+        setcookie("chatfiles", json_encode($files));
+        setcookie("aliases", json_encode($alias));
         return 1;
     }
     if (sizeof($files) == 1) {
-        setcookie("chatfiles", json_encode(array($files)));
-        setcookie("chatfile", ($file));
+        setcookie("chatfile", json_encode($files));
+        setcookie("aliases", json_encode($alias));
+        return 1;
     }
     return makeMyFile($con);
 }
@@ -39,9 +43,9 @@ function makeMyFile($cnxn) {
     srand($temp);
     $temp += rand(1,25);
     
-    if (!file_exists("./xml/" . md5($temp) . ".xml")) {
-        file_put_contents("./xml/" . md5($temp) . ".xml", '<?xml version=\'1.0\'?><messages></messages>');
-        chmod('./xml/' . md5($temp), 0666);
+    if (!file_exists("xml/" . md5($temp) . ".xml")) {
+        file_put_contents("xml/" . md5($temp) . ".xml", '<?xml version=\'1.0\'?><messages></messages>');
+        chmod('xml/' . md5($temp), 0666);
     }
     $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES (null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';
 
@@ -54,9 +58,9 @@ function makeMyFile($cnxn) {
 if ($_COOKIE['login'] != "true")
     header("Location: ./index.php");
 //$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
-
+    
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die(json_encode("Error: Cannot create connection"));
-
+    
 setcookie("store"," from stores!");
 $z = [];
 if (mysqli_connect_errno()) {

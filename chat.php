@@ -15,18 +15,16 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     
     $filename = $_COOKIE['chatfile'];
 
-    if (!file_exists('./xml/' . $filename)) {
-        file_put_contents('./xml/' . $filename, '<?xml version=\'1.0\'?><messages></messages>');
-        chmod('./xml/' . $filename, 0666);
+    if (!file_exists('xml/' . $filename)) {
+        file_put_contents('xml/' . $filename, '<?xml version=\'1.0\'?><messages></messages>');
+        chmod('xml/' . $filename, 0666);
     }
 
     $dom = new \DomDocument();
-    $dom->load('./xml/' . $filename);
+    $dom->load('xml/' . $filename);
 
     $z = $dom->getElementsByTagName("messages");
     $x = $dom->getElementsByTagName("messages")[0];
-    $y = $z->childNodes;
-    $i = 0;
     $v = $_GET['a'];
     $n = "";
 
@@ -36,7 +34,7 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
   $tmp->appendChild($tmpy);
    $x->appendChild($tmp);
    $dom->appendChild($x);
-   $dom->save('./xml/' . $filename);
+   $dom->save('xml/' . $filename);
    
    updateChatFile($conn);
 

@@ -2,26 +2,11 @@
 var datarray = [];
 var ADDR;
 
-function csvToArray(text) {
-  let p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
-  for (l of text) {
-      if ('"' === l) {
-          if (s && l === p) row[i] += l;
-          s = !s;
-      } else if (',' === l && s) l = row[++i] = '';
-      else if ('\n' === l && s) {
-          if ('\r' === p) row[i] = row[i].slice(0, -1);
-          row = ret[++r] = [l = '']; i = 0;
-      } else row[i] += l;
-      p = l;
-  }
-  return ret;
-};
-
 function listConvo() {
 
   var files = getCookie("chatfiles");
   var alias = getCookie("aliases");
+  
   files = files.substring(1,files.length-1);
   alias = alias.substring(1,alias.length-1);
   
@@ -38,14 +23,10 @@ function listConvo() {
     x.removeChild(x.firstChild);
   }
   h = 0;
-  var v = document.createElement("option");
-  
   x.options[0] = new Option("You have " + files.length + " people to chat with!","");
-  
-  for (var i = 0; i < files.length ; i++) { 
+  for (var i = 0; i < files.length ; i++) {
     x.options[i+1] = new Option(alias[i],files[i]);
   }
-  
 }
 
 function loginUnsuccessful() {
@@ -81,19 +62,35 @@ function getOption() {
   var x = document.getElementById("chatters");
   var str = x.options[x.selectedIndex].value
   str = str.substring(1,str.length-1);
-  startChat(str);
+  if (str == "")
+    return;
   setCookie("chatfile", str);
+  startChat(str);
+  var lbl = x.options[x.selectedIndex].label;
+  lbl = lbl.substring(1,lbl.length-1);
+  
+  var names = getCookie("names");
+  names = names.substring(1,names.length-1);
+  
+  names = names.split(",");
+  names = names[x.selectedIndex].substr(1,names.length-2);
+  
+  document.getElementById("contact").innerHTML = "Cheri with " + names;
 }
 
 function startChat(v) {
-  url = "./xml/" + getCookie("chatfile");
+  url = "xml/" + getCookie("chatfile");
   if (v !== undefined)
-    url = "./xml/" + v;
-    console.log(url);
+    url = "xml/" + v;
+  if (url == "xml/")
+    return;
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
           fillChat(this);
+          findOptions();
+          listConvo();
+          callPage();
       }
   };
   xhttp.open("GET", url, true);
@@ -102,13 +99,23 @@ function startChat(v) {
 }
 
 function findOptions() {
+
   xhttp = new XMLHttpRequest();
   xhttp.open("GET", "chatxml.php", true);
   xhttp.send();
   
 }
 
+function callPage(s) {
+  console.log(s);
+  xhttp = new XMLHttpRequest();
+  xhttp.open("GET", "getstore.php?a=" + s, true);
+  xhttp.send();  
+
+}
+
   function fillChat(xml) {
+  
     var y, z, i, yLen, xmlDoc, txt;
     xmlDoc = xml.responseXML;
     txt = "";
@@ -118,8 +125,7 @@ function findOptions() {
     z = xmlDoc.getElementsByTagName("messages")[0];
     y = z.childNodes;
     yLen = y.length;
-    for (i = 0; i < yLen; i++) { 
-      console.log(y[i].getAttribute("user") + " " + getCookie(""));
+    for (i = 0; i < yLen; i++) {
         if (y[i].getAttribute("user") == getCookie("myemail")) {
           txt += '<div style="opacity:0.5;background:gray;color:white;width:100%">';
           txt += "me: " + y[i].childNodes[0].nodeValue + '</div>';
@@ -129,11 +135,13 @@ function findOptions() {
           txt += getCookie("contact_alias") + ": " + y[i].childNodes[0].nodeValue + "</div><br>";
         }
     }
+    
     var t = document.getElementById("chatwindow");
     t.innerHTML = txt;
     if (document.getElementById("startchat").getAttribute("loaded") == "0") {
       t.scrollTop = t.childElementCount*18;
     }
+    
   }
 
 function goChat(i,j) {
@@ -267,7 +275,7 @@ function focusStore(name,no) {
 
   request.open('GET', "getstore.php?a=" + name + "&b=" + no, true);
   request.send(null);
-      menuList('preorder.php');
+      menuList('menu.php');
 }
 
 function downloadUrl(url, callback) {
