@@ -1,4 +1,4 @@
-	<?php
+<?php
 	header("X-Content-Type-Options: nosniff");
 	header("Content-Type: text/html");
 	header("Cache-Control: no-cache");
@@ -9,7 +9,8 @@
 		setcookie("vartime", 1);
 	else if (isset($_COOKIE['remember']))
 		setcookie("vartime",24*60);
-	
+	else
+		setcookie("vartime",1);
 	//if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') 
 	  //  header("Location: https://www.diads.co/");
 	

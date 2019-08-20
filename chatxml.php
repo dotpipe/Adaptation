@@ -10,16 +10,18 @@ function findMyFile($con) {
     $results = $con->query('SELECT start, aim, filename, alias, email, username FROM ad_revs, franchise, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") && ((aim = username || start = username) || (email = aim || start = email)) ORDER BY last DESC') or die("asd");
     if ($results->num_rows > 0) {
         while ($row = $results->fetch_assoc()) {
-            if (!in_array($row['filename'], $files))
-                $files[] = $row['filename'];
-            if (!in_array($row['aim'], $email))
-                $email[] = ($row['aim'] == $_COOKIE['myemail']) ? $row['start'] : $row['aim'];
-            if (!in_array($row['alias'], $alias))
-                $alias[] = $row['alias'];
-            $con->query('UPDATE chat SET `checked` = 0 WHERE `filename` = "' . $row['filename'] . '"');
+           // if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
+                if (!in_array($row['filename'], $files))
+                    $files[] = $row['filename'];
+                if (!in_array($row['aim'], $email))
+                    $email[] = ($row['aim'] == $_COOKIE['myemail']) ? $row['start'] : $row['aim'];
+                if (!in_array($row['alias'], $alias))
+                    $alias[] = $row['alias'];
+                $con->query('UPDATE chat SET `checked` = 0 WHERE `filename` = "' . $row['filename'] . '"');
+            //}
         }
     }
-    echo json_encode($files);
+    echo json_encode($alias);
     if (sizeof($files) > 0) {
         $f = [];
         foreach ($files as $v)
@@ -52,7 +54,8 @@ function makeMyFile($cnxn) {
     $temp += rand(1,25);
     srand($temp);
     $temp += rand(1,25);
-    
+    if (!isset($_COOKIE['store_id']))
+        return 0;
     if (!file_exists("xml/" . md5($temp) . ".xml")) {
         file_put_contents("xml/" . md5($temp) . ".xml", "<?xml version=\'1.0\'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
         chmod('xml/' . md5($temp) . ".xml", 0644);

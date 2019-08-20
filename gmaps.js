@@ -153,7 +153,7 @@ function getOption() {
   }
   setCookie("indexNo", x.selectedIndex);
   setCookie("indexName", names);
-  document.getElementById("contact").innerHTML = "Cheri with " + names;
+  //document.getElementById("contact").innerHTML = "Cheri with " + names;
   
   startChat(str);
 }
@@ -201,8 +201,8 @@ function callPage(s) {
   xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
   var xslTransform = new XslTransform("xml/chatxml.xsl");
   var outputText = xslTransform.transform("xml/" + getCookie("chatfile"));
-  document.getElementById("chatwindow").innerHTML = "";
-  document.getElementById("chatwindow").append(outputText);
+  document.getElementById("chatpane").innerHTML = "";
+  document.getElementById("chatpane").append(outputText);
 }
 
 function fillChat(xml) {
@@ -219,7 +219,7 @@ function callChatWin(y) {
   
 function goChat(i,j) {
   if (j == 13) {
-    var x = document.getElementById("chatwindow");
+    var x = document.getElementById("chatpane");
     var y = i.cloneNode();
     if (y.value === "")
       return;
@@ -233,7 +233,7 @@ function goChat(i,j) {
 
 
 function clearChat() {
-  var x = document.getElementById("chatwindow");
+  var x = document.getElementById("chatpane");
   x.innerHTML = "";
   return;
 }
@@ -555,9 +555,9 @@ function move() {
   }
 
 //  function fillChat(i) {
-  //  document.getElementById("chatwindow").style.wordWrap = "true";
+  //  document.getElementById("chatpane").style.wordWrap = "true";
 
-    //document.getElementById("chatwindow").innerText = i.substring(1,i.length-2);
+    //document.getElementById("chatpane").innerText = i.substring(1,i.length-2);
   //}
   
   function cheriWindow(i) {
