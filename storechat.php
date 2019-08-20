@@ -7,7 +7,7 @@ $chat .= '<li><b style="font-size:18px;color:lightgray" onclick="javascript:mapV
 $chat .= '<table style="border:1px solid black;padding:3px;spacing:0px;width:250px;">';
 $chat .= '<tr><td><select id="chatters" onclick=listConvo() onchange=getOption()><option default value="" label="Click To see chats waiting"></select></td>';
 $chat .= '<td><button onclick=\'clearChat();\' style="border-radius:50%;color:green">&check;</button></td></tr></table>';
-$chat .= '<div id="chatpane">';
+$chat .= '<div id="chatpane" style="padding:3px;align:center;"><input spellcheck="true" onkeypress=\'goChat(this,event.keyCode)\' id="inputs" type="text" />';
 $chat .= '</div>';
 
 $g = str_replace("\"",'\'',$chat);

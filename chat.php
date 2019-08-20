@@ -13,6 +13,10 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     if (!isset($_SESSION))
         session_start();
     
+    if ($_GET['a'] == "adodocrossedthru")
+        $v = "&nbsp";
+    else
+        $v = $_GET['a'];
     $filename = $_GET['b'];
 
     if (!file_exists('xml/' . $filename)) {
@@ -24,12 +28,11 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     $dom = simplexml_load_file("xml/" . $filename);
 
     $x = $dom->msg;
-    $v = $_GET['a'];
     $n = "";
 
     $tmpy = $dom->addChild("msg");
     $tmp = $tmpy->addChild("text",$v);
-  
+    $tmpy->addAttribute("alias", $_COOKIE['store_id']);
     $tmp->addAttribute("time", time());
     $tmp->addAttribute("user", $_COOKIE['myemail']);
     $tmp->addAttribute("alias", $_COOKIE['myalias']);

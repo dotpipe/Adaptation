@@ -6,7 +6,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <xsl:template match="/">
   <style>
 	#td-surround { background:black;border:0px;height:300px;width:250px; }
-	#chatwindow { border:2px solid darkblue;overflow-wrap:break-word;overflow-y:scroll;color:black;background:black;height:300px;width:250px; }
+	#chatpane { border:2px solid darkblue;overflow-wrap:break-word;overflow-y:scroll;color:black;background:black;height:300px;width:250px; }
 	#texter {background:black;height:30px;width:250px; }
 	#inputs { font-size:24px;border:2px solid darkblue;width:250px; }
   </style>
@@ -19,20 +19,20 @@ xmlns="http://www.w3.org/TR/REC-html40">
       		<xsl:text> : : </xsl:text>
 	</td></tr>
 
-	<tr><td colspan=2 id="td-surround">
+	<tr><td colspan="2" id="td-surround">
 		<div id="chatwindow">
     			<xsl:for-each select="messages/msg">
-            				<div style="font-size:12px;background:black;color:white;width:100%">
-            				<xsl:value-of select="text/@alias"/>
-            				<xsl:text>: </xsl:text>
-            				<xsl:value-of select="text"/>
-            				</div>
+            <div style="font-size:12px;background:black;color:white;width:100%">
+      				<xsl:value-of select="text/@alias"/>
+       				<xsl:text>: </xsl:text>
+       				<xsl:value-of select="text"/>
+     				</div>
     			</xsl:for-each>
   		</div>
 	</td></tr>
 	<tr> <td>
 		<div id="texter">
-		<input spellcheck="true" onkeypress='goChat(this,event.keyCode)' id="inputs" type="text">
+		<input spellcheck="true" onkeypress='goChat(this,event.keyCode)' id="inputs" type="text" />
 		</div>
 	</td></tr>
   </table>

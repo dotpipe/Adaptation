@@ -153,7 +153,7 @@ function getOption() {
   }
   setCookie("indexNo", x.selectedIndex);
   setCookie("indexName", names);
-  //document.getElementById("contact").innerHTML = "Cheri with " + names;
+  document.getElementById("contact").innerHTML = "Cheri with " + names;
   
   startChat(str);
 }
@@ -205,27 +205,29 @@ function callPage(s) {
   document.getElementById("chatpane").append(outputText);
 }
 
-function fillChat(xml) {
-  if (getCookie("login") !== "true")
-    return;
-  callPage(xml);
-}
+  function fillChat(xml) {
+  
+    var y, z, i, yLen, xmlDoc, txt;
+    //xmlDoc = xml.responseXML;
+    txt = "";
+    if (getCookie("login") !== "true")
+      return;
+    callPage(xml);
+  }
 
-function callChatWin(y) {
-  xhttp = new XMLHttpRequest();
-  xhttp.open("POST", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
-  xhttp.send();  
-}
+  function callChatWin(y) {
+    xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
+    xhttp.send();  
+  }
   
 function goChat(i,j) {
   if (j == 13) {
-    var x = document.getElementById("chatpane");
+    //var x = document.getElementById("chatwindow");
     var y = i.cloneNode();
-    if (y.value === "")
-      return;
-    x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
-    x.scrollTop = x.childElementCount*18;
-    i.value = "";
+  //  x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
+    //x.scrollTop = x.childElementCount*18;
+    //i.value = "";
     callChatWin(y.value);
     startChat();
   }
@@ -233,7 +235,7 @@ function goChat(i,j) {
 
 
 function clearChat() {
-  var x = document.getElementById("chatpane");
+  var x = document.getElementById("chatwindow");
   x.innerHTML = "";
   return;
 }
@@ -555,9 +557,9 @@ function move() {
   }
 
 //  function fillChat(i) {
-  //  document.getElementById("chatpane").style.wordWrap = "true";
+  //  document.getElementById("chatwindow").style.wordWrap = "true";
 
-    //document.getElementById("chatpane").innerText = i.substring(1,i.length-2);
+    //document.getElementById("chatwindow").innerText = i.substring(1,i.length-2);
   //}
   
   function cheriWindow(i) {
