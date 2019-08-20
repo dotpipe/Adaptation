@@ -1,2 +1,3 @@
 <?xml version="1.0"?>
-<messages><msg user="tcp@null.net">lkafd</msg><msg user="tcp@null.net">jjea</msg><msg user="tcp@null.net">kadka</msg><msg user="tcp@null.net">asjdj</msg><msg user="tcp@null.net">kjdj</msg><msg user="tcp@null.net">ascda</msg><msg user="tcp@null.net">ksasd</msg><msg user="tcp@null.net">lksakd</msg><msg user="tcp@null.net">ksjda</msg><msg user="tcp@null.net">kdnkd</msg><msg user="tcp@null.net">ask</msg></messages>
+<?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?>
+<messages><msg><text time="1566309599" user="tcp@null.net" alias="Dave">jsdj</text></msg><msg><text time="1566309972" user="tcp@null.net" alias="Dave">kdaf</text></msg><msg><text time="1566312697" user="g@big.com" alias="Josh">kasd</text></msg></messages>

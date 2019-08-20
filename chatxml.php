@@ -22,7 +22,7 @@ function findMyFile($con) {
         }
     }
     echo json_encode($files);
-    if (sizeof($files) > 1) {
+    if (sizeof($files) > 0) {
         $f = [];
         foreach ($files as $v)
             $f[] = $v;
@@ -35,12 +35,8 @@ function findMyFile($con) {
         setcookie("chatfiles", json_encode($f));
         setcookie("aliases", json_encode($e));
         setcookie("names", json_encode($a));
-        return 1;
-    }
-    if (sizeof($files) == 1) {
-        setcookie("chatfile", json_encode($files));
-        setcookie("aliases", json_encode($email));
-        setcookie("names", json_encode($alias));
+        if (count($f) == 1)
+            setcookie("chatfile", $f[0]);
         return 1;
     }
     return makeMyFile($con);
@@ -60,8 +56,8 @@ function makeMyFile($cnxn) {
     $temp += rand(1,25);
     
     if (!file_exists("xml/" . md5($temp) . ".xml")) {
-        file_put_contents("xml/" . md5($temp) . ".xml", '<?xml version=\'1.0\'?><messages></messages>');
-        chmod('xml/' . md5($temp), 0644);
+        file_put_contents("xml/" . md5($temp) . ".xml", "<?xml version=\'1.0\'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
+        chmod('xml/' . md5($temp) . ".xml", 0644);
     }
     $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES (null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';
 

@@ -1,4 +1,75 @@
 
+dojo.provide("XslTransform");
+
+dojo.declare("XslTransform", [],
+{
+	_xslDoc : null,
+	_xslPath : null,
+
+	constructor : function(xslPath) {
+		this._xslPath = xslPath;
+	},
+
+	transform : function(xmlPath) {
+		if (this._xslDoc === null)
+			this._xslDoc = this._loadXML(this._xslPath);
+
+		var result = null;
+		var xmlDoc = this._loadXML(xmlPath);
+
+		if (dojo.isIE) {
+			result = xmlDoc.transformNode(this._xslDoc);
+		} else if(typeof XSLTProcessor !== undefined) {
+			xsltProcessor = new XSLTProcessor();
+	  		xsltProcessor.importStylesheet(this._xslDoc);
+
+	  		var ownerDocument = document.implementation.createDocument("", "", null);
+	  		result = xsltProcessor.transformToFragment(xmlDoc, ownerDocument);
+		} else {
+			alert("Your browser doesn't support XSLT!");
+		}
+
+		return result;
+
+	},
+
+	createXMLDocument : function(xmlText) {
+		var xmlDoc = null;
+
+		if (dojo.isIE) {
+			xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+			xmlDoc.async = false;
+			xmlDoc.loadXML(xmlText);
+		} else if (window.DOMParser) {
+			parser = new DOMParser();
+			xmlDoc = parser.parseFromString(xmlText, "text/xml");
+		} else {
+			alert("Your browser doesn't suppoprt XML parsing!");
+		}
+
+		return xmlDoc;
+	},
+
+	// Synchronously loads a remote xml file
+	_loadXML : function(xmlPath) {
+		var getResult = dojo.xhrGet({
+			url : xmlPath,
+			handleAs : "xml",
+			sync: true
+		});
+
+		var xml = null;
+		// Returns immediately, because the GET is synchronous.
+		var xmlData = getResult.then(function (response) {
+			xml = response;
+		});
+
+		return xml;
+	}
+});
+
+
+/////////////
 var datarray = [];
 var ADDR;
 
@@ -8,20 +79,26 @@ function listConvo() {
   var alias = getCookie("aliases");
   files = files.substring(1,files.length-1);
   alias = alias.substring(1,alias.length-1);
-  
   files = files.split(",");
   alias = alias.split(",");
   
   if (files.length === 0)
     return;
-  
   var x = document.getElementById("chatters");
   var h = 0;
   
   while (x.childElementCount > h++) {
     x.removeChild(x.firstChild);
   }
+  
   x.options[0] = new Option("You have " + files.length + " people to chat with!","");
+
+  if (!(files.length > 1)) {
+    
+    files = getCookie("chatfiles");
+    x.options[1] = new Option(alias[0].substr(1,alias.length-2),files.substr(1,files.length-2));
+    return;
+  }
   for (var i = 0; i < files.length ; i++) {
     x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),files[i]);
   }
@@ -60,6 +137,9 @@ function getOption() {
   str = str.substring(1,str.length-1);
   if (str == "")
     return;
+  clearChat();
+  if (str[0] == "[")
+    str = str.substr(2,str.length-3);
   setCookie("chatfile", str);
   var lbl = x.options[x.selectedIndex].label;
   lbl = lbl.substring(1,lbl.length-1);
@@ -88,7 +168,7 @@ function startChat(v) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-          fillChat(this);
+        fillChat(this);
       }
   };
   xhttp.open("POST", url, true);
@@ -107,41 +187,32 @@ function findOptions() {
 }
 
 function callPage(s) {
+  var xsltProcessor = new XSLTProcessor();
   console.log(s);
   xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "getstore.php?a=" + s, true);
-  xhttp.send();  
+  xhttp.open("GET", "xml/chatxml.xsl", true);
+  xhttp.send(null);  
+  xsltProcessor.importStylesheet(s.responseXML.firstChild);
+  
+  myXMLHTTPRequest = new XMLHttpRequest();
+  myXMLHTTPRequest.open("GET", "xml/" + getCookie("chatfile"), false);
+  myXMLHTTPRequest.send(null);
 
+  xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
+  var xslTransform = new XslTransform("xml/chatxml.xsl");
+  var outputText = xslTransform.transform("xml/" + getCookie("chatfile"));
+  document.getElementById("chatwindow").innerHTML = "";
+  document.getElementById("chatwindow").append(outputText);
 }
 
   function fillChat(xml) {
   
     var y, z, i, yLen, xmlDoc, txt;
-    xmlDoc = xml.responseXML;
+    //xmlDoc = xml.responseXML;
     txt = "";
     if (getCookie("login") !== "true")
       return;
-    // Output all chat lines
-    z = xmlDoc.getElementsByTagName("messages")[0];
-    y = z.childNodes;
-    yLen = y.length;
-    for (i = 0; i < yLen; i++) {
-        if (y[i].getAttribute("user") == getCookie("myemail")) {
-          txt += '<div style="opacity:0.5;background:gray;color:white;width:100%">';
-          txt += "me: " + y[i].childNodes[0].nodeValue + '</div>';
-        }
-        else {
-          txt += '<div style="opacity:0.5;background:black;color:white;width:100%">';
-          txt += getCookie("indexName") + ": " + y[i].childNodes[0].nodeValue + "</div><br>";
-        }
-    }
-    
-    var t = document.getElementById("chatwindow");
-    t.innerHTML = txt;
-    if (document.getElementById("startchat").getAttribute("loaded") == "0") {
-      t.scrollTop = t.childElementCount*18;
-    }
-    
+    callPage(xml);
   }
 
   function callChatWin(y) {
@@ -158,6 +229,7 @@ function goChat(i,j) {
     x.scrollTop = x.childElementCount*18;
     i.value = "";
     callChatWin(y.value);
+    startChat();
   }
 }
 

@@ -19,7 +19,7 @@ function findMyFile($con) {
             //}
         }
     }
-    if (sizeof($files) > 1) {
+    if (sizeof($files) > 0) {
         $f = [];
         foreach ($files as $v)
             $f[] = $v;
@@ -32,12 +32,8 @@ function findMyFile($con) {
         setcookie("chatfiles", json_encode($f));
         setcookie("aliases", json_encode($e));
         setcookie("names", json_encode($a));
-        return 1;
-    }
-    if (sizeof($files) == 1) {
-        setcookie("chatfile", json_encode($files));
-        setcookie("aliases", json_encode($email));
-        setcookie("names", json_encode($alias));
+        if (count($f) == 1)
+            setcookie("chatfile", $f[0]);
         return 1;
     }
     return makeMyFile($con);
@@ -57,7 +53,7 @@ function makeMyFile($cnxn) {
     $temp += rand(1,25);
     
     if (!file_exists("xml/" . md5($temp) . ".xml")) {
-        file_put_contents("xml/" . md5($temp) . ".xml", '<?xml version=\'1.0\'?><messages></messages>');
+        file_put_contents("xml/" . md5($temp) . ".xml", "<?xml version=\'1.0\'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
         chmod('xml/' . md5($temp), 0644);
     }
     $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES (null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';
@@ -99,7 +95,7 @@ $results = $conn->query($sql) or die(file_put_contents("test.txt", "idiaj"));
         setcookie("contact_alias",$rows['alias']);
         while (!findMyFile($conn));
         if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml")) {
-            file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml",'<?xml version=\'1.0\'?><messages></messages>');
+            file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml","<?xml version=\'1.0\'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
             chmod('./inbox/' . md5($_COOKIE['store'] . $_COOKIE['store_no']), 0644);
         }
         setcookie('inboxfile',md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");

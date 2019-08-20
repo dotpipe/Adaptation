@@ -16,25 +16,24 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     $filename = $_GET['b'];
 
     if (!file_exists('xml/' . $filename)) {
-        file_put_contents('xml/' . $filename, '<?xml version=\'1.0\'?><messages></messages>');
+        file_put_contents('xml/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
         chmod('xml/' . $filename, 0644);
     }
 
-    $dom = new \DomDocument();
-    $dom->load('xml/' . $filename);
+    //$dom = new \DomDocument();
+    $dom = simplexml_load_file("xml/" . $filename);
 
-    $z = $dom->getElementsByTagName("messages");
-    $x = $dom->getElementsByTagName("messages")[0];
+    $x = $dom->msg;
     $v = $_GET['a'];
     $n = "";
 
-  $tmp = $dom->createElement("msg");
-  $tmp->setAttribute("user", $_COOKIE['myemail']);
-  $tmpy = $dom->createTextNode($v);
-  $tmp->appendChild($tmpy);
-   $x->appendChild($tmp);
-   $dom->appendChild($x);
-   $dom->save('xml/' . $filename);
+    $tmpy = $dom->addChild("msg");
+    $tmp = $tmpy->addChild("text",$v);
+  
+    $tmp->addAttribute("time", time());
+    $tmp->addAttribute("user", $_COOKIE['myemail']);
+    $tmp->addAttribute("alias", $_COOKIE['myalias']);
+    $dom->asXML('xml/' . $filename);
    
    updateChatFile($conn);
 
