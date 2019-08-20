@@ -5,7 +5,7 @@ function findMyFile($con) {
     $alias = [];
     $email = [];
     setcookie("chatfiles","");
-    $results = $con->query('SELECT start, aim, filename, alias, email, username FROM ad_revs, franchise, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") && ((aim = username || start = username) || (email = aim || start = email))') or die("asd");
+    $results = $con->query('SELECT start, aim, filename, alias, email, username FROM ad_revs, franchise, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") && ((aim = username || start = username) || (email = aim || start = email)) ORDER BY last DESC') or die("asd");
     if ($results->num_rows > 0) {
         while ($row = $results->fetch_assoc()) {
            // if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
