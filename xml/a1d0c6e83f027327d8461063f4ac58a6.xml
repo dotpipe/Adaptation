@@ -1,3 +1,7 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?>
+<<<<<<< HEAD
 <messages><msg alias="Josh"><text time="1566344889" user="tcp@null.net" alias="Dave">asjd</text></msg><msg alias="Josh"><text time="1566344895" user="tcp@null.net" alias="Dave">kjd</text></msg></messages>
+=======
+<messages><msg><text time="1566309599" user="tcp@null.net" alias="Dave">jsdj</text></msg><msg><text time="1566309972" user="tcp@null.net" alias="Dave">kdaf</text></msg><msg><text time="1566312697" user="g@big.com" alias="Josh">kasd</text></msg><msg><text time="1566314741" user="tcp@null.net" alias="Dave"/></msg></messages>
+>>>>>>> e3ab750... 11:39pm 8-20-2019

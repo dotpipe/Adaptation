@@ -207,7 +207,13 @@ function goChat(i,j) {
   if (j == 13) {
     var x = document.getElementById("chatwindow");
     var y = i.cloneNode();
+<<<<<<< HEAD
   //  x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
+=======
+    if (y.value === "")
+      return;
+    x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
+>>>>>>> e3ab750... 11:39pm 8-20-2019
     x.scrollTop = x.childElementCount*18;
     i.value = "";
     callChatWin(y.value);
