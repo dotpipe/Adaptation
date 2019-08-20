@@ -205,26 +205,24 @@ function callPage(s) {
   document.getElementById("chatwindow").append(outputText);
 }
 
-  function fillChat(xml) {
-  
-    var y, z, i, yLen, xmlDoc, txt;
-    //xmlDoc = xml.responseXML;
-    txt = "";
-    if (getCookie("login") !== "true")
-      return;
-    callPage(xml);
-  }
+function fillChat(xml) {
+  if (getCookie("login") !== "true")
+    return;
+  callPage(xml);
+}
 
-  function callChatWin(y) {
-    xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
-    xhttp.send();  
-  }
+function callChatWin(y) {
+  xhttp = new XMLHttpRequest();
+  xhttp.open("POST", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
+  xhttp.send();  
+}
   
 function goChat(i,j) {
   if (j == 13) {
     var x = document.getElementById("chatwindow");
     var y = i.cloneNode();
+    if (y.value === "")
+      return;
     x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
     x.scrollTop = x.childElementCount*18;
     i.value = "";
