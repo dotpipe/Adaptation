@@ -5,8 +5,7 @@ var ADDR;
 function listConvo() {
 
   var files = getCookie("chatfiles");
-  var alias = getCookie("aliases");
-  
+  var alias = getCookie("names");
   files = files.substring(1,files.length-1);
   alias = alias.substring(1,alias.length-1);
   
@@ -37,8 +36,6 @@ function loginUnsuccessful() {
 }
 
 function logout() {
-  var x = document.getElementById("email").value;
-  var y = document.getElementById("password").value;
   
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -71,11 +68,9 @@ function getOption() {
   
   names = names.substring(1,names.length-1);
   names = names.split(",");
-  console.log(names);
   if (names.length > 0) {
     names = names[x.selectedIndex].substr(1,names[x.selectedIndex].length-2);
   }
-  console.log(str);
   setCookie("indexNo", x.selectedIndex);
   setCookie("indexName", names);
   document.getElementById("contact").innerHTML = "Cheri with " + names;

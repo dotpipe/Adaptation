@@ -1,42 +1,75 @@
 
 <?php
 
+function findMyFile($con) {
+    $temp = "";
+    $files = [];
+    $alias = [];
+    $email = [];
+    setcookie("chatfiles","");
+    $results = $con->query('SELECT start, aim, filename, alias, email, username FROM ad_revs, franchise, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") && ((aim = username || start = username) || (email = aim || start = email))') or die("asd");
+    if ($results->num_rows > 0) {
+        while ($row = $results->fetch_assoc()) {
+           // if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
+                if (!in_array($row['filename'], $files))
+                    $files[] = $row['filename'];
+                if (!in_array($row['aim'], $email))
+                    $email[] = ($row['aim'] == $_COOKIE['myemail']) ? $row['start'] : $row['aim'];
+                if (!in_array($row['alias'], $alias))
+                    $alias[] = $row['alias'];
+                $con->query('UPDATE chat SET `checked` = 0 WHERE `filename` = "' . $row['filename'] . '"');
+            //}
+        }
+    }
+    echo json_encode($files);
+    if (sizeof($files) > 1) {
+        $f = [];
+        foreach ($files as $v)
+            $f[] = $v;
+        $e = [];
+        foreach ($email as $v)
+            $e[] = $v;
+        $a = [];
+        foreach ($alias as $v)
+            $a[] = $v;
+        setcookie("chatfiles", json_encode($f));
+        setcookie("aliases", json_encode($e));
+        setcookie("names", json_encode($a));
+        return 1;
+    }
+    if (sizeof($files) == 1) {
+        setcookie("chatfile", json_encode($files));
+        setcookie("aliases", json_encode($email));
+        setcookie("names", json_encode($alias));
+        return 1;
+    }
+    return makeMyFile($con);
+}
+
+function makeMyFile($cnxn) {
+    $temp = 0;
+    
+    $results = $cnxn->query('SELECT * FROM chat WHERE 1');
+    
+    $row = $results->num_rows;
+    srand($row);
+    $temp = $row + rand(1,25);
+    srand($row + $temp);
+    $temp += rand(1,25);
+    srand($temp);
+    $temp += rand(1,25);
+    
+    if (!file_exists("xml/" . md5($temp) . ".xml")) {
+        file_put_contents("xml/" . md5($temp) . ".xml", '<?xml version=\'1.0\'?><messages></messages>');
+        chmod('xml/' . md5($temp), 0644);
+    }
+    $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES (null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';
+
+    $results = $cnxn->query($sql);
+    return findMyFile($cnxn);
+}
 //$con = mysqli_connect('localhost', 'r0ot3d', 'RTYfGhVbN!3$', 'adrs','3306') or die("Error: Can't connect");
 
 $con = mysqli_connect('localhost', 'root', '', 'adrs','3306') or die("Error: Can't connect");
-
-$files = [];
-$alias = [];
-$r = "";
-setcookie("chatfiles","");
-setcookie("aliases","");
-$results = $con->query('SELECT `alias`, `aim`, `start`, `filename`, `email`, `owner_id`, `store_name`, `store_no` FROM `chat`, `franchise`, `ad_revs` WHERE (`franchise`.`owner_id` = `ad_revs`.`username` || `franchise`.`email` = `ad_revs`.`username`) AND `chat`.`checked` = 0 AND (`chat`.`aim` = "' . $_COOKIE['myemail'] . '" || `chat`.`start` = "' . $_COOKIE['myemail'] . '")');
-
-$num = $results->num_rows;
-if ($num > 0) {
-    while ($row = $results->fetch_assoc()) {
-        $files[] = $row['filename'];
-        $alias[] = ($row['aim'] == $_COOKIE['myemail']) ? $row['start'] : $row['aim'];
-        $names[] = $row['alias'];
-    }
-}
-$r = [];
-$files = array_unique($files);
-foreach ($files as $k => $v)
-    $r[] = $v;
-$r = json_encode($r);
-setcookie('chatfiles', $r);
-$r = [];
-$alias = array_unique($alias);
-foreach ($alias as $k => $v)
-    $r[] = $v;
-$r = json_encode($r);
-setcookie('aliases', $r);
-$r = [];
-$names = array_unique($names);
-foreach ($names as $k => $v)
-    $r[] = $v;
-$r = json_encode($r);
-setcookie('names', $r);
-
+findMyFile($con);
 ?>
