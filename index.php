@@ -1,6 +1,7 @@
 	<?php
 	header("X-Content-Type-Options: nosniff");
 	header("Content-Type: text/html");
+	header("Cache-Control: no-cache");
 	session_start();
 	global $chats, $alias;
 	

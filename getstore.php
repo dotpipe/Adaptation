@@ -21,13 +21,13 @@ function findMyFile($con) {
     }
     if (sizeof($files) > 1) {
         $f = [];
-        foreach ($files as $k => $v)
+        foreach ($files as $v)
             $f[] = $v;
         $e = [];
-        foreach ($email as $k => $v)
+        foreach ($email as $v)
             $e[] = $v;
         $a = [];
-        foreach ($alias as $k => $v)
+        foreach ($alias as $v)
             $a[] = $v;
         setcookie("chatfiles", json_encode($f));
         setcookie("aliases", json_encode($e));

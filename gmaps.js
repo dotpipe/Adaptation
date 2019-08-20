@@ -5,7 +5,7 @@ var ADDR;
 function listConvo() {
 
   var files = getCookie("chatfiles");
-  var alias = getCookie("names");
+  var alias = getCookie("aliases");
   files = files.substring(1,files.length-1);
   alias = alias.substring(1,alias.length-1);
   
@@ -89,14 +89,13 @@ function startChat(v) {
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
           fillChat(this);
-          findOptions();
-          listConvo();
-          callPage();
       }
   };
-  xhttp.open("GET", url, true);
+  xhttp.open("POST", url, true);
   xhttp.send();
   
+  findOptions();
+  listConvo();
 }
 
 function findOptions() {
@@ -147,9 +146,8 @@ function callPage(s) {
 
   function callChatWin(y) {
     xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
+    xhttp.open("POST", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
     xhttp.send();  
-  
   }
   
 function goChat(i,j) {
@@ -160,9 +158,6 @@ function goChat(i,j) {
     x.scrollTop = x.childElementCount*18;
     i.value = "";
     callChatWin(y.value);
-  }
-  if (document.getElementById("chatwindow").innerHTML == "&nbsp;") {
-    startChat();
   }
 }
 
