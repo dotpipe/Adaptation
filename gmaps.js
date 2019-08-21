@@ -77,10 +77,13 @@ function listConvo() {
 
   var files = getCookie("chatfiles");
   var alias = getCookie("aliases");
+  var names = getCookie("names");
   files = files.substring(1,files.length-1);
   alias = alias.substring(1,alias.length-1);
+  names = names.substring(1,names.length-1);
   files = files.split(",");
   alias = alias.split(",");
+  names = names.split(",");
   
   if (files.length === 0)
     return;
@@ -95,12 +98,14 @@ function listConvo() {
 
   if (!(files.length > 1)) {
     
-    files = getCookie("chatfiles");
+    files = getCookie("chatfile");
     x.options[1] = new Option(alias[0].substr(1,alias.length-2),files.substr(1,files.length-2));
+    x.options[1].setAttribute("alias",names[0].substr(1,names[0].length-2))
     return;
   }
   for (var i = 0; i < files.length ; i++) {
     x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),files[i]);
+    x.options[i+1].setAttribute("alias",names[i].substr(1,names[i].length-2))
   }
 }
 
@@ -133,35 +138,55 @@ function unload() {
 
 function getOption() {
   var x = document.getElementById("chatters");
-  var str = x.options[x.selectedIndex].value
-  str = str.substring(1,str.length-1);
+  var str = x.options[x.selectedIndex].value;
   if (str == "")
     return;
-  clearChat();
   setCookie("chatfile", str);
-  var lbl = x.options[x.selectedIndex].innerHTML;
+  setCookie("nodeNo", x.selectedIndex-1);
+  
+  var a = getCookie("names");
+  
+  names = a.substring(1,a.length);
+  names = a.split(",");
+  console.log(names);
+  var b = names[getCookie("nodeNo")];
+  setCookie("chatalias",b.substr(1,b.length-2));
   startChat(str);
 }
 
-function startChat(v) {
-  url = "xml/" + getCookie("chatfile");
-  if (v !== undefined)
-    url = "xml/" + v;
-    console.log(url);
-  if (url == "xml/")
+function startChat(url) {
+  if (getCookie("chatfile") === url === undefined) {
+    var files = getCookie("chatfiles");
+    files = files.substring(1,files.length-1);
+    files = files.split(",");
+    x = files[getCookie("nodeNo")];
+  }
+  else if (url === undefined)
+    x = "xml/" + getCookie("chatfile");
+  else
+    x = "xml/" + url;
+  console.log(url);
+  if (url[0] == '"')
+    x = url.substr(1,url.length-2);
+  if (x == "xml/")
     return;
-  
+    
+  if (x.substr(0,4) === "xml/")
+    x = x.substr(4,x.length);
+  console.log("ada " + x);
   var xhttp = new XMLHttpRequest();
   xhttp.open("POST", "createchat.php", true);
   xhttp.send();
-  
+  clearChat();
+  setCookie("chatfile",x);
+  console.log("Asfa" + x);
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         callPage(this);
       }
   };
-  xhttp.open("POST", url, true);
+  xhttp.open("POST", "xml/" + x, true);
   xhttp.send();
   
   findOptions();
@@ -178,16 +203,16 @@ function findOptions() {
 
 function callPage(s) {
   var xsltProcessor = new XSLTProcessor();
-  console.log(s);
   xhttp = new XMLHttpRequest();
   xhttp.open("GET", "xml/chatxml.xsl", true);
-  xhttp.send(null);  
+  xhttp.send(null);
+  console.log(s);  
   xsltProcessor.importStylesheet(s.responseXML.firstChild);
   
   myXMLHTTPRequest = new XMLHttpRequest();
   myXMLHTTPRequest.open("GET", "xml/" + getCookie("chatfile"), false);
   myXMLHTTPRequest.send(null);
-
+  console.log(getCookie("chatfile"));
   xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
   var xslTransform = new XslTransform("xml/chatxml.xsl");
   var outputText = xslTransform.transform("xml/" + getCookie("chatfile"));
@@ -209,15 +234,11 @@ function callChatWin(y) {
   
 function goChat(i,j) {
   if (j == 13) {
-    var x = document.getElementById("chatpane");
     var y = i.cloneNode();
-    if (y.value === "")
-      return;
-    x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
-    x.scrollTop = x.childElementCount*18;
     i.value = "";
     var z = document.getElementById("chatters").options;
-    var w = z[z.selectedIndex].value;
+    var w = z[getCookie("nodeNo")].value;
+    w = w.substr(1,w.length-2);
     callChatWin(y.value);
     startChat(w);
   }
@@ -225,7 +246,7 @@ function goChat(i,j) {
 
 
 function clearChat() {
-  var x = document.getElementById("chatpane");
+  var x = document.getElementById("chatwindow");
   x.innerHTML = "";
   return;
 }

@@ -11,7 +11,7 @@ $chat .= '<div id="chatpane">';
 $chat .= '<table>';
 $chat .= '<tr><td><b id="contact" style="font-size:15px;color:red">Cheri</b> : : </td></tr>';
 $chat .= '<tr><td colspan=2 style="background:black;border:0px;height:300px;width:250px"><div id="chatwindow" style="border:2px solid darkblue;overflow-wrap:break-word;overflow-y:scroll;color:black;background:black;height:300px;width:250px">';
-$chat .= '&nbsp;</div></td></tr><tr><td colspan=2 style="background:black;"><div id="texter" style="background:black;height:30px;width:250px">';
+$chat .= '</div></td></tr><tr><td colspan=2 style="background:black;"><div id="texter" style="background:black;height:30px;width:250px">';
 $chat .= '<input spellcheck="true" onkeypress=\'goChat(this,event.keyCode)\' style="font-size:24px;border:2px solid darkblue;width:250px;" type="text"></div></td></tr>';
 $chat .= '</table>';
 $chat .= '</div>';

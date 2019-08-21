@@ -16,7 +16,7 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     $filename = $_GET['b'];
 
     if (!file_exists('xml/' . $filename)) {
-        file_put_contents('xml/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
+        file_put_contents('xml/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages><msg><text></text></msg></messages>");
         chmod('xml/' . $filename, 0644);
     }
 
@@ -28,7 +28,7 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     $n = "";
 
     $tmpy = $dom->addChild("msg");
-    $tmpy->addAttribute("alias", $_COOKIE['myalias'] . " "  . $_COOKIE['contact_alias']);
+    $tmpy->addAttribute("alias", $_COOKIE['myalias'] . " <-> "  . $_COOKIE['chatalias']);
     $tmp = $tmpy->addChild("text",$v);
   
     $tmp->addAttribute("time", time());

@@ -9,7 +9,7 @@ function sanitize(&$r) {
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 if (!file_exists('branches.xml'))
-    file_put_contents('branches.xml', "<?xml version=\'1.0\'?><accounts></accounts>");
+    file_put_contents('branches.xml', "<?xml version='1.0'?><accounts></accounts>");
 
 $xml = simplexml_load_file('branches.xml');
 
