@@ -7,7 +7,7 @@ function findMyFile($con) {
     $alias = [];
     $email = [];
     setcookie("chatfiles","");
-    $results = $con->query('SELECT start, aim, filename, alias, email, username FROM ad_revs, franchise, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") && ((aim = username || start = username) || (email = aim || start = email))') or die("asd");
+    $results = $con->query('SELECT start, aim, filename, alias, email, username FROM ad_revs, franchise, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '")'); // && ((aim = username || start = username) || (email = aim || start = email))') or die("asd");
     if ($results->num_rows > 0) {
         while ($row = $results->fetch_assoc()) {
            // if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
@@ -15,13 +15,12 @@ function findMyFile($con) {
                     $files[] = $row['filename'];
                 if (!in_array($row['aim'], $email))
                     $email[] = ($row['aim'] == $_COOKIE['myemail']) ? $row['start'] : $row['aim'];
-                if (!in_array($row['alias'], $alias))
-                    $alias[] = $row['alias'];
                 $con->query('UPDATE chat SET `checked` = 0 WHERE `filename` = "' . $row['filename'] . '"');
             //}
         }
     }
     echo json_encode($files);
+    echo json_encode($email);
     if (sizeof($files) > 0) {
         $f = [];
         foreach ($files as $v)
@@ -34,7 +33,6 @@ function findMyFile($con) {
             $a[] = $v;
         setcookie("chatfiles", json_encode($f));
         setcookie("aliases", json_encode($e));
-        setcookie("names", json_encode($a));
         if (count($f) == 1)
             setcookie("chatfile", $f[0]);
         return 1;

@@ -95,7 +95,7 @@ function listConvo() {
 
   if (!(files.length > 1)) {
     
-    files = getCookie("chatfiles");
+    files = getCookie("chatfile");
     x.options[1] = new Option(alias[0].substr(1,alias.length-2),files.substr(1,files.length-2));
     return;
   }
@@ -135,26 +135,12 @@ function getOption() {
   var x = document.getElementById("chatters");
   var str = x.options[x.selectedIndex].value
   str = str.substring(1,str.length-1);
+  console.log(str);
   if (str == "")
     return;
-  clearChat();
-  if (str[0] == "[")
-    str = str.substr(2,str.length-3);
   setCookie("chatfile", str);
-  var lbl = x.options[x.selectedIndex].label;
-  lbl = lbl.substring(1,lbl.length-1);
-  
-  var names = getCookie("names");
-  
-  names = names.substring(1,names.length-1);
-  names = names.split(",");
-  if (names.length > 0) {
-    names = names[x.selectedIndex].substr(1,names[x.selectedIndex].length-2);
-  }
-  setCookie("indexNo", x.selectedIndex);
-  setCookie("indexName", names);
-  document.getElementById("contact").innerHTML = "Cheri with " + names;
-  
+  var lbl = x.options[x.selectedIndex].innerHTML;
+  setCookie("chatlabel", lbl);
   startChat(str);
 }
 
@@ -201,8 +187,8 @@ function callPage(s) {
   xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
   var xslTransform = new XslTransform("xml/chatxml.xsl");
   var outputText = xslTransform.transform("xml/" + getCookie("chatfile"));
-  document.getElementById("chatwindow").innerHTML = "";
-  document.getElementById("chatwindow").append(outputText);
+  document.getElementById("chatpane").innerHTML = "";
+  document.getElementById("chatpane").append(outputText);
 }
 
 function fillChat(xml) {
@@ -221,13 +207,10 @@ function goChat(i,j) {
   if (j == 13) {
     var x = document.getElementById("chatwindow");
     var y = i.cloneNode();
-    if (y.value === "")
-      return;
-    x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
+  //  x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
     x.scrollTop = x.childElementCount*18;
     i.value = "";
     callChatWin(y.value);
-    startChat();
   }
 }
 

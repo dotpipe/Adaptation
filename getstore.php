@@ -69,12 +69,6 @@ if ($_COOKIE['login'] != "true")
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die(json_encode("Error: Cannot create connection"));
     
 setcookie("store"," from stores!");
-$z = [];
-if (mysqli_connect_errno()) {
-    exit();
-}
-for ($i = 0 ; $i < count($y) ; $i++)
-    $z[] = trim($y[$i]);
 
 $results = "";
 

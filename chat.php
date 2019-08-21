@@ -10,10 +10,20 @@ function updateChatFile($con) {
 
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
 
+    $sql = 'SELECT alias FROM ad_revs WHERE username = "' . $_COOKIE['chatlabel'] . '"';
+    $results = mysqli_query($conn,$sql);
+    
+    if ($results->num_rows > 0) {
+        $row = $results->fetch_assoc();
+        setcookie("facename", $row['alias']);
+    }
+
     if (!isset($_SESSION))
         session_start();
+    $v = "";
+    $v = $_GET['a'];
     
-    $filename = $_GET['b'];
+    $filename = $_COOKIE['chatfile'];
 
     if (!file_exists('xml/' . $filename)) {
         file_put_contents('xml/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
@@ -24,17 +34,16 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     $dom = simplexml_load_file("xml/" . $filename);
 
     $x = $dom->msg;
-    $v = $_GET['a'];
     $n = "";
 
     $tmpy = $dom->addChild("msg");
+    $tmpy->addAttribute("alias", $_COOKIE['facename']);
     $tmp = $tmpy->addChild("text",$v);
-  
     $tmp->addAttribute("time", time());
     $tmp->addAttribute("user", $_COOKIE['myemail']);
     $tmp->addAttribute("alias", $_COOKIE['myalias']);
     $dom->asXML('xml/' . $filename);
-   
-   updateChatFile($conn);
+
+    updateChatFile($conn);
 
 ?>
