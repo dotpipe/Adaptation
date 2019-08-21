@@ -140,8 +140,6 @@ function getOption() {
   clearChat();
   setCookie("chatfile", str);
   var lbl = x.options[x.selectedIndex].innerHTML;
-  
-  //document.getElementById("contact").innerHTML = "Cheri with " + names;
   startChat(str);
 }
 
@@ -152,6 +150,11 @@ function startChat(v) {
     console.log(url);
   if (url == "xml/")
     return;
+  
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("POST", "createchat.php", true);
+  xhttp.send();
+  
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
@@ -170,7 +173,7 @@ function findOptions() {
   xhttp = new XMLHttpRequest();
   xhttp.open("GET", "chatxml.php", true);
   xhttp.send();
-  
+
 }
 
 function callPage(s) {
@@ -213,8 +216,10 @@ function goChat(i,j) {
     x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
     x.scrollTop = x.childElementCount*18;
     i.value = "";
+    var z = document.getElementById("chatters").options;
+    var w = z[z.selectedIndex].value;
     callChatWin(y.value);
-    startChat();
+    startChat(w);
   }
 }
 
