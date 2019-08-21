@@ -28,6 +28,7 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
     $n = "";
 
     $tmpy = $dom->addChild("msg");
+    $tmpy->addAttribute("alias", $_COOKIE['myalias'] . " "  . $_COOKIE['contact_alias']);
     $tmp = $tmpy->addChild("text",$v);
   
     $tmp->addAttribute("time", time());

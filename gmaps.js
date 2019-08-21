@@ -138,23 +138,10 @@ function getOption() {
   if (str == "")
     return;
   clearChat();
-  if (str[0] == "[")
-    str = str.substr(2,str.length-3);
   setCookie("chatfile", str);
-  var lbl = x.options[x.selectedIndex].label;
-  lbl = lbl.substring(1,lbl.length-1);
+  var lbl = x.options[x.selectedIndex].innerHTML;
   
-  var names = getCookie("names");
-  
-  names = names.substring(1,names.length-1);
-  names = names.split(",");
-  if (names.length > 0) {
-    names = names[x.selectedIndex].substr(1,names[x.selectedIndex].length-2);
-  }
-  setCookie("indexNo", x.selectedIndex);
-  setCookie("indexName", names);
   //document.getElementById("contact").innerHTML = "Cheri with " + names;
-  
   startChat(str);
 }
 
@@ -168,7 +155,7 @@ function startChat(v) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-        fillChat(this);
+        callPage(this);
       }
   };
   xhttp.open("POST", url, true);

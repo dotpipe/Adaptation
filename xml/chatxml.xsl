@@ -19,7 +19,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
       		<xsl:text> : : </xsl:text>
 	</td></tr>
 
-	<tr><td colspan=2 id="td-surround">
+	<tr><td colspan="2" id="td-surround">
 		<div id="chatwindow">
     			<xsl:for-each select="messages/msg">
             				<div style="font-size:12px;background:black;color:white;width:100%">
@@ -32,7 +32,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 	</td></tr>
 	<tr> <td>
 		<div id="texter">
-		<input spellcheck="true" onkeypress='goChat(this,event.keyCode)' id="inputs" type="text">
+		<input spellcheck="true" onkeypress='goChat(this,event.keyCode)' id="inputs" type="text" />
 		</div>
 	</td></tr>
   </table>
