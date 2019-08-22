@@ -75,19 +75,14 @@ var ADDR;
 function callFile(str) {
 
   var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        return;
-      }
-  };
   xhttp.open("GET", str, false);
   xhttp.send();
 }
 
 function listConvo() {
-  callFile("chataliases.php");
+  callFile("chataliases.php?c=1");
   var alias = getCookie("aliases");
-  //alias = alias.substring(1,alias.length-1);
+  alias = alias.substring(1,alias.length-1);
   console.log(alias);
   alias = alias.split(",");
   var x = document.getElementById("chatters");
@@ -103,7 +98,7 @@ function listConvo() {
   }
   else {
     for (var i = 0 ; i < alias.length ; i++)
-      x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),alias[0].substr(1,alias[0].length-2));
+      x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),alias[i].substr(1,alias[i].length-2));
   }
 }
 
@@ -142,54 +137,27 @@ function getOption() {
     str = str.substr(1,str.length-2);
   if (str == "")
     return;
-  for(var i = 0, j = x.options.length; i < j; ++i) {
-    if(x.options[i].innerHTML === getCookie("chataddr")) {
-      x.selectedIndex = i;
-      break;
-    }
-  }
-  setCookie("chatfile", str);
-  setCookie("chataddr", idx.innerHTML);
   setCookie("nodeNo",x.selectedIndex);
-  
-  startChat();
+  console.log(str);
+  setCookie("chataddr", str);
+  startChat(str);
 }
 
 function startChat(url) {
-  var x;
-  if (url !== undefined)
-    x = url;
-  else if (getCookie("chatfile") === undefined) {
-    var z = document.getElementById("chatters").options;
-    var w = z[getCookie("nodeNo")].value;
-    x = w;
-    if (x[0] == '"')
-      x = x.substr(1,x.length-2);
-    setCookie("chatfile", x)
-  }
-  else
-    x = getCookie("chatfile");
-  console.log(x);
+  callFile("chataliases.php?c=2");
   
-  if (x.substr(0,4) === "xml/")
-    x = x.substr(4,x.length);
-  if (x[0] == '"')
-    x = x.substr(1,x.length-2);
-  if (x === "")
-    return;
-    
-  console.log("ada " + getCookie("chatfile"));
-  var xhttp = new XMLHttpRequest();
-  xhttp.open("POST", "createchat.php", true);
-  xhttp.send();
+  callFile("createchat.php")
+  x = getCookie("chatfile");
   console.log("Asfa" + x);
+  console.log()
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
+        clearChat();
         callPage(this);
       }
   };
-  xhttp.open("POST", "xml/" + x, true);
+  xhttp.open("POST", "xml/" + x, false);
   xhttp.send();
 }
 
@@ -205,18 +173,13 @@ function callPage(s) {
 
   var xsltProcessor = new XSLTProcessor();
   xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "xml/chatxml.xsl", true);
+  xhttp.open("GET", "xml/chatxml.xsl", false);
   xhttp.send(null);
   console.log(s);  
   xsltProcessor.importStylesheet(s.responseXML.firstChild);
-
-  var x = getCookie("chatfile");
-  console.log("+++" + x);
-  x = x.split('"');
-  if (x.length === 1)
-    x = x[0];
-  else
-    x = x[1];
+  
+  callFile("chataliases.php?c=2");
+  x = getCookie("chatfile");
   
   myXMLHTTPRequest = new XMLHttpRequest();
   myXMLHTTPRequest.open("GET", "xml/" + x, false);
@@ -237,7 +200,7 @@ function fillChat(xml) {
 
 function callChatWin(cnv) {
   xhttp = new XMLHttpRequest();
-  xhttp.open("POST", "chat.php?a=" + cnv, true);
+  xhttp.open("POST", "chat.php?a=" + cnv, false);
   xhttp.send();
 }
 

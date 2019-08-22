@@ -18,7 +18,7 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
         $c = $row['alias'];
     }
     
-    $query_res = $conn->query('SELECT filename FROM chat WHERE ((aim = "' . $_COOKIE['chataddr'] . '" || start = "' . $_COOKIE['chataddr'] . '") && (aim = "' . $_COOKIE['myemail'] . '" || start = "' . $_COOKIE['myemail'] . '"))');
+    $query_res = $conn->query('SELECT filename FROM chat WHERE ((aim = "' . $_COOKIE['chataddr'] . '" && start = "' . $_COOKIE['myemail'] . '") || (aim = "' . $_COOKIE['myemail'] . '" && start = "' . $_COOKIE['chataddr'] . '"))');
     $b = "";
     if ($query_res->num_rows > 0) {
         $row = $query_res->fetch_assoc();
