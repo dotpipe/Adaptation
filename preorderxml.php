@@ -1,41 +1,31 @@
 <?php
-    $filename = 'xml/' . md5($_COOKIE['id']) . ".xml";
-    if (!file_exists('xml/' . $filename)) {
-        file_put_contents('xml/' . $filename, '<?xml version="1.0"?><preorder></preorder>');
-        chmod('xml/' . $filename, 0644);
+    $filename = md5($_COOKIE['myemail']) . ".xml";
+
+    if (!file_exists('preorders/' . $filename)) {
+        file_put_contents('preorders/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><preorders></preorders>");
+        chmod('preorders/' . $filename, 0644);
     }
+    $dom = "";
+    
+    $dom = simplexml_load_file("preorders/" . $filename);
 
-    $dom = new \DomDocument();
-    $dom->load('xml/' . $filename);
-
-    $z = $dom->getElementsByTagName("preorder");
-    $x = $dom->getElementsByTagName("preorder")[0];
-    $y = $z->childNodes;
+    $x = $dom->preorders;
+    $y = $_GET['a'];
+    $w = $_GET['b'];
+    
+    $a = str_getcsv($y,",");
+    $b = str_getcsv($w,",");
     $i = 0;
-    $a = $_GET['a'];
-    $b = $_GET['b'];
-    for ($i = 0 ; $i < count($z) ; $i++) {
-        if ($z[$i]->getAttribute("name") == "" ||
-            $z[$i]->getAttribute("quantity") == "")
-            continue;
-        $a .= "," . $z[$i]->getAttribute("name");
-        $b .= "," . $z[$i]->getAttribute("quantity");
-    }
-    $varA = str_getcsv($a,",");
-    $varB = str_getcsv($b,",");
-    foreach ($varA as $v) {
-        if ($v == null || $v == "" || $varB[$i] == "") {
-            $i++;
-            continue;
-        }
-        $tmp[] = $dom->createElement("item");
-        $tmp[count($tmp)-1]->setAttribute("name",$v);
-        $tmp[count($tmp)-1]->setAttribute("quantity",$varB[$i]);
+    
+    foreach($a as $v) {
+        $tmpy = $dom->addChild("items");
+        $tmp = $tmpy->addChild("product", $v);
+        $tmpz = $tmpy->addChild("email", $_COOKIE['myemail']);
+        $tmp = $tmpy->addAttribute("quantity", $b[$i]);
+        $tmpy->addAttribute("from", $_COOKIE['myname']);
+        $tmpy->addAttribute("day", date('d-m-Y',time()));
         $i++;
+        echo $dom->asXML('preorders/' . $filename);
     }
-    foreach ($tmp as $v) {
-        $x->appendChild($v);
-    }
-    $dom->appendChild($x);
-    $dom->save('xml/' . $filename);
+    
 ?>

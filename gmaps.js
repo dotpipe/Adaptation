@@ -533,50 +533,29 @@ function move() {
     var h = document.getElementById("preorders");
     var p = h.firstChild.cloneNode(true);
     var x = h.childElementCount;
-    p.setAttribute("pos", x);
-    var t = p.firstChild;
-    var i = 0;
-    var c = p.firstChild.childElementCount;
-    while (p.firstChild.hasChildNodes && i < c && p.firstChild.childNodes[i].tagName != "BUTTON") {
-      console.log(p.firstChild.childNodes[i].tagName);
-      i++;
-    }
-    if (p.firstChild.childNodes[i].tagName == "BUTTON") {
-      p.firstChild.childNodes[i].setAttribute("pos", x);
-      h.appendChild(p);
-    }
+    h.append(p);
   }
 
-  function removeItem(i) {
-    var x = i.getAttribute("pos");
-
+  function removeItem() {
     var h = document.getElementById("preorders");
-    var k = h.childNodes;
-    var j = k.length;
-    if (x >= j) {
-      h.removeChild(k[k.length-1])
-    }
-    else
-      h.removeChild(k[x]);
+    if (h.length >= 2)
+      h.removeChild(h.lastChild);
+    
   }
 
   function makePreorder() {
-    var g = document.getElementsByTagName("input");
-    var z = [null];
-    var y = [null];
-    
-    for (i = 0 ; i < g.length ; i++) {
-        if (g[i].className == "item")
-          z.unshift(g[i].value);
-        else {
-          y.unshift(g[i].value);
-        }
+    var g = document.getElementsByClassName("inclusions");
+    var cnt = g.length;
+    console.log(g);
+    var z = [];
+    var y = [];
+    var c;
+    for (j = 0; j < cnt ; j++) {
+      c = g[j];
+      var v = c.getElementsByTagName("input");
+      
+      z.unshift(v[0].value);
+      y.unshift(v[1].value);
     }
-    fetch('preorderxml.php?a=' + encodeURI(z) + "&b=" + encodeURI(y))
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(j) {
-      console.log(JSON.stringify(j));
-    });
+    callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y));
   }
