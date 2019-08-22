@@ -1,7 +1,7 @@
 <?php
 
 function getaliases($con) {
-    $results = $conn->query('SELECT username FROM ad_revs, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") && (aim = username || start = username) && username != "' .  $_COOKIE['myemail'] . '"');
+    $results = $con->query('SELECT username FROM ad_revs, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") && (aim = username || start = username) && username != "' .  $_COOKIE['myemail'] . '" ORDER BY last DESC');
     
     $c = [];
     $d = [];
@@ -21,11 +21,12 @@ function getaliases($con) {
 }
 
 function getfilename($con) {
-    $results = $conn->query('SELECT filename FROM chat WHERE (aim = "' . $_COOKIE['myemail'] . '" && start = "' .  $_COOKIE['chataddr'] . '") || (aim = "' . $_COOKIE['chataddr'] . '" && start = "' .  $_COOKIE['myemail'] . '")');
+    $results = $con->query('SELECT filename FROM chat WHERE (aim = "' . $_COOKIE['myemail'] . '" && start = "' .  $_COOKIE['chataddr'] . '") || (aim = "' . $_COOKIE['chataddr'] . '" && start = "' .  $_COOKIE['myemail'] . '")');
     
     $d = "oajc";
     
     if ($results->num_rows == 1) {
+        $row = $results->fetch_assoc();
         $d = $row['filename'];
     }
     setcookie("chatfile", $d);
