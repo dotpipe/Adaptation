@@ -11,19 +11,24 @@ function updateChatFile($con) {
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
 
     $results = $conn->query('SELECT alias FROM ad_revs WHERE username = "' . $_COOKIE['chataddr'] . '"');
+    
     $c = "";
     if ($results->num_rows > 0) {
         $row = $results->fetch_assoc();
         $c = $row['alias'];
     }
     
-    $filename = $_COOKIE['chatfile'];
-
-    if ($filename[0] == '"')
-        $filename = substr($filename,1,strlen($filename)-1);
-
+    $query_res = $conn->query('SELECT filename FROM chat WHERE ((aim = "' . $_COOKIE['chataddr'] . '" || start = "' . $_COOKIE['chataddr'] . '") && (aim = "' . $_COOKIE['myemail'] . '" || start = "' . $_COOKIE['myemail'] . '"))');
+    $b = "";
+    if ($query_res->num_rows > 0) {
+        $row = $query_res->fetch_assoc();
+        $b = $row['filename'];
+    }
+    
+    $filename = $b;
+    setcookie("chatfile",$filename);
     if (!file_exists('xml/' . $filename)) {
-        file_put_contents('xml/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages><msg><text></text></msg></messages>");
+        file_put_contents('xml/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
         chmod('xml/' . $filename, 0644);
     }
     $dom = "";

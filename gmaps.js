@@ -72,42 +72,39 @@ dojo.declare("XslTransform", [],
 /////////////
 var datarray = [];
 var ADDR;
+function callFile(str) {
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        return;
+      }
+  };
+  xhttp.open("GET", str, false);
+  xhttp.send();
+}
 
 function listConvo() {
-  var files = getCookie("chatfiles");
+  callFile("chataliases.php");
   var alias = getCookie("aliases");
-  var names = getCookie("names");
-  //if (files[0] === '"') {
-    files = files.substring(1,files.length-1);
-    alias = alias.substring(1,alias.length-1);
-    names = names.substring(1,names.length-1);
-  //}
-  files = files.split(",");
+  //alias = alias.substring(1,alias.length-1);
+  console.log(alias);
   alias = alias.split(",");
-  names = names.split(",");
-  if (names.length > files.length)
-    names.shift();
-  if (files.length === 0)
-    return;
   var x = document.getElementById("chatters");
   var h = 0;
   
   while (x.childElementCount > h++) {
     x.removeChild(x.firstChild);
   }
-  console.log(alias.length +  " " + files.length);
-  x.options[0] = new Option("You have " + files.length + " people to chat with!","");
+  x.options[0] = new Option("You have " + alias.length + " people to chat with!","");
 
-  if (files.length == 1) {
-    files = getCookie("chatfile");
-    x.options[1] = new Option(alias[0].substr(1,alias[0].length-2),files.substr(1,files.length-2));
+  if (alias.length == 1) {
+    x.options[1] = new Option(alias,alias);
   }
   else {
-    for (var i = 0 ; i < files.length && i < alias.length ; i++) {
-      x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),files[i]);
-    }
+    for (var i = 0 ; i < alias.length ; i++)
+      x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),alias[0].substr(1,alias[0].length-2));
   }
-  
 }
 
 function loginUnsuccessful() {
@@ -146,7 +143,7 @@ function getOption() {
   if (str == "")
     return;
   for(var i = 0, j = x.options.length; i < j; ++i) {
-    if(x.options[i].innerHTML === setCookie("chataddr")) {
+    if(x.options[i].innerHTML === getCookie("chataddr")) {
       x.selectedIndex = i;
       break;
     }
