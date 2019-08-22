@@ -171,7 +171,7 @@ function callPage() {
   var outputText = xslTransform.transform("xml/" + x);
   document.getElementById("chatpane").innerHTML = ""; 
   document.getElementById("chatpane").append(outputText);
-  var x = document.getElementById("chatwindow");
+  var x = document.getElementById("in-window");
   x.scroll(0,x.childElementCount*20);
 }
 
@@ -183,7 +183,7 @@ function goChat(i,j) {
     console.log(y.value);
     
     callFile("chat.php?a=" + y.value);
-    var x = document.getElementById("chatwindow");
+    var x = document.getElementById("in-window");
     x.offsetTop = x.childElementCount*20;
     callPage();
     callFile("chataliases.php?c=1");
@@ -191,7 +191,7 @@ function goChat(i,j) {
 }
 
 function clearChat() {
-  var x = document.getElementById("chatwindow");
+  var x = document.getElementById("in-window");
   x.innerHTML = "";
   return;
 }
