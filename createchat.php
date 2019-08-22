@@ -11,7 +11,7 @@ while ($var = $results->fetch_assoc()) {
     if (file_exists("xml/" . $var['filename']))
         continue;
     if (!file_exists("xml/" . $var['filename'])) {
-        file_put_contents("xml/" . $var['filename'], "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages><msg><text></text></msg></messages>");
+        file_put_contents("xml/" . $var['filename'], "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
         chmod('xml/' . $var['filename'], 0644);
     }
 }

@@ -7,21 +7,37 @@ function findMyFile($con) {
     $alias = [];
     $email = [];
     setcookie("chatfiles","");
-    $results = $con->query('SELECT start, aim, filename, alias, email, username FROM ad_revs, franchise, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") && ((aim = username || start = username) || (email = aim || start = email)) ORDER BY last DESC') or die("asd");
-    if ($results->num_rows > 0) {
-        while ($row = $results->fetch_assoc()) {
-           // if ($row['aim'] == $_COOKIE['myemail'] || $row['start'] == $_COOKIE['myemail']) {
-                if (!in_array($row['filename'], $files))
+    setcookie("chatfiles","");
+    setcookie("chatfiles","");
+    
+    $sql = 'SELECT start, aim, filename, alias FROM ad_revs, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '");';
+    $sql .= 'SELECT aim, start, filename, username, alias FROM ad_revs, chat WHERE ((aim = username || start = username) || (email = aim || start = email))';
+    //$sql .= 'SELECT filename, aim, start, alias FROM ad_revs, chat WHERE username = aim'
+    $sql .= 'ORDER BY last DESC';
+    if (mysqli_multi_query($con,$sql)) {
+        do {
+            if ($results = mysqli_store_result($con)) {
+                while ($row = mysqli_fetch_assoc($results)) {
+                    if ($row['aim'] != $_COOKIE['myemail'] && $row['start'] != $_COOKIE['myemail']) {
+                        mysqli_free_result($results);
+                        continue;
+                    }
                     $files[] = $row['filename'];
-                if (!in_array($row['aim'], $email))
                     $email[] = ($row['aim'] == $_COOKIE['myemail']) ? $row['start'] : $row['aim'];
-                if (!in_array($row['alias'], $alias))
                     $alias[] = $row['alias'];
-                $con->query('UPDATE chat SET `checked` = 0 WHERE `filename` = "' . $row['filename'] . '"');
-            //}
-        }
+                }
+                mysqli_free_result($results);
+            }
+        } while (mysqli_next_result($con));
     }
+    $email = array_unique($email);
+    $alias = array_unique($alias);
+    $files = array_unique($files);
+    
     echo json_encode($alias);
+    echo json_encode($files);
+    echo json_encode($email);
+    
     if (sizeof($files) > 0) {
         $f = [];
         foreach ($files as $v)
@@ -35,8 +51,8 @@ function findMyFile($con) {
         setcookie("chatfiles", json_encode($f));
         setcookie("aliases", json_encode($e));
         setcookie("names", json_encode($a));
-        //if (count($f) == 1)
-        //    setcookie("chatfile", $f[0]);
+        if (count($f) == 1)
+            setcookie("chatfile", $f[0]);
         return 1;
     }
     return makeMyFile($con);
@@ -57,7 +73,7 @@ function makeMyFile($cnxn) {
     if (!isset($_COOKIE['store_id']))
         return 0;
     if (!file_exists("xml/" . md5($temp) . ".xml")) {
-        file_put_contents("xml/" . md5($temp) . ".xml", "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages><msg><text></text></msg></messages>");
+        file_put_contents("xml/" . md5($temp) . ".xml", "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages><msg><text></text></msg><msg><text></text></msg></messages>");
         chmod('xml/' . md5($temp) . ".xml", 0644);
     }
     $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES (null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';

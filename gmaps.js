@@ -74,17 +74,19 @@ var datarray = [];
 var ADDR;
 
 function listConvo() {
-
   var files = getCookie("chatfiles");
   var alias = getCookie("aliases");
   var names = getCookie("names");
-  files = files.substring(1,files.length-1);
-  alias = alias.substring(1,alias.length-1);
-  names = names.substring(1,names.length-1);
+  //if (files[0] === '"') {
+    files = files.substring(1,files.length-1);
+    alias = alias.substring(1,alias.length-1);
+    names = names.substring(1,names.length-1);
+  //}
   files = files.split(",");
   alias = alias.split(",");
   names = names.split(",");
-  
+  if (names.length > files.length)
+    names.shift();
   if (files.length === 0)
     return;
   var x = document.getElementById("chatters");
@@ -93,20 +95,19 @@ function listConvo() {
   while (x.childElementCount > h++) {
     x.removeChild(x.firstChild);
   }
-  
+  console.log(alias.length +  " " + files.length);
   x.options[0] = new Option("You have " + files.length + " people to chat with!","");
 
-  if (!(files.length > 1)) {
-    
+  if (files.length == 1) {
     files = getCookie("chatfile");
-    x.options[1] = new Option(alias[0].substr(1,alias.length-2),files.substr(1,files.length-2));
-    x.options[1].setAttribute("alias",names[0].substr(1,names[0].length-2))
-    return;
+    x.options[1] = new Option(alias[0].substr(1,alias[0].length-2),files.substr(1,files.length-2));
   }
-  for (var i = 0; i < files.length ; i++) {
-    x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),files[i]);
-    x.options[i+1].setAttribute("alias",names[i].substr(1,names[i].length-2))
+  else {
+    for (var i = 0 ; i < files.length && i < alias.length ; i++) {
+      x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),files[i]);
+    }
   }
+  
 }
 
 function loginUnsuccessful() {
@@ -138,47 +139,52 @@ function unload() {
 
 function getOption() {
   var x = document.getElementById("chatters");
-  var str = x.options[x.selectedIndex].value;
+  var idx = x.options[x.selectedIndex];
+  var str = idx.value;
+  if (str[0] === '"')
+    str = str.substr(1,str.length-2);
   if (str == "")
     return;
+  for(var i = 0, j = x.options.length; i < j; ++i) {
+    if(x.options[i].innerHTML === setCookie("chataddr")) {
+      x.selectedIndex = i;
+      break;
+    }
+  }
   setCookie("chatfile", str);
-  setCookie("nodeNo", x.selectedIndex-1);
+  setCookie("chataddr", idx.innerHTML);
+  setCookie("nodeNo",x.selectedIndex);
   
-  var a = getCookie("names");
-  
-  names = a.substring(1,a.length);
-  names = a.split(",");
-  console.log(names);
-  var b = names[getCookie("nodeNo")];
-  setCookie("chatalias",b.substr(1,b.length-2));
-  startChat(str);
+  startChat();
 }
 
 function startChat(url) {
-  if (getCookie("chatfile") === url === undefined) {
-    var files = getCookie("chatfiles");
-    files = files.substring(1,files.length-1);
-    files = files.split(",");
-    x = files[getCookie("nodeNo")];
+  var x;
+  if (url !== undefined)
+    x = url;
+  else if (getCookie("chatfile") === undefined) {
+    var z = document.getElementById("chatters").options;
+    var w = z[getCookie("nodeNo")].value;
+    x = w;
+    if (x[0] == '"')
+      x = x.substr(1,x.length-2);
+    setCookie("chatfile", x)
   }
-  else if (url === undefined)
-    x = "xml/" + getCookie("chatfile");
   else
-    x = "xml/" + url;
-  console.log(url);
-  if (url[0] == '"')
-    x = url.substr(1,url.length-2);
-  if (x == "xml/")
-    return;
-    
+    x = getCookie("chatfile");
+  console.log(x);
+  
   if (x.substr(0,4) === "xml/")
     x = x.substr(4,x.length);
-  console.log("ada " + x);
+  if (x[0] == '"')
+    x = x.substr(1,x.length-2);
+  if (x === "")
+    return;
+    
+  console.log("ada " + getCookie("chatfile"));
   var xhttp = new XMLHttpRequest();
   xhttp.open("POST", "createchat.php", true);
   xhttp.send();
-  clearChat();
-  setCookie("chatfile",x);
   console.log("Asfa" + x);
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -188,9 +194,6 @@ function startChat(url) {
   };
   xhttp.open("POST", "xml/" + x, true);
   xhttp.send();
-  
-  findOptions();
-  listConvo();
 }
 
 function findOptions() {
@@ -198,24 +201,33 @@ function findOptions() {
   xhttp = new XMLHttpRequest();
   xhttp.open("GET", "chatxml.php", true);
   xhttp.send();
-
+  listConvo();
 }
 
 function callPage(s) {
+
   var xsltProcessor = new XSLTProcessor();
   xhttp = new XMLHttpRequest();
   xhttp.open("GET", "xml/chatxml.xsl", true);
   xhttp.send(null);
   console.log(s);  
   xsltProcessor.importStylesheet(s.responseXML.firstChild);
+
+  var x = getCookie("chatfile");
+  console.log("+++" + x);
+  x = x.split('"');
+  if (x.length === 1)
+    x = x[0];
+  else
+    x = x[1];
   
   myXMLHTTPRequest = new XMLHttpRequest();
-  myXMLHTTPRequest.open("GET", "xml/" + getCookie("chatfile"), false);
+  myXMLHTTPRequest.open("GET", "xml/" + x, false);
   myXMLHTTPRequest.send(null);
-  console.log(getCookie("chatfile"));
+  console.log(x);
   xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
   var xslTransform = new XslTransform("xml/chatxml.xsl");
-  var outputText = xslTransform.transform("xml/" + getCookie("chatfile"));
+  var outputText = xslTransform.transform("xml/" + x);
   document.getElementById("chatpane").innerHTML = "";
   document.getElementById("chatpane").append(outputText);
 }
@@ -226,22 +238,24 @@ function fillChat(xml) {
   callPage(xml);
 }
 
-function callChatWin(y) {
+function callChatWin(cnv) {
   xhttp = new XMLHttpRequest();
-  xhttp.open("POST", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
-  xhttp.send();  
+  xhttp.open("POST", "chat.php?a=" + cnv, true);
+  xhttp.send();
 }
-  
+
 function goChat(i,j) {
   if (j == 13) {
     var y = i.cloneNode();
     i.value = "";
     var z = document.getElementById("chatters").options;
-    var w = z[getCookie("nodeNo")].value;
-    w = w.substr(1,w.length-2);
+    setCookie("chataddr",z[getCookie("nodeNo")].innerHTML);
+    setCookie("chatfile",z[getCookie("nodeNo")].value);
+    console.log(y.value);
     callChatWin(y.value);
-    startChat(w);
+    startChat();
   }
+  
 }
 
 
