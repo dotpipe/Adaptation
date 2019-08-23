@@ -169,12 +169,11 @@ function callPage() {
   xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
   var xslTransform = new XslTransform("xml/chatxml.xsl");
   var outputText = xslTransform.transform("xml/" + x);
-  document.getElementById("chatpane").innerHTML = ""; 
-  document.getElementById("chatpane").append(outputText);
+  document.getElementById("navpane").innerHTML = ""; 
+  document.getElementById("navpane").append(outputText);
   var x = document.getElementById("in-window");
   x.scroll(0,x.childElementCount*20);
 }
-
 
 function goChat(i,j) {
   if (j == 13) {
@@ -513,9 +512,9 @@ function move() {
   }
 
 //  function fillChat(i) {
-  //  document.getElementById("chatpane").style.wordWrap = "true";
+  //  document.getElementById("navpane").style.wordWrap = "true";
 
-    //document.getElementById("chatpane").innerText = i.substring(1,i.length-2);
+    //document.getElementById("navpane").innerText = i.substring(1,i.length-2);
   //}
   
   function cheriWindow(i) {
@@ -559,3 +558,39 @@ function move() {
     }
     callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y));
   }
+  
+  function callOrders(no) {
+    callFile("toorders.php?c=" + no);
+    
+    var x = getCookie("order");
+    var xslt = getCookie("dir");
+    var fi = getCookie("file");
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        clearChat();
+      }
+    };
+    xhttp.open("GET", x + xslt + fi, false);
+    xhttp.send();
+    var s = xhttp.responseXML.firstChild;
+    var xsltProcessor = new XSLTProcessor();
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", x + "oxml.xsl", false);
+    xhttp.send(null);
+    console.log(s);  
+    xsltProcessor.importStylesheet(s);
+    
+    myXMLHTTPRequest = new XMLHttpRequest();
+    myXMLHTTPRequest.open("GET", x + xslt + fi, false);
+    myXMLHTTPRequest.send(null);
+    console.log(fi);
+    xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
+    var xslTransform = new XslTransform(x + "oxml.xsl");
+    var outputText = xslTransform.transform(x + xslt + fi);
+    document.getElementById("navpane").innerHTML = "";
+    document.getElementById("navpane").append(outputText);
+    var x = document.getElementById("in-window");
+    x.scroll(0,x.childElementCount*20);
+  }
+  

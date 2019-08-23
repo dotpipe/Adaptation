@@ -12,7 +12,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
   <table>
       	
        <tr><td>
-            <a style="text-decoration:none;font-size:15px;color:red">
+            <a onclick="menuList('inbox.php')" style="text-decoration:none;font-size:15px;color:red">
         	   <xsl:text>Back To Inbox</xsl:text>
             </a>
             <xsl:value-of select="/preorders/items/@from" />
@@ -34,8 +34,8 @@ xmlns="http://www.w3.org/TR/REC-html40">
 	<tr><td>
         <input style="background-color:green;" name="listen" type="radio"><xsl:text> Got it! </xsl:text>
         <input style="color:white;background-color:red;" name="listen" type="radio"><xsl:text> Waiting...<br></xsl:text>
-        <select><option name="listen" value="ignore">User Queue</option></select> <input style="background-color:blue;color:white;noshadow:true" type="checkbox"><xsl:text> Busy -- </xsl:test>
-        <button style="font-size:14px;background-color:blue;color:white;border-radius:50%">:)</button>';
+        <input style="background-color:blue;color:white;noshadow:true" type="checkbox"><xsl:text> Busy -- </xsl:test>
+        <button style="font-size:18px;background-color:blue;color:white;margin:10px;border-radius:25%">:)</button>';
  	</td></tr>
   </table>
 </xsl:template>

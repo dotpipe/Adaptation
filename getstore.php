@@ -5,7 +5,7 @@ function makeMyFile($cnxn) {
     
     $results = $cnxn->query('SELECT * FROM chat WHERE 1');
     while ($row = $results->fetch_assoc()) {
-        if (in_array($_COOKIE['owner_id'], $row) && in_array($_COOKIE['store_id']))
+        if (in_array($_COOKIE['owner_id'], $row) && in_array($_COOKIE['store_id'], $row))
             return 1;
     }
     $row = $results->num_rows;
@@ -37,18 +37,12 @@ if ($_COOKIE['login'] != "true")
 $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die(json_encode("Error: Cannot create connection"));
     
 setcookie("store"," from stores!");
-$z = [];
-if (mysqli_connect_errno()) {
-    exit();
-}
-for ($i = 0 ; $i < count($y) ; $i++)
-    $z[] = trim($y[$i]);
 
 $results = "";
 
-$sql = "SELECT `franchise`.`id` `franchise`.`store_name`, `ad_revs`.`store_creditor`, `franchise`.`store_no`, `franchise`.`owner_id`, `franchise`.`email`, `ad_revs`.`username`, `ad_revs`.`alias` FROM `franchise`, `ad_revs` WHERE (`franchise`.`owner_id` = `ad_revs`.`username` || `franchise`.`email` = `ad_revs`.`username`) AND `franchise`.`store_name` = \"" . $_GET['a'] . "\" AND `franchise`.`store_no` = \"" . $_GET['b'] . "\"";
+$sql = "SELECT `franchise`.`id`, `franchise`.`store_name`, `ad_revs`.`store_creditor`, `franchise`.`store_no`, `franchise`.`owner_id`, `franchise`.`email`, `ad_revs`.`username`, `ad_revs`.`alias` FROM `franchise`, `ad_revs` WHERE (`franchise`.`owner_id` = `ad_revs`.`username` || `franchise`.`email` = `ad_revs`.`username`) AND `franchise`.`store_name` = \"" . $_GET['a'] . "\" AND `franchise`.`store_no` = \"" . $_GET['b'] . "\"";
 
-$results = $conn->query($sql) or die(file_put_contents("test.txt", "idiaj"));
+$results = $conn->query($sql);
 
     if ($results->num_rows > 0) {
         $rows = $results->fetch_assoc();
@@ -64,7 +58,7 @@ $results = $conn->query($sql) or die(file_put_contents("test.txt", "idiaj"));
         setcookie("contact_alias",$rows['alias']);
         makeMyFile($conn);
         if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml")) {
-            file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml","<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages><msg><text></text></msg><msg><text></text></msg></messages>");
+            file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml","<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
             chmod('./inbox/' . md5($_COOKIE['store'] . $_COOKIE['store_no']), 0644);
         }
         setcookie('inboxfile',md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");
