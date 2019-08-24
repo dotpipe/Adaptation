@@ -14,15 +14,16 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
             <a onclick="menuList('inbox.php')" style="text-decoration:none;font-size:15px;color:red">
         	   <xsl:text>Back To Inbox</xsl:text>
             </a>
-            <xsl:value-of select="/preorders/items/@from" />
+            <xsl:value-of select="preorders/items/@from" />
   		    <xsl:text> on </xsl:text>
-            <xsl:value-of select="/preorders/items/@day" />
+            <xsl:value-of select="preorders/items/@day" />
         </td></tr>
         <tr><td id="td-surround">
             <div id="in-window">
-                <xsl:for-each select="/preorders">
+                <xsl:for-each select="preorders">
                 	<div>
-                	    <xsl:value-of select="../email" />
+                	    <div onclick="getInbox(this)" style="width:100%;background:darkblue;color:lightblue">
+                	      <xsl:value-of select="items/email" /></div>
                       	<xsl:value-of select="items/product" />
                         <xsl:text> Qu: </xsl:text>
                 	    <xsl:value-of select="items/@quantity" />

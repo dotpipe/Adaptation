@@ -28,6 +28,6 @@ xmlns="http://www.w3.org/TR/REC-html40">
        		</xsl:for-each>
         </td></tr>
 	</table>
-<xsl:template>
-<xsl:stylesheet>
+</xsl:template>
+</xsl:stylesheet>
 	

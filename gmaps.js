@@ -175,6 +175,39 @@ function callPage() {
   x.scroll(0,x.childElementCount*20);
 }
 
+function getInbox(no, vthis) {
+  callFile("toorders.php?c=" + no + "&b=" + vthis.innerHTML);
+  var x = getCookie("order");
+  var y = getCookie("dir");
+  var z = getCookie("file");
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      clearChat();
+    }
+  };
+  xhttp.open("POST", x + z, false);
+  xhttp.send();
+  var s = xhttp.responseXML.firstChild;
+  var xsltProcessor = new XSLTProcessor();
+  xhttp = new XMLHttpRequest();
+  xhttp.open("GET", x + "oxml.xsl", false);
+  xhttp.send(null);
+  console.log(s);  
+  xsltProcessor.importStylesheet(s);
+  
+  myXMLHTTPRequest = new XMLHttpRequest();
+  myXMLHTTPRequest.open("GET", x + z, false);
+  myXMLHTTPRequest.send(null);
+  
+  xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
+  var xslTransform = new XslTransform(x + "oxml.xsl");
+  var outputText = xslTransform.transform(x + z);
+  document.getElementById("chatpane").innerHTML = ""; 
+  document.getElementById("chatpane").append(outputText);
+  var x = document.getElementById("in-window");
+  x.scroll(0,x.childElementCount*20);
+}
 
 function goChat(i,j) {
   if (j == 13) {
