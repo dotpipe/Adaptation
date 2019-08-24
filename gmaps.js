@@ -72,36 +72,35 @@ dojo.declare("XslTransform", [],
 /////////////
 var datarray = [];
 var ADDR;
+function callFile(str) {
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", str, false);
+  xhttp.send();
+}
 
 function listConvo() {
-
-  var files = getCookie("chatfiles");
+  callFile("chataliases.php?c=1");
   var alias = getCookie("aliases");
-  files = files.substring(1,files.length-1);
   alias = alias.substring(1,alias.length-1);
-  files = files.split(",");
+  console.log(alias);
   alias = alias.split(",");
-  
-  if (files.length === 0)
-    return;
   var x = document.getElementById("chatters");
   var h = 0;
   
   while (x.childElementCount > h++) {
     x.removeChild(x.firstChild);
   }
-  
-  x.options[0] = new Option("You have " + files.length + " people to chat with!","");
+  x.options[0] = new Option("You have " + alias.length + " people to chat with!","");
 
-  if (!(files.length > 1)) {
-    
-    files = getCookie("chatfiles");
-    x.options[1] = new Option(alias[0].substr(1,alias.length-2),files.substr(1,files.length-2));
-    return;
+  if (alias.length == 1) {
+    x.options[1] = new Option(alias,alias);
   }
-  for (var i = 0; i < files.length ; i++) {
-    x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),files[i]);
+  else {
+    for (var i = 0 ; i < alias.length ; i++)
+      x.options[i+1] = new Option(alias[i].substr(1,alias[i].length-2),alias[i].substr(1,alias[i].length-2));
   }
+  callPage();
 }
 
 function loginUnsuccessful() {
@@ -116,9 +115,9 @@ function logout() {
   
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        return;
-      }
+    if (this.readyState == 4 && this.status == 200) {
+      return;
+    }
   };
   xhttp.open("GET", "nologin.php", true);
   xhttp.send();
@@ -133,109 +132,66 @@ function unload() {
 
 function getOption() {
   var x = document.getElementById("chatters");
-  var str = x.options[x.selectedIndex].value
-  str = str.substring(1,str.length-1);
+  var idx = x.options[x.selectedIndex];
+  var str = idx.value;
+  if (str[0] === '"')
+    str = str.substr(1,str.length-2);
   if (str == "")
     return;
-  clearChat();
-  if (str[0] == "[")
-    str = str.substr(2,str.length-3);
-  setCookie("chatfile", str);
-  var lbl = x.options[x.selectedIndex].label;
-  lbl = lbl.substring(1,lbl.length-1);
-  
-  var names = getCookie("names");
-  
-  names = names.substring(1,names.length-1);
-  names = names.split(",");
-  if (names.length > 0) {
-    names = names[x.selectedIndex].substr(1,names[x.selectedIndex].length-2);
-  }
-  setCookie("indexNo", x.selectedIndex);
-  setCookie("indexName", names);
-  document.getElementById("contact").innerHTML = "Cheri with " + names;
-  
-  startChat(str);
+  setCookie("nodeNo", x.selectedIndex);
+  setCookie("chataddr", str);
 }
 
-function startChat(v) {
-  url = "xml/" + getCookie("chatfile");
-  if (v !== undefined)
-    url = "xml/" + v;
-    console.log(url);
-  if (url == "xml/")
-    return;
+function callPage() {
+  callFile("createchat.php");
+  callFile("chataliases.php?c=2");
+  var x = getCookie("chatfile");
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        fillChat(this);
-      }
+    if (this.readyState == 4 && this.status == 200) {
+      clearChat();
+    }
   };
-  xhttp.open("POST", url, true);
+  xhttp.open("POST", "xml/" + x, false);
   xhttp.send();
-  
-  findOptions();
-  listConvo();
-}
-
-function findOptions() {
-
-  xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "chatxml.php", true);
-  xhttp.send();
-  
-}
-
-function callPage(s) {
+  var s = xhttp.responseXML.firstChild;
   var xsltProcessor = new XSLTProcessor();
-  console.log(s);
   xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "xml/chatxml.xsl", true);
-  xhttp.send(null);  
-  xsltProcessor.importStylesheet(s.responseXML.firstChild);
+  xhttp.open("GET", "xml/chatxml.xsl", false);
+  xhttp.send(null);
+  console.log(s);  
+  xsltProcessor.importStylesheet(s);
   
   myXMLHTTPRequest = new XMLHttpRequest();
-  myXMLHTTPRequest.open("GET", "xml/" + getCookie("chatfile"), false);
+  myXMLHTTPRequest.open("GET", "xml/" + x, false);
   myXMLHTTPRequest.send(null);
-
+  
   xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
   var xslTransform = new XslTransform("xml/chatxml.xsl");
-  var outputText = xslTransform.transform("xml/" + getCookie("chatfile"));
-  document.getElementById("chatpane").innerHTML = "";
+  var outputText = xslTransform.transform("xml/" + x);
+  document.getElementById("chatpane").innerHTML = ""; 
   document.getElementById("chatpane").append(outputText);
+  var x = document.getElementById("in-window");
+  x.scroll(0,x.childElementCount*20);
 }
 
-  function fillChat(xml) {
-  
-    var y, z, i, yLen, xmlDoc, txt;
-    //xmlDoc = xml.responseXML;
-    txt = "";
-    if (getCookie("login") !== "true")
-      return;
-    callPage(xml);
-  }
 
-  function callChatWin(y) {
-    xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "chat.php?a=" + y + "&b=" + getCookie("chatfile"), true);
-    xhttp.send();  
-  }
-  
 function goChat(i,j) {
   if (j == 13) {
-    //var x = document.getElementById("chatwindow");
     var y = i.cloneNode();
-  //  x.innerHTML += '<div style="background:gray;color:white;width:100%">' + y.value + "</div>";
-    //x.scrollTop = x.childElementCount*18;
-    //i.value = "";
-    callChatWin(y.value);
-    startChat();
+    i.value = "";
+    console.log(y.value);
+    
+    callFile("chat.php?a=" + y.value);
+    var x = document.getElementById("in-window");
+    x.offsetTop = x.childElementCount*20;
+    callPage();
+    callFile("chataliases.php?c=1");
   }
 }
 
-
 function clearChat() {
-  var x = document.getElementById("chatwindow");
+  var x = document.getElementById("in-window");
   x.innerHTML = "";
   return;
 }
@@ -557,9 +513,9 @@ function move() {
   }
 
 //  function fillChat(i) {
-  //  document.getElementById("chatwindow").style.wordWrap = "true";
+  //  document.getElementById("chatpane").style.wordWrap = "true";
 
-    //document.getElementById("chatwindow").innerText = i.substring(1,i.length-2);
+    //document.getElementById("chatpane").innerText = i.substring(1,i.length-2);
   //}
   
   function cheriWindow(i) {
@@ -577,50 +533,29 @@ function move() {
     var h = document.getElementById("preorders");
     var p = h.firstChild.cloneNode(true);
     var x = h.childElementCount;
-    p.setAttribute("pos", x);
-    var t = p.firstChild;
-    var i = 0;
-    var c = p.firstChild.childElementCount;
-    while (p.firstChild.hasChildNodes && i < c && p.firstChild.childNodes[i].tagName != "BUTTON") {
-      console.log(p.firstChild.childNodes[i].tagName);
-      i++;
-    }
-    if (p.firstChild.childNodes[i].tagName == "BUTTON") {
-      p.firstChild.childNodes[i].setAttribute("pos", x);
-      h.appendChild(p);
-    }
+    h.append(p);
   }
 
-  function removeItem(i) {
-    var x = i.getAttribute("pos");
-
+  function removeItem() {
     var h = document.getElementById("preorders");
-    var k = h.childNodes;
-    var j = k.length;
-    if (x >= j) {
-      h.removeChild(k[k.length-1])
-    }
-    else
-      h.removeChild(k[x]);
+    if (h.length >= 2)
+      h.removeChild(h.lastChild);
+    
   }
 
   function makePreorder() {
-    var g = document.getElementsByTagName("input");
-    var z = [null];
-    var y = [null];
-    
-    for (i = 0 ; i < g.length ; i++) {
-        if (g[i].className == "item")
-          z.unshift(g[i].value);
-        else {
-          y.unshift(g[i].value);
-        }
+    var g = document.getElementsByClassName("inclusions");
+    var cnt = g.length;
+    console.log(g);
+    var z = [];
+    var y = [];
+    var c;
+    for (j = 0; j < cnt ; j++) {
+      c = g[j];
+      var v = c.getElementsByTagName("input");
+      
+      z.unshift(v[0].value);
+      y.unshift(v[1].value);
     }
-    fetch('preorderxml.php?a=' + encodeURI(z) + "&b=" + encodeURI(y))
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(j) {
-      console.log(JSON.stringify(j));
-    });
+    callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y));
   }
