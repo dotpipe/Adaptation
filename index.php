@@ -249,7 +249,6 @@
 	<script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
 
 	<script src="gmaps.js"></script>
-	<script>makeFiles();</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3DYtYBqKTgqG46VTRhlGGx-_nD6Vw4yc&libraries=places&callback=honey"
 	  async defer></script>
 	  <meta content="Diads is your best place to advertise. Get Followers, Preordering, Reviews from customers and much more." name="description">

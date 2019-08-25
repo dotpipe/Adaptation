@@ -176,17 +176,18 @@ function callPage() {
 }
 
 function getInbox(no, vthis) {
-  callFile("toorders.php?c=" + no + "&b=" + vthis.innerHTML);
+  if (vthis !== undefined) {
+    menuList('orders.php');
+    console.log(vthis);
+    callFile("toorders.php?c=" + no + "&b=" + vthis);
+  }
+  else
+    callFile("toorders.php?c=" + no);
   var x = getCookie("order");
   var y = getCookie("dir");
   var z = getCookie("file");
   var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      clearChat();
-    }
-  };
-  xhttp.open("POST", x + z, false);
+  xhttp.open("GET", x + y + z, false);
   xhttp.send();
   var s = xhttp.responseXML.firstChild;
   var xsltProcessor = new XSLTProcessor();
@@ -197,16 +198,14 @@ function getInbox(no, vthis) {
   xsltProcessor.importStylesheet(s);
   
   myXMLHTTPRequest = new XMLHttpRequest();
-  myXMLHTTPRequest.open("GET", x + z, false);
+  myXMLHTTPRequest.open("GET", x + y + z, false);
   myXMLHTTPRequest.send(null);
   
   xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
   var xslTransform = new XslTransform(x + "oxml.xsl");
-  var outputText = xslTransform.transform(x + z);
-  document.getElementById("chatpane").innerHTML = ""; 
+  var outputText = xslTransform.transform(x + y + z);
+  document.getElementById("chatpane").innerHTML = "";
   document.getElementById("chatpane").append(outputText);
-  var x = document.getElementById("in-window");
-  x.scroll(0,x.childElementCount*20);
 }
 
 function goChat(i,j) {

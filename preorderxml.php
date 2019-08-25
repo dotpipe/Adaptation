@@ -7,7 +7,7 @@
     $dom = "";
     if (!is_dir("preorders/" . $salt . md5($_COOKIE['franchise_id'] . $t))){
         mkdir("preorders/" . $salt . md5($_COOKIE['franchise_id'] . $t));
-        file_put_contents('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/.htaccess', "Require all granted");
+        file_put_contents('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/.htaccess', "Required all granted");
     }
     if (!file_exists('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/' . $filename))       
         file_put_contents('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='../oxml.xsl' ?><preorders></preorders>");
@@ -30,12 +30,14 @@
         $tmpy->addAttribute("from", $_COOKIE['myname']);
         $tmpy->addAttribute("date", date('d-m-Y',time()));
         $i++;
-        echo $dom->asXML('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/' . $filename);
+        $dom->asXML('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/' . $filename);
     }
+    
+    $filename = $salt . md5($_COOKIE['franchise_id'] . $t) . '.xml';
     
     if (!is_dir("inbox")) {
         mkdir("inbox");
-        file_put_contents('inbox/.htaccess', "Require all granted");
+        file_put_contents('inbox/.htaccess', "Required all granted");
     }
     if (!file_exists('inbox/' . $filename))       
         file_put_contents('inbox/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='oxml.xsl' ?><preorders></preorders>");
@@ -43,7 +45,7 @@
     $dom2 = simplexml_load_file('inbox/' . $filename);
 
     $x = $dom2->preorders;
-
+    
     $tmpy = $dom2->addChild("shopper");
     $tmpy->addChild("products", count($a));
     $tmpy->addChild("items", count($b));
@@ -51,6 +53,6 @@
     $tmpy->addChild("from", $_COOKIE['myname']);
     $tmpy->addChild("date", date('d-m-Y',time()));
 
-    echo $dom2->asXML('inbox/' . $filename);
+    $dom2->asXML('inbox/' . $filename);
 
 ?>
