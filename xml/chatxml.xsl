@@ -6,15 +6,10 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <xsl:output method="html"/>
 <xsl:template match="/">
   <style>
-	#td-surround { background:black;border:0px;height:300px;width:250px; }
-<<<<<<< HEAD
-	#chatpane { border:2px solid darkblue;overflow-wrap:break-word;overflow-y:scroll;color:black;background:black;height:300px;width:250px; }
-=======
-	#in-window { border:2px solid darkblue;overflow-wrap:break-word;overflow-y:scroll;color:black;background:black;height:300px;width:250px; }
->>>>>>> 9f1db909a7dc3f1791b4a1d9f5ab17f6cf8001b5
 	#texter {background:black;height:30px;width:250px; }
 	#inputs { font-size:24px;border:2px solid darkblue;width:250px; }
-  </style>
+	#in-window { border:2px solid darkblue;overflow-wrap:break-word;overflow-y:scroll;color:black;background:black;height:300px;width:250px; }
+   </style>
   <table>
 	<tr> <td>
 		<b style="font-size:15px;color:red">
@@ -25,11 +20,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 	</td></tr>
 
 	<tr><td colspan="2" id="td-surround">
-<<<<<<< HEAD
-		<div id="chatwindow">
-=======
 		<div id="in-window">
->>>>>>> 9f1db909a7dc3f1791b4a1d9f5ab17f6cf8001b5
     			<xsl:for-each select="messages/msg">
             <div style="font-size:12px;background:black;color:white;width:100%">
       				<xsl:value-of select="text/@alias"/>
