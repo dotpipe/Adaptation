@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 <?xml version=\'1.0\'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages><msg><text>&nbsp</text></msg></messages>
+=======
+<?xml version="1.0"?>
+<?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?>
+<messages><msg><text/></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566436026" user="tcp@null.net" alias="Dave">jafh</text></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566436031" user="tcp@null.net" alias="Dave">ihd</text></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566436035" user="tcp@null.net" alias="Dave">adjfha</text></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566451419" user="tcp@null.net" alias="Dave">df</text></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566451940" user="tcp@null.net" alias="Dave">kdjc</text></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566451997" user="tcp@null.net" alias="Dave">jd</text></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566452586" user="tcp@null.net" alias="Dave">akdfja</text></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566454527" user="tcp@null.net" alias="Dave">jsd</text></msg><msg alias="Dave &lt;-&gt; fi"><text time="1566482907" user="tcp@null.net" alias="Dave">askdsa</text></msg></messages>
+>>>>>>> 9f1db909a7dc3f1791b4a1d9f5ab17f6cf8001b5

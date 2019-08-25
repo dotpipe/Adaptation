@@ -3,7 +3,7 @@ if (!isset($_SESSION))
     session_start();
     
   if (!file_exists('branches.xml'))
-    file_put_contents('branches.xml', '<?xml version=\'1.0\'?><accounts></accounts>');
+    file_put_contents('branches.xml', "<?xml version='1.0'?><accounts></accounts>");
   $xml = simplexml_load_file('branches.xml');
   
     $list = $xml->links;

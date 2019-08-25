@@ -6,7 +6,7 @@ $conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: C
 
 $affectedRow = 0;
 if (!file_exists('newusers.xml'))
-    file_put_contents("newusers.xml", "<?xml version=\'1.0\'?><markers></markers>");
+    file_put_contents("newusers.xml", "<?xml version='1.0'?><markers></markers>");
     
 $xml = simplexml_load_file("newusers.xml");
 
