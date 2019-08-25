@@ -1,8 +1,8 @@
 <?php
 
-//$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-$conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
+
 
 $affectedRow = 0;
 if (!file_exists('newusers.xml'))

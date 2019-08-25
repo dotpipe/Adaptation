@@ -3,17 +3,17 @@
     srand($_COOKIE['franchise_id']);
     $t = rand(1,465365);
     $salt = rand(1,5);
-    $filename = md5($_COOKIE['myemail']) . ".xml";
+    $filename = $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . ".xml";
     $dom = "";
-    if (!is_dir("preorders/" . $salt . md5($_COOKIE['franchise_id'] . $t))){
-        mkdir("preorders/" . $salt . md5($_COOKIE['franchise_id'] . $t));
-        file_put_contents('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/.htaccess', "Require all granted");
+    if (!is_dir("preorders/" . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t))){
+        mkdir("preorders/" . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t));
+        file_put_contents('preorders/' . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/.htaccess', "Require all granted");
     }
-    if (!file_exists('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/' . $filename))       
-        file_put_contents('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='../oxml.xsl' ?><preorders></preorders>");
-   
+    if (!file_exists('preorders/' . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/' . $filename))       
+        file_put_contents('preorders/' . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='../oxml.xsl' ?><preorders></preorders>");
         
-    $dom = simplexml_load_file("preorders/" . $salt . md5($_COOKIE['franchise_id'] . $t) . '/' . $filename);
+        
+    $dom = simplexml_load_file("preorders/" . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/' . $filename);
 
     $x = $dom->preorders;
     $y = $_GET['a'];
@@ -31,10 +31,10 @@
         $tmpy->addAttribute("from", $_COOKIE['myname']);
         $tmpy->addAttribute("date", date('d-m-Y',time()));
         $i++;
-        $dom->asXML('preorders/' . $salt . md5($_COOKIE['franchise_id'] . $t) . '/' . $filename);
+        $dom->asXML('preorders/' . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/' . $filename);
     }
     
-    $filename = $salt . md5($_COOKIE['franchise_id'] . $t) . '.xml';
+    $filename = $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '.xml';
     
     if (!is_dir("inbox")) {
         mkdir("inbox");

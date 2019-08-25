@@ -134,12 +134,14 @@ function getOption() {
   var x = document.getElementById("chatters");
   var idx = x.options[x.selectedIndex];
   var str = idx.value;
-  if (str[0] === '"')
-    str = str.substr(1,str.length-2);
+//  if (str.charAt(0) === '"')
+  //  str = str.substr(1,str.length-2);
   if (str == "")
     return;
+  console.log(str);
   setCookie("nodeNo", x.selectedIndex);
   setCookie("chataddr", str);
+  callPage();
 }
 
 function callPage() {
@@ -149,7 +151,7 @@ function callPage() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      clearChat();
+      //clearChat();
     }
   };
   xhttp.open("POST", "xml/" + x, false);
@@ -194,7 +196,7 @@ function getInbox(no, vthis) {
   xhttp = new XMLHttpRequest();
   xhttp.open("GET", x + "oxml.xsl", false);
   xhttp.send(null);
-  console.log(s);  
+  console.log(s);
   xsltProcessor.importStylesheet(s);
   
   myXMLHTTPRequest = new XMLHttpRequest();

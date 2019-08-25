@@ -32,9 +32,9 @@ function getfilename($con) {
     setcookie("chatfile", $d);
 }
 
-//$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-$conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
+
 if ($_GET['c'] == 1)
     getaliases($conn);
 else if ($_GET['c'] == 2)

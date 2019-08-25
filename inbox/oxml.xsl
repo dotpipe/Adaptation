@@ -21,7 +21,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     		<xsl:value-of select="quantity"/>
 			<xsl:text> - Contact: </xsl:text>
 			<xsl:value-of select="email"/>
-			<i onclick="getInbox(1,'{ $e }')"> look</i>
+			<i onmouseover="setCookie('e', '{ $e }')" onclick="getInbox(1,'{ $e }')"> look</i>
 			<hr/>
        	</div>
     </xsl:for-each>

@@ -1,9 +1,10 @@
 <?php
 $x = urldecode($_POST['password']);
 $y = urldecode($_POST['email']);
-//$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-$conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die("Error: Cannot create connection");
+$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+
+
 
 setcookie("login","false",time()+60*60*($_COOKIE['vartime']+1));
 $z = [];

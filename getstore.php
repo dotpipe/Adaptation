@@ -32,9 +32,7 @@ function makeMyFile($cnxn) {
 
 if ($_COOKIE['login'] != "true")
     header("Location: ./index.php");
-//$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
-    
-$conn = mysqli_connect("localhost", "root", "", "adrs", "3306") or die(json_encode("Error: Cannot create connection"));
+$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
     
 setcookie("store"," from stores!");
 
@@ -57,11 +55,6 @@ $results = $conn->query($sql);
         setcookie("contact",$rows['store_creditor']);
         setcookie("contact_alias",$rows['alias']);
         makeMyFile($conn);
-        if (!file_exists('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml")) {
-            file_put_contents('./inbox/' . md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml","<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
-            chmod('./inbox/' . md5($_COOKIE['store'] . $_COOKIE['store_no']), 0644);
-        }
-        setcookie('inboxfile',md5($_COOKIE['store_id'] . $_COOKIE['store_no']) . ".xml");
     }
     else {
         setcookie("store","from many stores!");
