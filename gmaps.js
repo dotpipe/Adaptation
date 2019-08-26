@@ -584,17 +584,21 @@ function move() {
 
   function editFields(vthis) {
     var t = vthis;
-    var pn = vthis.getAttribute("name");
+    var pn = vthis.parentNode.getAttribute("name");
     console.log(pn + " " + t.innerHTML);
-    setCookie("id", pn);
-    callFile("toorders.php?c=u&b=" + t.getAttribute("name") + "&a=" + t.innerHTML);
+    callFile("toorders.php?c=u&d=" + t.getAttribute("name") + "&b=" + pn + "&a=" + t.innerHTML);
       
   }
   
   function editDrop(vthis) {
     var t = vthis.options;
-    var vn = t[vthis.selectedIndex].value;
-    var pn = vthis.parentNode.getAttribute("name");
+    var vn = t[t.selectedIndex].value;
     callFile("toorders.php?c=u&b=action&a=" + vn);
       
+  }
+  
+  function editStack(vthis) {
+    var t = vthis.options;
+    var vn = t[t.selectedIndex].value;
+    callFile("toorders.php?c=g&b=" + vn);
   }

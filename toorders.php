@@ -1,11 +1,30 @@
 <?php
 
-function updateRow() {
+function updateRows() {
 
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
     $sql = "";
 
+    $f = "";
+    if ($_GET['b'] === "3") 
+        $f = ', delivered = CURRENT_TIMESTAMP';
+    $g = (int)$_GET['b'];
+    $sql = 'UPDATE `preorders` SET `action` = ' . $g . $f . ' WHERE `store_name` = "' . $_COOKIE['store_name'] . '" && `store_no` = ' . $_COOKIE['store_num'] . ' && `order_id` = ' . $_COOKIE['orderid'] . ' && `customer` = "' . $_COOKIE['e'] . '"';
+    
+    echo $sql;
+
+    $conn->query($sql) or die("AGGHHH");
+
+}
+
+function updateRow() {
+
+    $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+
+    $sql = "";
+    
+    
     if ($_GET['b'] == "action") {
         $f = "";
         if ($_GET['a'] === "3")
@@ -150,7 +169,7 @@ function getOrder() {
         $total = 0;
         foreach ($row as $k => $v) {
             $edit = "";
-            if ($v === null || $k == "id" || ($k === "delivered" && $v === null))
+            if ($v === null || $k == "id" || ($k === "delivered" && $v === null) || ($row['delivered'] !== null && $k === "action"))
                 continue;
             switch($k) {
                 case "action":
@@ -165,11 +184,13 @@ function getOrder() {
                 break;
                 case "total_price":
                 break;
+                case "delivered":
+                break;
                 default:
                     $edit = ' onclick="this.contentEditable=\'true\';setCookie(\'e\',\'' . $row['customer'] . '\')" onblur="this.contentEditable=\'false\';editFields(this,\'' . $row['id'] . '\')"';
                 break;
             }
-            $info .= '<td name="' . $k . '" style="color:lightgray;border:2px solid darkblue"' . $edit .'>';
+            $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border:2px solid darkblue"' . $edit .'>';
             $act0 = ""; $act1 = ""; $act2 = ""; $act3 = ""; 
             if ($k === "action" && $v == 0) {
                 $act0 = "selected ";
@@ -207,6 +228,8 @@ if (isset($_GET['c']) && $_GET['c'] == 'd')
     listDelivered();
 else if (isset($_GET['c']) && $_GET['c'] == 'o')
     listOrdered();
+else if (isset($_GET['c']) && $_GET['c'] == 'g')
+    updateRows();
 else if (isset($_GET['c']) && $_GET['c'] == 'h')
     listHold();
 else if (isset($_GET['c']) && $_GET['c'] == 'c')
