@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+- phpMyAdmin XML Dump
+- version 4.8.4
+- https://www.phpmyadmin.net
+-
+- Host: 127.0.0.1
+- Generation Time: Aug 26, 2019 at 09:56 PM
+- Server version: 10.1.37-MariaDB
+- PHP Version: 7.3.0
+-->
+
+<pma_xml_export version="1.0" xmlns:pma="https://www.phpmyadmin.net/some_doc_url/">
+    <!--
+    - Structure schemas
+    -->
+    <pma:structure_schemas>
+        <pma:database name="adrs" collation="latin1_swedish_ci" charset="latin1">
+            <pma:table name="advs">
+                CREATE TABLE `advs` (
+                  `store_uniq` int(11) NOT NULL,
+                  `title` text NOT NULL,
+                  `description` text NOT NULL,
+                  `img` text NOT NULL,
+                  `paid` tinyint(1) NOT NULL DEFAULT '0',
+                  `paid_on` date NOT NULL,
+                  `flagged` tinyint(1) NOT NULL DEFAULT '0',
+                  `start` time NOT NULL,
+                  `end` time NOT NULL,
+                  `serial` bigint(20) NOT NULL,
+                  UNIQUE KEY `serial` (`serial`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+            </pma:table>
+            <pma:table name="ad_revs">
+                CREATE TABLE `ad_revs` (
+                  `store_uniq` int(11) NOT NULL AUTO_INCREMENT,
+                  `store_creditor` text NOT NULL,
+                  `phone` text NOT NULL,
+                  `ads_run` int(11) NOT NULL,
+                  `total_spent` decimal(30,2) DEFAULT '0.00',
+                  `img_dir` text NOT NULL,
+                  `flags` tinyint(4) NOT NULL DEFAULT '0',
+                  `joined_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  `left_on` date DEFAULT NULL,
+                  `avg_hrs_day` decimal(2,1) DEFAULT '0.0',
+                  `avg_ads_hr` int(2) DEFAULT '0',
+                  `reviews` tinyint(4) DEFAULT '0',
+                  `review_tally` int(11) DEFAULT '0',
+                  `username` varchar(45) DEFAULT NULL,
+                  `password` varchar(120) NOT NULL,
+                  `alias` varchar(15) NOT NULL,
+                  UNIQUE KEY `store_uniq` (`store_uniq`),
+                  UNIQUE KEY `user` (`username`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=latin1;
+            </pma:table>
+            <pma:table name="chat">
+                CREATE TABLE `chat` (
+                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                  `start` varchar(67) NOT NULL,
+                  `aim` varchar(67) NOT NULL,
+                  `filename` varchar(67) NOT NULL,
+                  `last` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                  `altered` timestamp NULL DEFAULT NULL,
+                  `checked` tinyint(1) NOT NULL DEFAULT '0',
+                  UNIQUE KEY `id` (`id`),
+                  UNIQUE KEY `filename` (`filename`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=24534 DEFAULT CHARSET=latin1;
+            </pma:table>
+            <pma:table name="franchise">
+                CREATE TABLE `franchise` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `store_name` varchar(60) NOT NULL,
+                  `store_no` smallint(255) NOT NULL,
+                  `owner_id` varchar(67) NOT NULL,
+                  `manager` varchar(67) NOT NULL,
+                  `addr_str` varchar(255) NOT NULL,
+                  `city` varchar(67) NOT NULL,
+                  `state` char(2) NOT NULL,
+                  `password` varchar(120) NOT NULL,
+                  `phone` char(15) NOT NULL,
+                  `email` varchar(67) DEFAULT NULL,
+                  PRIMARY KEY (`id`),
+                  UNIQUE KEY `id` (`id`) USING BTREE,
+                  UNIQUE KEY `phone` (`phone`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=latin1;
+            </pma:table>
+            <pma:table name="preorders">
+                CREATE TABLE `preorders` (
+                  `id` bigint(9) unsigned NOT NULL AUTO_INCREMENT,
+                  `customer` varchar(67) NOT NULL,
+                  `store_name` varchar(67) NOT NULL,
+                  `store_no` bigint(8) NOT NULL,
+                  `product` varchar(67) NOT NULL,
+                  `quantity` int(5) unsigned NOT NULL,
+                  `indv_price` decimal(5,2) NOT NULL DEFAULT '0.00',
+                  `total_price` decimal(6,2) NOT NULL DEFAULT '0.00',
+                  `needed_by` int(2) DEFAULT '7',
+                  `delivered` timestamp NULL DEFAULT NULL,
+                  `expected` date DEFAULT NULL,
+                  `action` tinyint(1) NOT NULL,
+                  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  `order_id` bigint(10) NOT NULL,
+                  UNIQUE KEY `id` (`id`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+            </pma:table>
+        </pma:database>
+    </pma:structure_schemas>
+
+    <!--
+    - Database: 'adrs'
+    -->
+    <database name="adrs">
+        <!-- Table advs -->
+        <!-- Table ad_revs -->
+        <table name="ad_revs">
+            <column name="store_uniq">63</column>
+            <column name="store_creditor">Anthony David Pulse</column>
+            <column name="phone"></column>
+            <column name="ads_run">0</column>
+            <column name="total_spent">0.00</column>
+            <column name="img_dir">a6e0a4e59826a834aa9454e0b8e3269a</column>
+            <column name="flags">0</column>
+            <column name="joined_on">2019-08-17 13:08:43</column>
+            <column name="left_on">NULL</column>
+            <column name="avg_hrs_day">0.0</column>
+            <column name="avg_ads_hr">0</column>
+            <column name="reviews">0</column>
+            <column name="review_tally">0</column>
+            <column name="username">tcp@null.net</column>
+            <column name="password">$2y$10$MeoHS4D.fOKD3ZDOLjSPluK7SnfotXahabQEcsKSCWhIFmVkedcxG</column>
+            <column name="alias">Dave</column>
+        </table>
+        <table name="ad_revs">
+            <column name="store_uniq">65</column>
+            <column name="store_creditor">Anthony David Pulse</column>
+            <column name="phone"></column>
+            <column name="ads_run">0</column>
+            <column name="total_spent">0.00</column>
+            <column name="img_dir">ed72524bb30467cee3bb66d4b0322455</column>
+            <column name="flags">0</column>
+            <column name="joined_on">2019-08-17 14:16:15</column>
+            <column name="left_on">NULL</column>
+            <column name="avg_hrs_day">0.0</column>
+            <column name="avg_ads_hr">0</column>
+            <column name="reviews">0</column>
+            <column name="review_tally">0</column>
+            <column name="username">inland14@live.com</column>
+            <column name="password">$2y$10$GHx5512CGg6eVOftr9g2M.GJ7Hgdywjvl/71qApWwB9SwdxGVGwuW</column>
+            <column name="alias">David</column>
+        </table>
+        <table name="ad_revs">
+            <column name="store_uniq">77</column>
+            <column name="store_creditor">Tony Pulse</column>
+            <column name="phone"></column>
+            <column name="ads_run">0</column>
+            <column name="total_spent">0.00</column>
+            <column name="img_dir">975edf116c98c8ae4e4287316348d883</column>
+            <column name="flags">0</column>
+            <column name="joined_on">2019-08-18 00:20:58</column>
+            <column name="left_on">NULL</column>
+            <column name="avg_hrs_day">0.0</column>
+            <column name="avg_ads_hr">0</column>
+            <column name="reviews">0</column>
+            <column name="review_tally">0</column>
+            <column name="username">noway@email.com</column>
+            <column name="password">$2y$10$2F7mc2i9/lCKEQb6dUJJM.2ocsLpvQFW0Pm77ikNJNBI0IXMsPg5G</column>
+            <column name="alias">Tony</column>
+        </table>
+        <table name="ad_revs">
+            <column name="store_uniq">83</column>
+            <column name="store_creditor">Joshua Cheff</column>
+            <column name="phone"></column>
+            <column name="ads_run">0</column>
+            <column name="total_spent">0.00</column>
+            <column name="img_dir">0b16318c660362bdd245e55eb4e7f0da</column>
+            <column name="flags">0</column>
+            <column name="joined_on">2019-08-18 00:44:42</column>
+            <column name="left_on">NULL</column>
+            <column name="avg_hrs_day">0.0</column>
+            <column name="avg_ads_hr">0</column>
+            <column name="reviews">0</column>
+            <column name="review_tally">0</column>
+            <column name="username">g@big.com</column>
+            <column name="password">$2y$10$JiwiIbxKq98nPFN6ceyDReSkc6ocLW5a497GNchGCi6.yrJWhIwy6</column>
+            <column name="alias">Josh</column>
+        </table>
+        <table name="ad_revs">
+            <column name="store_uniq">102</column>
+            <column name="store_creditor">Fijiman</column>
+            <column name="phone">2103210981</column>
+            <column name="ads_run">0</column>
+            <column name="total_spent">0.00</column>
+            <column name="img_dir">dec5cf97c1ba6c571895b01cfe4579aa</column>
+            <column name="flags">0</column>
+            <column name="joined_on">2019-08-18 11:20:36</column>
+            <column name="left_on">NULL</column>
+            <column name="avg_hrs_day">0.0</column>
+            <column name="avg_ads_hr">0</column>
+            <column name="reviews">0</column>
+            <column name="review_tally">0</column>
+            <column name="username">fiji@fiji.com</column>
+            <column name="password">$2y$10$doQfLFiynswIRg.npKJoMOPBDwp/zCvKBQu.r/TQAcbbVEnuZQ3iS</column>
+            <column name="alias">fi</column>
+        </table>
+        <!-- Table chat -->
+        <table name="chat">
+            <column name="id">3236</column>
+            <column name="start">tcp@null.net</column>
+            <column name="aim">g@big.com</column>
+            <column name="filename">a1d0c6e83f027327d8461063f4ac58a6.xml</column>
+            <column name="last">2019-08-25 11:29:04</column>
+            <column name="altered">2019-08-25 11:23:22</column>
+            <column name="checked">0</column>
+        </table>
+        <table name="chat">
+            <column name="id">24504</column>
+            <column name="start">tcp@null.net</column>
+            <column name="aim">fiji@fiji.com</column>
+            <column name="filename">f7177163c833dff4b38fc8d2872f1ec6.xml</column>
+            <column name="last">2019-08-25 11:28:53</column>
+            <column name="altered">2019-08-25 00:50:35</column>
+            <column name="checked">0</column>
+        </table>
+        <table name="chat">
+            <column name="id">24505</column>
+            <column name="start">tcp@null.net</column>
+            <column name="aim">fun@house.com</column>
+            <column name="filename">9a1158154dfa42caddbd0694a4e9bdc8.xml</column>
+            <column name="last">2019-08-21 15:22:54</column>
+            <column name="altered">2019-08-21 15:22:48</column>
+            <column name="checked">0</column>
+        </table>
+        <table name="chat">
+            <column name="id">24506</column>
+            <column name="start">fiji@fiji.com</column>
+            <column name="aim">fun@house.com</column>
+            <column name="filename">d645920e395fedad7bbbed0eca3fe2e0.xml</column>
+            <column name="last">2019-08-18 19:50:55</column>
+            <column name="altered">2019-08-18 11:35:09</column>
+            <column name="checked">0</column>
+        </table>
+        <!-- Table franchise -->
+        <table name="franchise">
+            <column name="id">68</column>
+            <column name="store_name">Diads</column>
+            <column name="store_no">1</column>
+            <column name="owner_id">tcp@null.net</column>
+            <column name="manager"></column>
+            <column name="addr_str">3017 Fenton Rd, Flint, MI</column>
+            <column name="city">Flint</column>
+            <column name="state">MI</column>
+            <column name="password">$2y$10$GXjniCAKYviKEhIvjKsiWOTX5zevERQvQolpYsq0hS/b2eS2VIg3O</column>
+            <column name="phone">8108203737</column>
+            <column name="email">inland14@live.com</column>
+        </table>
+        <table name="franchise">
+            <column name="id">71</column>
+            <column name="store_name">Diads</column>
+            <column name="store_no">2</column>
+            <column name="owner_id">tcp@null.net</column>
+            <column name="manager">Anthony David Pulse</column>
+            <column name="addr_str">321 East Oliver Street, Corunna, MI</column>
+            <column name="city">Corunna</column>
+            <column name="state">MI</column>
+            <column name="password">$2y$10$.9YT2XzX4EpJGW3ZoMSqcueUICf8KYal5plEkxIAHpCeJGSAGSPvC</column>
+            <column name="phone">9896661888</column>
+            <column name="email">inland14@live.com</column>
+        </table>
+        <table name="franchise">
+            <column name="id">72</column>
+            <column name="store_name">Diads</column>
+            <column name="store_no">3</column>
+            <column name="owner_id">inland14@live.com</column>
+            <column name="manager">Anthony David Pulse</column>
+            <column name="addr_str">209 W Oliver, Owosso, Michigan</column>
+            <column name="city">Owosso</column>
+            <column name="state">Mi</column>
+            <column name="password">$2y$10$103kF0yZoJsggUnl1sz49e9C4GQYJv6NBnQoDm5m.tiKoQnJsPCOS</column>
+            <column name="phone">9894723286</column>
+            <column name="email">null@null.net</column>
+        </table>
+        <table name="franchise">
+            <column name="id">84</column>
+            <column name="store_name">Mc Neil Street Market</column>
+            <column name="store_no">2</column>
+            <column name="owner_id">inland14@live.com</column>
+            <column name="manager">Billy Singh</column>
+            <column name="addr_str">McNeil Street, Corunna, MI</column>
+            <column name="city">Corunna</column>
+            <column name="state">MI</column>
+            <column name="password">$2y$09$dvbTfQAGs2MeJvG8yKKZzus299wBZHXXkdAhMX/YOd/yO6.wJJjhO</column>
+            <column name="phone">8193931831</column>
+            <column name="email">fiji@fiji.com</column>
+        </table>
+        <!-- Table preorders -->
+        <table name="preorders">
+            <column name="id">1</column>
+            <column name="customer">tcp@null.net</column>
+            <column name="store_name">Diads</column>
+            <column name="store_no">1</column>
+            <column name="product">doaijd</column>
+            <column name="quantity">1</column>
+            <column name="indv_price">0.00</column>
+            <column name="total_price">0.00</column>
+            <column name="needed_by">2</column>
+            <column name="delivered">2019-08-26 15:35:34</column>
+            <column name="expected">NULL</column>
+            <column name="action">3</column>
+            <column name="created">2019-08-26 02:22:20</column>
+            <column name="order_id">1</column>
+        </table>
+    </database>
+</pma_xml_export>
