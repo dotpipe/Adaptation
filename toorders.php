@@ -5,8 +5,7 @@ function updateRow() {
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
     $sql = "";
-    
-    
+
     if ($_GET['b'] == "action") {
         $f = "";
         if ($_GET['a'] === "3")
