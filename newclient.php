@@ -12,6 +12,7 @@ $form .= '<input required id="password" type="password" name="password" placehol
 $form .= '<button onclick="submit">Welcome!</button><br>';
 $form .= '</form></div>';
 
-$f = str_replace('"','\'',$form);
-echo json_encode($f);
+//$f = str_replace('"','\'',$form);
+//echo json_encode($f);
+echo $form;
 ?>

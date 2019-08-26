@@ -18,6 +18,5 @@ $form .= '<input id="store_email" style="background:white" name="store_email" ty
 $form .= '<button>List My Store!</button><br>';
 $form .= '</form></div>';
 
-$f = str_replace('"','\'',$form);
-echo json_encode($f);
+echo $form;
 ?>

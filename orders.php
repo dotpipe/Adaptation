@@ -17,6 +17,6 @@ $chat .= '<button style=\'font-size:14px;background-color:blue;color:white;borde
 $chat .= '</form></td></tr></table>';
 
 $g = str_replace('"',"\'",$chat);
-echo json_encode($chat);
-
+//echo json_encode($chat);
+echo $chat;
 ?>

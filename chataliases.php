@@ -15,8 +15,8 @@ function getaliases($con) {
     foreach ($c as $v)
         $f[] = $v;
         
-    echo json_encode($c);
-    
+    //echo json_encode($c);
+    echo $c;
     setcookie("aliases", json_encode($f));
 }
 

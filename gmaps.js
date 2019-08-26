@@ -134,8 +134,8 @@ function getOption() {
   var x = document.getElementById("chatters");
   var idx = x.options[x.selectedIndex];
   var str = idx.value;
-//  if (str.charAt(0) === '"')
-  //  str = str.substr(1,str.length-2);
+  if (str.charAt(0) === '"')
+    str = str.substr(1,str.length-2);
   if (str == "")
     return;
   console.log(str);
@@ -178,36 +178,16 @@ function callPage() {
 }
 
 function getInbox(no, vthis) {
-  if (vthis !== undefined) {
-    menuList('orders.php');
-    console.log(vthis);
-    callFile("toorders.php?c=" + no + "&b=" + vthis);
+
+  if (getCookie("login") !== "true") {
+    menuList("login.php");
+    return;
   }
-  else
-    callFile("toorders.php?c=" + no);
-  var x = getCookie("order");
-  var y = getCookie("dir");
-  var z = getCookie("file");
-  var xhttp = new XMLHttpRequest();
-  xhttp.open("GET", x + y + z, false);
-  xhttp.send();
-  var s = xhttp.responseXML.firstChild;
-  var xsltProcessor = new XSLTProcessor();
-  xhttp = new XMLHttpRequest();
-  xhttp.open("GET", x + "oxml.xsl", false);
-  xhttp.send(null);
-  console.log(s);
-  xsltProcessor.importStylesheet(s);
-  
-  myXMLHTTPRequest = new XMLHttpRequest();
-  myXMLHTTPRequest.open("GET", x + y + z, false);
-  myXMLHTTPRequest.send(null);
-  
-  xmlDoc = myXMLHTTPRequest.responseXML.firstChild;
-  var xslTransform = new XslTransform(x + "oxml.xsl");
-  var outputText = xslTransform.transform(x + y + z);
-  document.getElementById("chatpane").innerHTML = "";
-  document.getElementById("chatpane").append(outputText);
+  if (no == 'd') {
+    document.getElementById('menu').style.width = "600px";
+    document.getElementById('menu').style.scrollY = "hidden";
+  }
+  callFile("toorders.php?c=" + no);
 }
 
 function goChat(i,j) {
@@ -531,36 +511,23 @@ function move() {
   }
 
   function fillMenu(i) {
-    document.getElementById("menu-article").innerHTML = i.substring(1,i.length-2);
+    console.log(i);
+    document.getElementById("menu-article").innerHTML = "";
+    //i.parseFromString
+    
+    document.getElementById("menu-article").innerHTML = i;
   }
   
   function menuList(i) {
-    fetch(i, function() {})
-      .then(function(response){
-      return response.json();
-      })
-      .then(function(j) {
-        fillMenu(JSON.stringify(j));
-      });
-      if (i === "newclient.php")
-        honey();
-  }
-
-//  function fillChat(i) {
-  //  document.getElementById("chatpane").style.wordWrap = "true";
-
-    //document.getElementById("chatpane").innerText = i.substring(1,i.length-2);
-  //}
-  
-  function cheriWindow(i) {
-    var url = 'fmcht.php?' + i;
-    fetch(url, function() {})
-      .then(function(response){
-      return response.json();
-      })
-      .then(function(j) {
-        fillChat(JSON.stringify(j));
-      });
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        g = this.response;
+        fillMenu(g);
+      }
+    };
+    xhttp.open("GET", i, false);
+    xhttp.send();
   }
   
   function addNewItem() {
@@ -574,13 +541,11 @@ function move() {
     var h = document.getElementById("preorders");
     if (h.length >= 2)
       h.removeChild(h.lastChild);
-    
   }
 
   function makePreorder() {
     var g = document.getElementsByClassName("inclusions");
     var cnt = g.length;
-    console.log(g);
     var z = [];
     var y = [];
     var c;
@@ -591,5 +556,8 @@ function move() {
       z.unshift(v[0].value);
       y.unshift(v[1].value);
     }
-    callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y));
+    var x = document.getElementById("days");
+    x = x.options[x.selectedIndex].value;
+    
+    callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y) + "&c=" + x);
   }

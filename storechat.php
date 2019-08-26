@@ -14,7 +14,5 @@ $chat .= '<tr><td colspan=2 style="background:black;border:0px;height:300px;widt
 $chat .= '</div></td></tr></table>';
 $chat .= '</div>';
 
-$g = str_replace("\"",'\'',$chat);
-echo json_encode($g);
-
+echo $chat;
 ?> 

@@ -19,5 +19,6 @@ $menu = "";
 		$menu .= '<ul onclick=menuList(\'login.php\');>Login</ul></li>';
 	}
 $f = str_replace("\'",'"',$menu);
-echo json_encode($f);
+//echo json_encode($f);
+echo $menu;
 ?>

@@ -1,59 +1,45 @@
 <?php
-    
-    srand($_COOKIE['franchise_id']);
-    $t = rand(1,465365);
-    $salt = rand(1,5);
-    $filename = $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . ".xml";
-    $dom = "";
-    if (!is_dir("preorders/" . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t))){
-        mkdir("preorders/" . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t));
-        file_put_contents('preorders/' . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/.htaccess', "Require all granted");
-    }
-    if (!file_exists('preorders/' . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/' . $filename))       
-        file_put_contents('preorders/' . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='../oxml.xsl' ?><preorders></preorders>");
-        
-        
-    $dom = simplexml_load_file("preorders/" . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/' . $filename);
 
-    $x = $dom->preorders;
-    $y = $_GET['a'];
-    $w = $_GET['b'];
+    function countOrders() {
+
+        setcookie("orders",0);
+        
+        $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
     
-    $a = str_getcsv($y,",");
-    $b = str_getcsv($w,",");
+        $sql = 'SELECT DISTINCT(order_id) FROM `preorders` WHERE `store_name` = "' . $_COOKIE['store'] . '" && `store_no` = ' . $_COOKIE['store_no'] . ' && `customer` = "' . $_COOKIE['e'] . '"';
+    
+        echo $sql;
+        $results = mysqli_query($conn,$sql) or die("AGGHHH");
+    
+        $f = $results->fetch_assoc();
+        
+        $next_order = $results->num_rows;
+    
+        setcookie("orders", $next_order + 1);
+    
+        $conn->close();
+    }
+    
+    $con = mysqli_connect('localhost', 'r0ot3d', 'RTYfGhVbN!3$', 'adrs','3306') or die("Error: Can't connect");
+    
+    countOrders();
+
+    $a = str_getcsv($_GET['a']);
+    $b = str_getcsv($_GET['b']);
+    $c = $_GET['c'];
+    
     $i = 0;
-    
-    $tmpy = $dom->addChild("items");
-    foreach($a as $v) {
-        $tmpy->addChild("product", $v);
-        $tmpy->addChild("email", $_COOKIE['myemail']);
-        $tmpy->addAttribute("quantity", $b[$i]);
-        $tmpy->addAttribute("from", $_COOKIE['myname']);
-        $tmpy->addAttribute("date", date('d-m-Y',time()));
+    $sql = "";
+    foreach ($a as $v) {
+        $sql = 'INSERT INTO preorders(`id`,`customer`,`store_name`,`store_no`,`product`,`quantity`,`indv_price`,`total_price`,`needed_by`,`delivered`,`expected`,`action`,`created`,`order_id`)';
+        $sql .= ' VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store'] . '",' . $_COOKIE['store_no'] . ',"' . $v . '",' . $b[$i] . ',0,0,' . $c . ',null,null,0,CURRENT_TIMESTAMP,' . $_COOKIE['orders'] . ')';
         $i++;
-        $dom->asXML('preorders/' . $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '/' . $filename);
+        $result = $con->query($sql) or die(json_encode(mysqli_error_list($con)));
     }
     
-    $filename = $salt . md5($_COOKIE['myemail'] . $_COOKIE['franchise_id'] . $t) . '.xml';
+    //echo $sql;
     
-    if (!is_dir("inbox")) {
-        mkdir("inbox");
-        file_put_contents('inbox/.htaccess', "Require all granted");
-    }
-    if (!file_exists('inbox/' . $filename))       
-        file_put_contents('inbox/' . $filename, "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='oxml.xsl' ?><preorders></preorders>");
+   
 
-    $dom2 = simplexml_load_file('inbox/' . $filename);
-
-    $x = $dom2->preorders;
-    
-    $tmpy = $dom2->addChild("shopper");
-    $tmpy->addChild("products", count($a));
-    $tmpy->addChild("items", count($b));
-    $tmpy->addChild("email", $_COOKIE['myemail']);
-    $tmpy->addChild("from", $_COOKIE['myname']);
-    $tmpy->addChild("date", date('d-m-Y',time()));
-
-    $dom2->asXML('inbox/' . $filename);
 
 ?>

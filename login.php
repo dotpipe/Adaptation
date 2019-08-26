@@ -14,6 +14,6 @@ $form .= "</form></div>";
 if (isset($_COOKIE) && isset($_COOKIE['count']) && $_COOKIE['count'] == 3) {
     $form = "Locked out for " . ($_COOKIE['lock'] - time()) . " hours due to login tries exceeded.";
 }
-$f = str_replace("\"","'",$form);
-echo json_encode($f);
+//echo json_encode($f);
+echo $form;
 ?>
