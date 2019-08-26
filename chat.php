@@ -8,8 +8,6 @@ function updateChatFile($con) {
 
 $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-
-
     $results = $conn->query('SELECT alias FROM ad_revs WHERE username = "' . $_COOKIE['chataddr'] . '"');
     
     $c = "";

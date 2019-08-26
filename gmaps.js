@@ -177,17 +177,38 @@ function callPage() {
   x.scroll(0,x.childElementCount*20);
 }
 
-function getInbox(no, vthis) {
+function getInbox(no) {
 
   if (getCookie("login") !== "true") {
     menuList("login.php");
     return;
   }
-  if (no == 'd') {
+  if (no == 'x') {
     document.getElementById('menu').style.width = "600px";
     document.getElementById('menu').style.scrollY = "hidden";
+    
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        g = this.response;
+        document.getElementById("chatpane").innerHTML = g;
+      }
+    };
+    xhttp.open("GET", "listorders.php", false);
+    xhttp.send();
+    return;
   }
-  callFile("toorders.php?c=" + no);
+  else {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        g = this.response;
+        document.getElementById("chatpane").innerHTML = g;
+      }
+    };
+    xhttp.open("GET", "toorders.php?c=" + no, false);
+    xhttp.send();
+  }
 }
 
 function goChat(i,j) {
@@ -533,7 +554,6 @@ function move() {
   function addNewItem() {
     var h = document.getElementById("preorders");
     var p = h.firstChild.cloneNode(true);
-    var x = h.childElementCount;
     h.append(p);
   }
 
@@ -560,4 +580,21 @@ function move() {
     x = x.options[x.selectedIndex].value;
     
     callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y) + "&c=" + x);
+  }
+
+  function editFields(vthis) {
+    var t = vthis;
+    var pn = vthis.getAttribute("name");
+    console.log(pn + " " + t.innerHTML);
+    setCookie("id", pn);
+    callFile("toorders.php?c=u&b=" + t.getAttribute("name") + "&a=" + t.innerHTML);
+      
+  }
+  
+  function editDrop(vthis) {
+    var t = vthis.options;
+    var vn = t[vthis.selectedIndex].value;
+    var pn = vthis.parentNode.getAttribute("name");
+    callFile("toorders.php?c=u&b=action&a=" + vn);
+      
   }
