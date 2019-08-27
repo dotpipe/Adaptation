@@ -2,7 +2,7 @@
 
 function updateChatFile($con) {
     $filename = $_COOKIE['chatfile'];
-    $sql = 'UPDATE `chat` SET `chat`.`altered` = `chat`.`last`, `chat`.`checked` = 0, last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
+    $sql = 'UPDATE chat SET chat.altered = chat.last, chat.checked = 0, last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
     $results = $con->query($sql);
 }
 

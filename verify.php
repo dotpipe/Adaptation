@@ -14,7 +14,7 @@ if (mysqli_connect_errno()) {
 }
 $results = "";
 
-$results = $conn->query('SELECT store_uniq, store_creditor, username, password, alias FROM ad_revs WHERE username = "' . $y . '"') or die(mysqli_error());
+$results = $conn->query('SELECT store_uniq, store_creditor, username, password, alias FROM ad_revs WHERE username = "' . $y . '"') or die(mysqli_error($conn));
 
     if ($results->num_rows > 0) {
         $rows = $results->fetch_assoc();

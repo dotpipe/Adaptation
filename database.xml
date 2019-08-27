@@ -17,90 +17,90 @@
     <pma:structure_schemas>
         <pma:database name="adrs" collation="latin1_swedish_ci" charset="latin1">
             <pma:table name="advs">
-                CREATE TABLE `advs` (
-                  `store_uniq` int(11) NOT NULL,
-                  `title` text NOT NULL,
-                  `description` text NOT NULL,
-                  `img` text NOT NULL,
-                  `paid` tinyint(1) NOT NULL DEFAULT '0',
-                  `paid_on` date NOT NULL,
-                  `flagged` tinyint(1) NOT NULL DEFAULT '0',
-                  `start` time NOT NULL,
-                  `end` time NOT NULL,
-                  `serial` bigint(20) NOT NULL,
-                  UNIQUE KEY `serial` (`serial`)
+                CREATE TABLE advs (
+                  store_uniq int(11) NOT NULL,
+                  title text NOT NULL,
+                  description text NOT NULL,
+                  img text NOT NULL,
+                  paid tinyint(1) NOT NULL DEFAULT '0',
+                  paid_on date NOT NULL,
+                  flagged tinyint(1) NOT NULL DEFAULT '0',
+                  start time NOT NULL,
+                  end time NOT NULL,
+                  serial bigint(20) NOT NULL,
+                  UNIQUE KEY serial (serial)
                 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
             </pma:table>
             <pma:table name="ad_revs">
-                CREATE TABLE `ad_revs` (
-                  `store_uniq` int(11) NOT NULL AUTO_INCREMENT,
-                  `store_creditor` text NOT NULL,
-                  `phone` text NOT NULL,
-                  `ads_run` int(11) NOT NULL,
-                  `total_spent` decimal(30,2) DEFAULT '0.00',
-                  `img_dir` text NOT NULL,
-                  `flags` tinyint(4) NOT NULL DEFAULT '0',
-                  `joined_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                  `left_on` date DEFAULT NULL,
-                  `avg_hrs_day` decimal(2,1) DEFAULT '0.0',
-                  `avg_ads_hr` int(2) DEFAULT '0',
-                  `reviews` tinyint(4) DEFAULT '0',
-                  `review_tally` int(11) DEFAULT '0',
-                  `username` varchar(45) DEFAULT NULL,
-                  `password` varchar(120) NOT NULL,
-                  `alias` varchar(15) NOT NULL,
-                  UNIQUE KEY `store_uniq` (`store_uniq`),
-                  UNIQUE KEY `user` (`username`)
+                CREATE TABLE ad_revs (
+                  store_uniq int(11) NOT NULL AUTO_INCREMENT,
+                  store_creditor text NOT NULL,
+                  phone text NOT NULL,
+                  ads_run int(11) NOT NULL,
+                  total_spent decimal(30,2) DEFAULT '0.00',
+                  img_dir text NOT NULL,
+                  flags tinyint(4) NOT NULL DEFAULT '0',
+                  joined_on datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  left_on date DEFAULT NULL,
+                  avg_hrs_day decimal(2,1) DEFAULT '0.0',
+                  avg_ads_hr int(2) DEFAULT '0',
+                  reviews tinyint(4) DEFAULT '0',
+                  review_tally int(11) DEFAULT '0',
+                  username varchar(45) DEFAULT NULL,
+                  password varchar(120) NOT NULL,
+                  alias varchar(15) NOT NULL,
+                  UNIQUE KEY store_uniq (store_uniq),
+                  UNIQUE KEY user (username)
                 ) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=latin1;
             </pma:table>
             <pma:table name="chat">
-                CREATE TABLE `chat` (
-                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                  `start` varchar(67) NOT NULL,
-                  `aim` varchar(67) NOT NULL,
-                  `filename` varchar(67) NOT NULL,
-                  `last` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                  `altered` timestamp NULL DEFAULT NULL,
-                  `checked` tinyint(1) NOT NULL DEFAULT '0',
-                  UNIQUE KEY `id` (`id`),
-                  UNIQUE KEY `filename` (`filename`)
+                CREATE TABLE chat (
+                  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                  start varchar(67) NOT NULL,
+                  aim varchar(67) NOT NULL,
+                  filename varchar(67) NOT NULL,
+                  last timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                  altered timestamp NULL DEFAULT NULL,
+                  checked tinyint(1) NOT NULL DEFAULT '0',
+                  UNIQUE KEY id (id),
+                  UNIQUE KEY filename (filename)
                 ) ENGINE=InnoDB AUTO_INCREMENT=24534 DEFAULT CHARSET=latin1;
             </pma:table>
             <pma:table name="franchise">
-                CREATE TABLE `franchise` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `store_name` varchar(60) NOT NULL,
-                  `store_no` smallint(255) NOT NULL,
-                  `owner_id` varchar(67) NOT NULL,
-                  `manager` varchar(67) NOT NULL,
-                  `addr_str` varchar(255) NOT NULL,
-                  `city` varchar(67) NOT NULL,
-                  `state` char(2) NOT NULL,
-                  `password` varchar(120) NOT NULL,
-                  `phone` char(15) NOT NULL,
-                  `email` varchar(67) DEFAULT NULL,
-                  PRIMARY KEY (`id`),
-                  UNIQUE KEY `id` (`id`) USING BTREE,
-                  UNIQUE KEY `phone` (`phone`)
+                CREATE TABLE franchise (
+                  id int(11) NOT NULL AUTO_INCREMENT,
+                  store_name varchar(60) NOT NULL,
+                  store_no smallint(255) NOT NULL,
+                  owner_id varchar(67) NOT NULL,
+                  manager varchar(67) NOT NULL,
+                  addr_str varchar(255) NOT NULL,
+                  city varchar(67) NOT NULL,
+                  state char(2) NOT NULL,
+                  password varchar(120) NOT NULL,
+                  phone char(15) NOT NULL,
+                  email varchar(67) DEFAULT NULL,
+                  PRIMARY KEY (id),
+                  UNIQUE KEY id (id) USING BTREE,
+                  UNIQUE KEY phone (phone)
                 ) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=latin1;
             </pma:table>
             <pma:table name="preorders">
-                CREATE TABLE `preorders` (
-                  `id` bigint(9) unsigned NOT NULL AUTO_INCREMENT,
-                  `customer` varchar(67) NOT NULL,
-                  `store_name` varchar(67) NOT NULL,
-                  `store_no` bigint(8) NOT NULL,
-                  `product` varchar(67) NOT NULL,
-                  `quantity` int(5) unsigned NOT NULL,
-                  `indv_price` decimal(5,2) NOT NULL DEFAULT '0.00',
-                  `total_price` decimal(6,2) NOT NULL DEFAULT '0.00',
-                  `needed_by` int(2) DEFAULT '7',
-                  `delivered` timestamp NULL DEFAULT NULL,
-                  `expected` date DEFAULT NULL,
-                  `action` tinyint(1) NOT NULL,
-                  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                  `order_id` bigint(10) NOT NULL,
-                  UNIQUE KEY `id` (`id`)
+                CREATE TABLE preorders (
+                  id bigint(9) unsigned NOT NULL AUTO_INCREMENT,
+                  customer varchar(67) NOT NULL,
+                  store_name varchar(67) NOT NULL,
+                  store_no bigint(8) NOT NULL,
+                  product varchar(67) NOT NULL,
+                  quantity int(5) unsigned NOT NULL,
+                  indv_price decimal(5,2) NOT NULL DEFAULT '0.00',
+                  total_price decimal(6,2) NOT NULL DEFAULT '0.00',
+                  needed_by int(2) DEFAULT '7',
+                  delivered timestamp NULL DEFAULT NULL,
+                  expected date DEFAULT NULL,
+                  action tinyint(1) NOT NULL,
+                  created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  order_id bigint(10) NOT NULL,
+                  UNIQUE KEY id (id)
                 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
             </pma:table>
         </pma:database>

@@ -7,7 +7,7 @@ $chat .= '<tr><td><b style=\'font-size:15px;color:red\'>Welcome to your Inbox!</
 $chat .= '<td><button onclick=\'clearChat();\' style=\'vertical-alignment:bottom;border-radius:50%;color:green\'>&check;</button></td></tr>';
 $chat .= '<tr><td colspan=2 style=\'background:black;border:0px;height:300px;width:250px\'>';
 $chat .= '<div id=\'chatpane\' style=\'border:2px solid darkblue;overflow-wrap:break-word;overflow-y:scroll;color:lightgray;background:black;height:300px;width:250px\'>';
-$chat .= '<br><br><br><br><br><center><a onclick=getInbox(\'z\',1)>Click here to open Inbox</a></div></td></tr><tr><td colspan=2 style=\'text-align:center;background:black;\'>';
+$chat .= '<br><br><br><br><br><center><a onclick=getInbox(\'p\')>Click here to open Inbox</a></div></td></tr><tr><td colspan=2 style=\'text-align:center;background:black;\'>';
 $chat .= '<form method=\'POST\' action=\'msg.php\'>';
 $chat .= '<input style=\'background-color:green;\' name=\'listen\' type=\'radio\'> Got it! ';
 $chat .= '<input style=\'color:white;background-color:red;\' name=\'listen\' type=\'radio\'> Waiting...<br>';

@@ -38,7 +38,7 @@ setcookie("store"," from stores!");
 
 $results = "";
 
-$sql = "SELECT `franchise`.`id`, `franchise`.`store_name`, `ad_revs`.`store_creditor`, `franchise`.`store_no`, `franchise`.`owner_id`, `franchise`.`email`, `ad_revs`.`username`, `ad_revs`.`alias` FROM `franchise`, `ad_revs` WHERE (`franchise`.`owner_id` = `ad_revs`.`username` || `franchise`.`email` = `ad_revs`.`username`) AND `franchise`.`store_name` = \"" . $_GET['a'] . "\" AND `franchise`.`store_no` = \"" . $_GET['b'] . "\"";
+$sql = "SELECT franchise.id, franchise.store_name, ad_revs.store_creditor, franchise.store_no, franchise.owner_id, franchise.email, ad_revs.username, ad_revs.alias FROM franchise, ad_revs WHERE (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) AND franchise.store_name = \"" . $_GET['a'] . "\" AND franchise.store_no = \"" . $_GET['b'] . "\"";
 
 $results = $conn->query($sql);
 

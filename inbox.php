@@ -8,7 +8,12 @@ $chat .= '<tr><td><b style=\'font-size:15px;color:red\'>Welcome to your Inbox!</
 $chat .= '<td><button onclick=\'clearChat();\' style=\'vertical-alignment:bottom;border-radius:50%;color:green\'>&check;</button></td></tr>';
 $chat .= '<tr><td colspan=2 style=\'background:black;border:0px;height:300px;width:250px\'>';
 $chat .= '<div id=\'chatpane\' style=\'border:2px solid darkblue;overflow-wrap:break-word;overflow-y:scroll;color:lightgray;background:black;height:300px;width:250px\'>';
-$chat .= '<br><br><br><br><br><center><a onclick=getInbox(\'z\',0)>Click here to open Inbox</a></div></td></tr><tr><td colspan=2 style=\'text-align:center;background:black;\'>';
+$chat .= '<center><br><a onclick=getInbox(\'li\')>Click here To Open Inbox</a><br>';
+$chat .= '<br><a onclick=getInbox(\'d\',1)>Click here for Delivered</a><br>';
+$chat .= '<br><a onclick=getInbox(\'h\',1)>Click here for On Hold</a><br>';
+$chat .= '<br><a onclick=getInbox(\'o\',1)>Click here for Ordered</a><br>';
+$chat .= '<br><a onclick=getInbox(\'c\',1)>Click here for Canceled</a><br>';
+$chat .= '</div></td></tr><tr><td colspan=2 style=\'text-align:center;background:black;\'>';
 $chat .= '<form method=\'POST\' action=\'msg.php\'>';
 $chat .= '<input style=\'background-color:green;\' name=\'listen\' type=\'radio\'> Got it! ';
 $chat .= '<input style=\'color:white;background-color:red;\' name=\'listen\' type=\'radio\'> Waiting...<br>';
