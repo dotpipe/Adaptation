@@ -177,13 +177,13 @@ function callPage() {
   x.scroll(0,x.childElementCount*20);
 }
 
-function getInbox(no) {
+function getInbox(no, data) {
 
   if (getCookie("login") !== "true") {
     menuList("login.php");
     return;
   }
-  if (1 === no || no === 'x') {
+  if (false === true) {
     document.getElementById('menu').style.width = "600px";
     document.getElementById('menu').style.scrollY = "hidden";
     
@@ -194,7 +194,7 @@ function getInbox(no) {
         document.getElementById("chatpane").innerHTML = g;
       }
     };
-    xhttp.open("GET", "listorders.php?p=" + no, false);
+    xhttp.open("GET", "listorders.php?p=" + no + "&x=" + data, false);
     xhttp.send();
     return;
   }
@@ -206,7 +206,7 @@ function getInbox(no) {
         document.getElementById("chatpane").innerHTML = g;
       }
     };
-    xhttp.open("GET", "toorders.php?c=" + no, false);
+    xhttp.open("GET", "toorders.php?c=" + no + "&p=" + data, false);
     xhttp.send();
   }
 }
