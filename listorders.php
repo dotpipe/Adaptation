@@ -2,7 +2,11 @@
 
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-    $sql = 'SELECT id, order_id, store_name, store_no, customer, needed_by, action FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'];
+    if ($_GET['p'] == 1)
+        $sql = 'SELECT id, order_id, store_name, store_no, customer, needed_by, action FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'];
+    else
+        $sql = 'SELECT id, order_id, store_name, store_no, customer, needed_by, action FROM preorders WHERE customer = "' . $_COOKIE['e'] . '" ORDER BY created DESC';
+    
     
     $result = $conn->query($sql) or die("GARRRRRRR");
     $table = "";

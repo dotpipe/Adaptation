@@ -15,8 +15,8 @@ function getaliases($con) {
     foreach ($c as $v)
         $f[] = $v;
         
-    //echo json_encode($c);
-    echo $c;
+    echo json_encode($c);
+    
     setcookie("aliases", json_encode($f));
 }
 
@@ -33,7 +33,6 @@ function getfilename($con) {
 }
 
 $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
-
 
 if ($_GET['c'] == 1)
     getaliases($conn);

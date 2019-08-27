@@ -9,6 +9,7 @@ $menu = "";
 		$menu .= '<ul onclick=menuList(\'storechat.php\');>Cheri</ul>';
 		$menu .= '<ul onclick=menuList(\'preorder.php\');>Preorder</ul>';
 		$menu .= '<ul onclick=menuList(\'inbox.php\');>Inbox</ul>';
+		$menu .= '<ul onclick=menuList(\'myorders.php\');>My Orders</ul>';
 		$menu .= '<ul><a href=\'nologin.php\' style=\'color:white;text-decoration:none;font-size:18px;\'>Logout</a></ul>';
 		$menu .= '<ul>Logged in as ' . $_COOKIE['myemail'] . '</ul></li>';
 	}

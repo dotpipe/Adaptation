@@ -21,11 +21,11 @@
 			<tr>
 				<td id="td-surround">
 					<div id="in-window">
-						<xsl:for-each select="messages">
+						<xsl:for-each select="messages/msg">
 							<div style="font-size:12px;background:black;color:white;width:100%">
-								<xsl:value-of select="msg/text/@alias"/>
+								<xsl:value-of select="text/@alias"/>
 								<xsl:text>: </xsl:text>
-								<xsl:value-of select="msg/text"/>
+								<xsl:value-of select="text"/>
 							</div>
 						</xsl:for-each>
 					</div>

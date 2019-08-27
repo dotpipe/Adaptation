@@ -35,8 +35,8 @@
             $i++;
             continue;
         }
-        $sql = 'INSERT INTO preorders(`id`,`customer`,`store_name`,`store_no`,`product`,`quantity`,`indv_price`,`total_price`,`needed_by`,`delivered`,`expected`,`action`,`created`,`order_id`)';
-        $sql .= ' VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store'] . '",' . $_COOKIE['store_no'] . ',"' . $v . '",' . $b[$i] . ',0,0,' . $c . ',null,null,0,CURRENT_TIMESTAMP,' . $_COOKIE['orders'] . ')';
+        $sql = 'INSERT INTO preorders(`id`,`customer`,`store_name`,`store_no`,`product`,`quantity`,`indv_price`,`total_price`,`needed_by`,`delivered`,`expected`,`action`,`created`,`order_id`,`edited`)';
+        $sql .= ' VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store'] . '",' . $_COOKIE['store_no'] . ',"' . $v . '",' . $b[$i] . ',0,0,' . $c . ',null,null,0,CURRENT_TIMESTAMP,' . $_COOKIE['orders'] . ',null)';
         $i++;
         $result = $con->query($sql) or die(json_encode(mysqli_error_list($con)));
     }

@@ -183,7 +183,7 @@ function getInbox(no) {
     menuList("login.php");
     return;
   }
-  if (no == 'x') {
+  if (1 === no || no === 'x') {
     document.getElementById('menu').style.width = "600px";
     document.getElementById('menu').style.scrollY = "hidden";
     
@@ -194,7 +194,7 @@ function getInbox(no) {
         document.getElementById("chatpane").innerHTML = g;
       }
     };
-    xhttp.open("GET", "listorders.php", false);
+    xhttp.open("GET", "listorders.php?p=" + no, false);
     xhttp.send();
     return;
   }
