@@ -546,13 +546,15 @@ function move() {
   function addNewItem() {
     var h = document.getElementById("preorders");
     var p = h.firstChild.cloneNode(true);
+    p.childNodes[0].value = "";
+    p.childNodes[2].value = 1;
     h.append(p);
   }
 
-  function removeItem() {
-    var h = document.getElementById("preorders");
-    if (h.length >= 2)
-      h.removeChild(h.lastChild);
+  function removeItem(vthis) {
+    var h = vthis.parentNode.parentNode;
+    if (h.childElementCount > 1)
+      h.removeChild(vthis.parentNode);
   }
 
   function makePreorder() {
@@ -564,14 +566,17 @@ function move() {
     for (j = 0; j < cnt ; j++) {
       c = g[j];
       var v = c.getElementsByTagName("input");
-      
-      z.unshift(v[0].value);
-      y.unshift(v[1].value);
+      if (v[0].value !== undefined) {
+        z.unshift(v[0].value);
+        y.unshift(v[1].value);
+      }
     }
     var x = document.getElementById("days");
     x = x.options[x.selectedIndex].value;
-    
-    callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y) + "&c=" + x);
+    if (z.length > 0)
+      callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y) + "&c=" + x);
+    else
+      return;
   }
 
   function editFields(vthis) {

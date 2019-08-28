@@ -20,7 +20,7 @@ $form .= '</select><br>';
 $form .= '<div id=\'preorders\'>';
 $form .= '<div class=\'inclusions\'>';
 $form .= '<input required type=\'text\' class=\'item\' placeholder=\'Item name\'>';
-$form .= '<font style=\'font-size:12px\'> Qu: </font><input type=\'number\' class=\'quantity\' style=\'display:table-cell;width:24px;\' value=1 min=1 required>';
+$form .= '<font style=\'font-size:12px\'> Qu: </font><input id="qu" type=\'number\' class=\'quantity\' style=\'display:table-cell;width:24px;\' value=1 min=1 required>';
 $form .= '&nbsp;<button style=\'background:red;color:black;border-radius:50%;font-size:18px;border-right:1px solid white;\' onclick="removeItem(this)">&times;</button>';
 $form .= '</div></div>';
 $form .= '<div style=\'width:100%;display:table\'>';

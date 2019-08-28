@@ -189,7 +189,7 @@
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
-        $info = "<table style='text-align:center;font-size:13px;color:lightgray;border-right:1px solid red' id='order'><tr><td># &nbsp;</td><td>Est.</td><td>Product</td><td>Qu</td><td>Price</td><td>Tax</td><td>Total</td><td>TOA</td><td>Need By</td><td>Created</td><td>Action</td><td>Delete</td></tr>";
+        $info = "<table style='text-align:center;font-size:13px;color:lightgray;border-right:1px solid red' id='order'><tr><td style='width:70px;'># &nbsp;</td><td style='width:70px;'>Est.</td><td style='width:70px;'>Product</td><td style='width:70px;'>Qu *</td><td style='width:70px;'>Price</td><td style='width:70px;'>Tax</td><td style='width:70px;'>Total</td><td style='width:70px;'>TOA</td><td style='width:70px;'>Need By *</td><td style='width:70px;'>Created</td><td>Action</td><td>Delete</td></tr>";
         
         getTable($result, $info);
         $conn->close();
@@ -205,7 +205,7 @@
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
-        $info = "<table style='text-align:center;font-size:13px;color:lightgray;border-right:1px solid red' id='order'><tr><td># &nbsp;</td><td>Customer</td><td>Product</td><td>Qu</td><td>Price</td><td>Tax</td><td>Total</td><td>TOA</td><td>Need By</td><td>Created</td><td>Action</td><td>Delete</td></tr>";
+        $info = "<table style='text-align:center;font-size:13px;color:lightgray;border-right:1px solid red' id='order'><tr><td style='width:70px;'># &nbsp;</td><td style='width:70px;'>Customer</td><td style='width:70px;'>Product</td><td style='width:70px;'>Qu *</td><td style='width:70px;'>Price</td><td style='width:70px;'>Tax</td><td style='width:70px;'>Total</td><td style='width:70px;'>TOA</td><td style='width:70px;'>Need By *</td><td style='width:70px;'>Created</td><td>Action</td><td>Delete</td></tr>";
         
         getTable($result, $info);
         $conn->close();
@@ -377,7 +377,7 @@ function getOrder() {
     
     $result = $conn->query($sql) or die(mysqli_error($conn));
     
-    $info = "<table style='text-align:center;font-size:13px;color:lightgray; id='order'><tr><td># &nbsp;</td><td>Est.</td><td>Product</td><td>Qu</td><td>Price</td><td>Tax</td><td>Total</td><td>TOA</td><td>Need By</td><td>Created</td><td>Action</td><td>Delete</td></tr>";
+    $info = "<table style='text-align:center;font-size:13px;color:lightgray; id='order'><tr><td style='width:70px;'># &nbsp;</td><td style='width:35px;'>Est.</td><td style='width:35px;'>Product</td><td style='width:70px;'>Qu *</td><td style='width:70px;'>Price</td><td style='width:70px;'>Tax</td><td style='width:70px;'>Total</td><td style='width:70px;'>TOA</td><td style='width:70px;'>Need By *</td><td style='width:70px;'>Created</td><td>Action</td><td>Delete</td></tr>";
         
     getTable($result, $info);
     
