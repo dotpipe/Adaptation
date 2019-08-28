@@ -584,9 +584,9 @@ function move() {
 
   function editFields(vthis) {
     var t = vthis;
-    var pn = vthis.parentNode.getAttribute("name");
+    var pn = vthis.getAttribute("name");
     console.log(pn + " " + t.innerHTML);
-    callFile("toorders.php?c=u&d=" + t.getAttribute("name") + "&b=" + pn + "&a=" + t.innerHTML);
+    callFile("toorders.php?c=u&b=" + pn + "&a=" + t.innerHTML);
       
   }
   
