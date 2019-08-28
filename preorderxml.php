@@ -1,29 +1,38 @@
 <?php
 
-    function countOrders() {
+    function getTax($conn) {
+    
+        $sql = 'SELECT EstimatedCombinedRate FROM taxes WHERE ZipCode = "' . $_COOKIE['zip_code'] . '"';
+        //echo $sql;
+        $tax = $conn->query($sql) or die(mysqli_error($conn));
+    
+        $row = $tax->fetch_assoc();
+    
+        setcookie("taxes", $row['EstimatedCombinedRate']);
+    
+    }
+
+    function countOrders($conn) {
 
         setcookie("orders",0);
         
-        $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+        $sql = 'SELECT MAX(order_id) AS max FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'];
     
-        $sql = 'SELECT DISTINCT(order_id) FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'] . ' && customer = "' . $_COOKIE['e'] . '"';
-    
-        echo $sql;
-        $results = mysqli_query($conn,$sql) or die("AGGHHH");
+        $results = $conn->query($sql) or die("AGGHHH");
     
         $f = $results->fetch_assoc();
         
-        $next_order = $results->num_rows;
+        $next_order = $f['max'];
     
         setcookie("orders", $next_order + 1);
     
-        $conn->close();
     }
     
     $con = mysqli_connect('localhost', 'r0ot3d', 'RTYfGhVbN!3$', 'adrs','3306') or die("Error: Can't connect");
     
-    countOrders();
-
+    countOrders($con);
+    getTax($con);
+    
     $a = str_getcsv($_GET['a']);
     $b = str_getcsv($_GET['b']);
     $c = $_GET['c'];
@@ -35,15 +44,12 @@
             $i++;
             continue;
         }
-        $sql = 'INSERT INTO preorders(id,customer,store_name,store_no,product,quantity,indv_price,total_price,needed_by,delivered,expected,action,created,order_id,edited)';
-        $sql .= ' VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store'] . '",' . $_COOKIE['store_no'] . ',"' . $v . '",' . $b[$i] . ',0,0,' . $c . ',null,null,0,CURRENT_TIMESTAMP,' . $_COOKIE['orders'] . ',null)';
+        
+        $sql = 'INSERT INTO preorders(id,customer,store_name,store_no,product,quantity,indv_price,tax,total_price,needed_by,delivered,expected,action,created,order_id,edited)';
+        $sql .= ' VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store'] . '",' . $_COOKIE['store_no'] . ',"' . $v . '",' . $b[$i] . ',0,' . $_COOKIE['taxes'] . ',0,' . $c . ',null,null,0,CURRENT_TIMESTAMP,' . $_COOKIE['orders'] . ',null)';
         $i++;
-        $result = $con->query($sql) or die(json_encode(mysqli_error_list($con)));
+        $result = $con->query($sql) or die(mysqli_error($con));
     }
     
-    //echo $sql;
-    
-   
-
-
+    $con->close();
 ?>

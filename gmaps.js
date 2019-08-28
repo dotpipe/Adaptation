@@ -83,7 +83,6 @@ function listConvo() {
   callFile("chataliases.php?c=1");
   var alias = getCookie("aliases");
   alias = alias.substring(1,alias.length-1);
-  console.log(alias);
   alias = alias.split(",");
   var x = document.getElementById("chatters");
   var h = 0;
@@ -138,7 +137,6 @@ function getOption() {
     str = str.substr(1,str.length-2);
   if (str == "")
     return;
-  console.log(str);
   setCookie("nodeNo", x.selectedIndex);
   setCookie("chataddr", str);
   callPage();
@@ -161,7 +159,6 @@ function callPage() {
   xhttp = new XMLHttpRequest();
   xhttp.open("GET", "xml/chatxml.xsl", false);
   xhttp.send(null);
-  console.log(s);  
   xsltProcessor.importStylesheet(s);
   
   myXMLHTTPRequest = new XMLHttpRequest();
@@ -215,7 +212,6 @@ function goChat(i,j) {
   if (j == 13) {
     var y = i.cloneNode();
     i.value = "";
-    console.log(y.value);
     
     callFile("chat.php?a=" + y.value);
     var x = document.getElementById("in-window");
@@ -229,6 +225,14 @@ function clearChat() {
   var x = document.getElementById("in-window");
   x.innerHTML = "";
   return;
+}
+
+function getZip(address) {
+  geocoder = new google.maps.Geocoder();
+  geocoder.geocode({ 'address': address }, function(results, status) {
+    results[0].address_components[6].long_name;
+    setCookie("zip_code", results[0].address_components[6].long_name);
+  });
 }
 
 function honey() {
@@ -265,7 +269,7 @@ function collectXML (position) {
     autocomplete = new google.maps.places.Autocomplete(input);
 
     // Specify just the place data fields that you need.
-    autocomplete.setFields(['place_id', 'geometry', 'name', 'formatted_address']);
+    autocomplete.setFields(['address_components', 'geometry', 'name', 'formatted_address']);
   //}
   var infowindow = new google.maps.InfoWindow();
   var infowindowContent = document.getElementById('infowindow-content');
@@ -306,18 +310,19 @@ function collectXML (position) {
       infowincontent.appendChild(text);
       geocoder = new google.maps.Geocoder();
       geocoder.geocode({ 'address': address }, function(results, status) {
+
         if (status == google.maps.GeocoderStatus.OK) {
           //map.setCenter(results[0].geometry.location);
           var marker = new google.maps.Marker({
             map: map,
             position: results[0].geometry.location
           });
+         getZip(address);
           var x = encodeURI(biz);
           var y = encodeURI(no);
           marker.addListener('click', function() {
-            
            var infowindow = new google.maps.InfoWindow({
-              content: "<p onclick=focusStore(\"" + x + "\",\"" + y + "\");><u>" + name + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br><u>" + biz + "</u>&nbsp;&nbsp;&nbsp;&nbsp;<br>"
+              content: '<p onclick="focusStore(\'' + x + '\',\'' + y + '\',' + getCookie("zip_code") + ');"><u>' + name + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<br><u>' + biz + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
   
             });
             infowindow.open(map, marker);
@@ -329,20 +334,20 @@ function collectXML (position) {
   });
 }
 
-function focusStore(name,no) {
+function focusStore(name,no,zip) {
   var request = window.ActiveXObject ?
     new ActiveXObject('Microsoft.XMLHTTP') :
     new XMLHttpRequest;
 
   request.onreadystatechange = function() {
     if (request.readyState == 4) {
-      
     }
   };
 
-  request.open('GET', "getstore.php?a=" + name + "&b=" + no, true);
+  request.open('GET', "getstore.php?a=" + name + "&b=" + no + "&c=" + zip, true);
   request.send(null);
-      menuList('menu.php');
+  menuList('menu.php');
+  
 }
 
 function downloadUrl(url, callback) {
@@ -392,17 +397,14 @@ function mapView() {
     f.style.style = "margin-top:" + t.style.height + "px;width:100%;z-index:-1;background:url('blacksand.jpg');position:static;";
     p.index = "-1";
 
-    //t.style = "position:relative;z-index:1;";
     t.parentNode.style = "z-index:-1;height:100%;overflow:none;position:fixed;width:100%;";
   }
   else {
     f.style.index = "-1";
     f.style.style = "margin-top:105px;width:100%;z-index:1;background:url('blacksand.jpg');position:static;";
     p.index = "1";
-    //t.style = "position:relative;z-index:-2;";
     t.parentNode.style = "z-index:1;height:100%;overflow:none;position:fixed;width:100%;";
   }
-  //t.style.height = (0.50 * screen.height) + "px";
 }
 
 function callback(results, status) {
@@ -508,15 +510,6 @@ function move() {
     }
   }
 }
-//if (document.readyState === 'loading')
-
-  function fixheight() {
-    var t = document.getElementsByClassName("horizontal-mobi")[1];
-        
-    var h = t.childNodes[1];
-    //if (h.style.height !== undefined)
-    console.log(h);
-  }
 
   function menuslide() {
     if (document.getElementById('menu').style.display == "table-cell") {
@@ -532,7 +525,6 @@ function move() {
   }
 
   function fillMenu(i) {
-    console.log(i);
     document.getElementById("menu-article").innerHTML = "";
     //i.parseFromString
     
@@ -585,7 +577,6 @@ function move() {
   function editFields(vthis) {
     var t = vthis;
     var pn = vthis.getAttribute("name");
-    console.log(pn + " " + t.innerHTML);
     callFile("toorders.php?c=u&b=" + pn + "&a=" + t.innerHTML);
       
   }

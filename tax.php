@@ -7,11 +7,13 @@
     }
     
     
-    foreach (scandir("tax") as $file) {
-        $query = "LOAD DATA LOCAL INFILE ('" . $file . "') INTO TABLE names FIELDS TERMINATED BY ',' ENCLOSED BY '".chr(34)."' LINES TERMINATED BY '\n' IGNORE 1 ROWS";
-        if ($conn->query($query) === TRUE) { 
-            // data imported
-        }
+    foreach (scandir("tax/") as $file) {
+        echo $file . " ";
+        if ($file == '.' || $file == '..')
+            continue;
+        $query = 'LOAD DATA INFILE \'c:/xampp/htdocs/adrs/tax/' . $file . '\' INTO TABLE adrs.taxes FIELDS TERMINATED BY \',\' ENCLOSED BY \'' . chr(34) . '\' LINES TERMINATED BY \'\n\' IGNORE 1 ROWS';
+        $f = $conn->query($query) or die (mysqli_error($conn));
+        
     }
 ?>
         

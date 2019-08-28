@@ -1,78 +1,110 @@
 <?php
+
+    function getTax($con) {
+
+        $sql = 'SELECT EstimatedCombinedRate AS taxed FROM taxes WHERE ZipCode = ' . $_COOKIE['zip_code'];
+
+        $tax = $con->query($sql);
+
+        $row = $tax->fetch_assoc();
+
+        setcookie("taxes", $row['taxed']);
+
+    }
+    
     function shortListOut() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
     
+        getTax($conn);
+        
         $sql ='SELECT preorders.order_id, preorders.id, preorders.store_name, preorders.needed_by, preorders.action, preorders.customer, preorders.store_no, customer FROM preorders WHERE customer = "' . $_COOKIE['myemail'] . '" && store_name = "' . $_COOKIE['store_name'] . '"';
-        $tables = '<table style="color:lightgray;border-right:1px solid lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Est.</th><th>By Day</th><th>Action</th></tr>';
+        $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Est.</th><th>By Day</th><th>Action</th></tr>';
         
         $result = $conn->query($sql) or die(mysqli_error($conn));
 
-        shortList($result, $tables);    
+        shortList($result, $tables); 
+        $conn->close();
+        
     }
     
     function shortListIn() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
+        getTax($conn);
+        
         $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no';
-        $tables = '<table style="color:lightgray;border-right:1px solid lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
+        $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
 
-        shortList($result, $tables);        
+        shortList($result, $tables); 
+        $conn->close();       
     }
     
     function listHold() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
+        getTax($conn);
+        
         $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.needed_by, preorders.action, preorders.store_no, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no && action = 0';
-        $tables = '<table style="color:lightgray;border-right:1px solid lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
+        $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
 
         
-        shortList($result, $tables);          
+        shortList($result, $tables); 
+        $conn->close();         
     }
     
     function listOrdered() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
+        getTax($conn);
+        
         $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.needed_by, preorders.action, preorders.store_no, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no && action = 1';
-        $tables = '<table style="color:lightgray;border-right:1px solid lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
+        $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
 
         
-        shortList($result, $tables);      
+        shortList($result, $tables); 
+        $conn->close();     
     }
     
     function listCanceled() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
+        getTax($conn);
+        
         $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.needed_by, preorders.action, preorders.store_no, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no && action = 2';
-        $tables = '<table style="color:lightgray;border-right:1px solid lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
+        $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
 
         
-        shortList($result, $tables);    
+        shortList($result, $tables); 
+        $conn->close();   
     }
     
     function listDelivered() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
+        getTax($conn);
+        
         $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.needed_by, preorders.action, preorders.customer, preorders.store_no, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no && action = 3';
-        $tables = '<table style="color:lightgray;border-right:1px solid lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
+        $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
 
         
-        shortList($result, $tables);          
+        shortList($result, $tables); 
+        $conn->close();         
     }
 
     function shortList($results, $table) {
@@ -105,7 +137,7 @@
                             $s3 = " selected";
                             break;
                         }
-                        $table .= '<td>';
+                        $table .= '<td style="border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
                         $table .= '<select onclick="setCookie(\'orderid\',' . $row['order_id'] . ');setCookie(\'store_name\',\'' . $row['store_name'] . '\');setCookie(\'store_num\',' . $row['store_no'] . ')" onchange="editStack(this)" id=\'sn' . $row['id'] . '\'>';
                         $table .= '<option' . $s0 . ' value=\'0\'>On Hold</option>';
                         $table .= '<option' . $s1 . ' value=\'1\'>Ordered</option>';
@@ -116,7 +148,7 @@
                         $bool = 1;
                     }
                     else
-                        $table .= '<td onclick="setCookie(\'orderid\',' . $row['order_id'] . ');setCookie(\'e\',\'' . $row['customer'] . '\');getInbox(\'a\',\'' . $row['order_id'] . '\')">' . $v . '</td>';
+                        $table .= '<td style="border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px" onclick="setCookie(\'orderid\',' . $row['order_id'] . ');setCookie(\'e\',\'' . $row['customer'] . '\');getInbox(\'a\',\'' . $row['order_id'] . '\')">' . $v . '</td>';
                 }
                 $table .= '</tr>';
             }
@@ -133,6 +165,7 @@
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
+        $conn->close();
     }
     
     function deleteItem() {
@@ -143,25 +176,31 @@
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
+        $conn->close();
     }
 
     function myOrders() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
     
-        $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE customer = "' . $_COOKIE['e'] . '" && order_id = "' . $_COOKIE['orderid'] . '"';
+        getTax($conn);
+        
+        $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE customer = "' . $_COOKIE['myemail'] . '" && order_id = "' . $_COOKIE['orderid'] . '"';
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
         $info = "<table style='text-align:center;font-size:13px;color:lightgray;border-right:1px solid red' id='order'><tr><td># &nbsp;</td><td>Est.</td><td>Product</td><td>Qu</td><td>Price</td><td>Tax</td><td>Total</td><td>TOA</td><td>Need By</td><td>Created</td><td>Action</td><td>Delete</td></tr>";
         
         getTable($result, $info);
+        $conn->close();
     }
     
     function outOrders() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
     
+        getTax($conn);
+        
         $sql = 'SELECT order_id, id, customer, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE order_id != "' . $_COOKIE['orderid'] . '" && store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'] . '"';
         
         $result = $conn->query($sql) or die("GAAAHHHH");
@@ -169,6 +208,7 @@
         $info = "<table style='text-align:center;font-size:13px;color:lightgray;border-right:1px solid red' id='order'><tr><td># &nbsp;</td><td>Customer</td><td>Product</td><td>Qu</td><td>Price</td><td>Tax</td><td>Total</td><td>TOA</td><td>Need By</td><td>Created</td><td>Action</td><td>Delete</td></tr>";
         
         getTable($result, $info);
+        $conn->close();
     }
     
     function getTable($results, $info) {
@@ -180,6 +220,7 @@
             $indv_price = 0;
             $quantity = 0;
             $total = 0;
+            $tax = 0;
             foreach ($row as $k => $v) {
                 $edit = "";
                 if ($k === "id")
@@ -225,7 +266,7 @@
                     $act3 = "selected ";
                 }
                 if ($k === "action") {
-                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray">';
+                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
                     $info .= '<select onclick="setCookie(\'store_num\',' . $row['store_no'] . ');setCookie(\'store_name\',' . $row['store_name'] . ');setCookie(\'id\',' . $row['id'] . ');setCookie(\'e\',\'' . $row['customer'] . '\')" onchange="editDrop(this)" id=\'sn' . $row['id'] . '\'>';
                     $info .= '<option ' . $act0 . 'value=\'0\'>On Hold</option>';
                     $info .= '<option ' . $act1 . 'value=\'1\'>Ordered</option>';
@@ -234,24 +275,24 @@
                     $info .= '</select>';
                 }
                 else if ($k === "indv_price") {
-                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray">';
+                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
                     $info .= '$' . $row['indv_price'];
                 }
                 else if ($k === "tax") {
-                    $total = $row['indv_price'] * $row['quantity'] * $row['tax'];
-                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray">';
-                    $info .= '$' . $total;
+                    $tax = $row['indv_price'] * $row['quantity'] * $row['tax'];
+                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
+                    $info .= '$' . $tax;
                 }
                 else if ($k === "total_price") {
-                    $total = $row['indv_price'] * $row['quantity'];
-                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray">';
+                    $total = $row['indv_price'] * $row['quantity'] + $tax;
+                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
                     $info .= '$' . $total;
                 }
                 else if ($k === "store_no") {
-                    $info .= '<td onclick="setCookie(\'id\',' . $row['id'] . ');this.style.display=\'none\';getInbox(\'x\')" style="cursor:pointer;background:gray;color:lightgray;border:1px solid lightgray"><img style="width:25px" src="icons/recycling-bin.png"/>';
+                    $info .= '<td onclick="setCookie(\'id\',' . $row['id'] . ');this.style.display=\'none\';getInbox(\'x\')" style="cursor:pointer;background:gray;color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px"><img style="width:25px" src="icons/recycling-bin.png"/>';
                 }
                 else {
-                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray"' . $edit .'>';
+                    $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px"' . $edit .'>';
                     $info .= $v;
                 }
                 $info .= '</td>';
@@ -279,6 +320,7 @@ function updateRows() {
     echo $sql;
 
     $conn->query($sql) or die("AGGHHH");
+    $conn->close();
 
 }
 
@@ -287,7 +329,6 @@ function updateRow() {
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
     $sql = "";
-    
     
     if ($_GET['b'] == "action") {
         $f = "";
@@ -305,6 +346,7 @@ function updateRow() {
 
     $conn->query($sql) or die(mysqli_error($conn));
     
+    $conn->close();
 
 }
 
@@ -322,12 +364,15 @@ function countOrders() {
     
     setcookie("orders", $row['MAX(order_id)'] + 1);
 
+    $conn->close();
 }
 
 function getOrder() {
 
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
+    getTax($conn);
+        
     $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action, store_no, customer FROM preorders WHERE order_id = ' . $_COOKIE['orderid'] . ' && store_no = ' . $_COOKIE['store_num'] . ' && store_name = "' . $_COOKIE['store_name'] . '"';
     
     $result = $conn->query($sql) or die(mysqli_error($conn));
@@ -336,6 +381,7 @@ function getOrder() {
         
     getTable($result, $info);
     
+    $conn->close();
 }
 
 countOrders();

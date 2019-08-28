@@ -1,5 +1,17 @@
 <?php
 
+function getTax($con) {
+    
+    $sql = 'SELECT EstimatedCombinedRate AS taxed FROM taxes WHERE ZipCode = ' . $_COOKIE['zip_code'];
+
+    $tax = $con->query($sql);
+
+    $row = $tax->fetch_assoc();
+
+    setcookie("taxes", $row['taxed']);
+
+}
+
 function makeMyFile($cnxn) {
     $temp = 0;
     
@@ -33,7 +45,7 @@ function makeMyFile($cnxn) {
 if ($_COOKIE['login'] != "true")
     header("Location: ./index.php");
 $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
-    
+
 setcookie("store"," from stores!");
 
 $results = "";
@@ -42,23 +54,25 @@ $sql = "SELECT franchise.id, franchise.store_name, ad_revs.store_creditor, franc
 
 $results = $conn->query($sql);
 
-    if ($results->num_rows > 0) {
-        $rows = $results->fetch_assoc();
-        setcookie("franchise_id",$rows['id']);
-        setcookie("store",$rows['store_name']);
-        setcookie("store_no",$rows['store_no']);
-        setcookie("owner_id",$rows['owner_id']);
-        if (strlen($rows['email']) == 0)
-            setcookie("store_id","");
-        else 
-            setcookie("store_id",$rows['email']);
-        setcookie("contact",$rows['store_creditor']);
-        setcookie("contact_alias",$rows['alias']);
-        makeMyFile($conn);
-    }
-    else {
-        setcookie("store","from many stores!");
-    }
+if ($results->num_rows > 0) {
+    $rows = $results->fetch_assoc();
+    setcookie("franchise_id",$rows['id']);
+    setcookie("store",$rows['store_name']);
+    setcookie("store_no",$rows['store_no']);
+    setcookie("owner_id",$rows['owner_id']);
+    if (strlen($rows['email']) == 0)
+        setcookie("store_id","");
+    else 
+        setcookie("store_id",$rows['email']);
+    setcookie("contact",$rows['store_creditor']);
+    setcookie("contact_alias",$rows['alias']);
+    makeMyFile($conn);
+    getTax($conn);
+    
+}
+else {
+    setcookie("store","from many stores!");
+}
     $results->close();
 $conn->close();
 
