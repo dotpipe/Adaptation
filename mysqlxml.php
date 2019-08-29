@@ -6,7 +6,7 @@ $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or
 
 $affectedRow = 0;
 if (!file_exists('newusers.xml'))
-    file_put_contents("newusers.xml", "<?xml version='1.0'?><markers></markers>");
+    file_put_contents("newusers.xml", "<?xml version='1.0'?><users></users>");
     
 $xml = simplexml_load_file("newusers.xml");
 
@@ -58,6 +58,7 @@ Insert XML Data to MySql Table Output
 if ($affectedRow > 0) {
     $message = $affectedRow . " records inserted";
     echo $message;
+    file_put_contents("newusers.xml", "<?xml version=\'1.0\'?><users></users>");
 }
 header("Location: ./index.php")
 ?>

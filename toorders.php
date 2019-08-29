@@ -18,7 +18,7 @@
     
         getTax($conn);
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.store_name, preorders.needed_by, preorders.action, preorders.customer, preorders.store_no, customer FROM preorders WHERE customer = "' . $_COOKIE['myemail'] . '" && store_name = "' . $_COOKIE['store_name'] . '"';
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.store_name, preorders.needed_by, preorders.action, preorders.customer, preorders.store_no, customer FROM preorders WHERE customer = "' . $_COOKIE['myemail'] . '"';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Est.</th><th>By Day</th><th>Action</th></tr>';
         
         $result = $conn->query($sql) or die(mysqli_error($conn));
@@ -34,7 +34,7 @@
 
         getTax($conn);
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no';
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (preorders.store_name = franchise.store_name || preorders.store_no = preorders.store_no) && (ad_revs.username = franchise.owner_id || ad_revs.username = franchise.email) && ad_revs.username = "' . $_COOKIE['myemail'] . '"';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
@@ -49,7 +49,7 @@
 
         getTax($conn);
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.needed_by, preorders.action, preorders.store_no, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no && action = 0';
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = "' . $_COOKIE['store_name'] . '" && franchise.store_no = ' . $_COOKIE['store_num'] . ') && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 0';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
@@ -65,7 +65,7 @@
 
         getTax($conn);
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.needed_by, preorders.action, preorders.store_no, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no && action = 1';
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = "' . $_COOKIE['store_name'] . '" && franchise.store_no = ' . $_COOKIE['store_num'] . ') && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 1';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
@@ -81,7 +81,7 @@
 
         getTax($conn);
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.needed_by, preorders.action, preorders.store_no, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no && action = 2';
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = "' . $_COOKIE['store_name'] . '" && franchise.store_no = ' . $_COOKIE['store_num'] . ') && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 2';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
@@ -97,7 +97,7 @@
 
         getTax($conn);
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.needed_by, preorders.action, preorders.customer, preorders.store_no, preorders.store_name FROM franchise, ad_revs, preorders WHERE customer != "' . $_COOKIE['myemail'] . '" && franchise.store_name = "' . $_COOKIE['store_name'] . '" && (franchise.store_name = preorders.store_name) && franchise.store_no = preorders.store_no && action = 3';
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = "' . $_COOKIE['store_name'] . '" && franchise.store_no = ' . $_COOKIE['store_num'] . ') && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 3';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
 
         $result = $conn->query($sql) or die(mysqli_error($conn));
@@ -116,12 +116,14 @@
                 $table .= '<tr>';
                 $oid[] = Array($row['store_name'] => $row['order_id']);
                 $bool = 0;
+                if ($_GET['c'] == 'li' && $row['customer'] == $_COOKIE['myemail'])
+                    continue;
                 foreach ($row as $k => $v) {
-                    if ($k === "id")
+                    if ($k == "id")
                         continue;
-                    if ($bool === 1)
+                    if ($bool == 1)
                         continue;
-                    if ($k === "action") {
+                    if ($k == "action") {
                         $s0 = ""; $s1 = ""; $s2 = ""; $s3 = "";
                         switch ($v) {
                             case 0:
@@ -148,7 +150,7 @@
                         $bool = 1;
                     }
                     else
-                        $table .= '<td style="border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px" onclick="setCookie(\'orderid\',' . $row['order_id'] . ');setCookie(\'e\',\'' . $row['customer'] . '\');getInbox(\'a\',\'' . $row['order_id'] . '\')">' . $v . '</td>';
+                        $table .= '<td style="border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px" onclick="setCookie(\'orderid\',' . $row['order_id'] . ');setCookie(\'store_name\',\'' . $row['store_name'] . '\');setCookie(\'store_num\',' . $row['store_no'] . ');getInbox(\'a\',' . $row['order_id'] . ')">' . $v . '</td>';
                 }
                 $table .= '</tr>';
             }
@@ -161,7 +163,7 @@
         
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
     
-        $sql = 'DELETE FROM preorders WHERE store_name = "' . $_COOKIE['store_name'] . '" && store_no = ' . $_COOKIE['store_num'] . '" && order_id=="' . $_COOKIE['orderid'] . '" && customer=="' . $_COOKIE['e'] . '"';
+        $sql = 'DELETE FROM preorders WHERE store_name = "' . $_COOKIE['store_name'] . '" && store_no = ' . $_COOKIE['store_num'] . '" && order_id = ' . $_COOKIE['orderid'];
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
@@ -172,7 +174,7 @@
         
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
     
-        $sql = 'DELETE FROM preorders WHERE id = ' . $_COOKIE['id'];
+        $sql = 'DELETE FROM preorders WHERE id  = ' . $_COOKIE['id'];
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
@@ -185,7 +187,7 @@
     
         getTax($conn);
         
-        $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE customer = "' . $_COOKIE['myemail'] . '" && order_id = "' . $_COOKIE['orderid'] . '"';
+        $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE customer = "' . $_COOKIE['myemail'] . '" && order_id = ' . $_COOKIE['orderid'];
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
@@ -201,7 +203,7 @@
     
         getTax($conn);
         
-        $sql = 'SELECT order_id, id, customer, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE order_id != "' . $_COOKIE['orderid'] . '" && store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'] . '"';
+        $sql = 'SELECT order_id, id, customer, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE order_id != "' . $_COOKIE['orderid'] . '" && store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_num'] . '"';
         
         $result = $conn->query($sql) or die("GAAAHHHH");
         
@@ -216,16 +218,16 @@
         $row = [];
     
         while ($row = $results->fetch_assoc()) {
-            $info .= '<tr name="' . $row['id'] . '" onfocus="setCookie(\'e\',\'' . $row['customer'] . '\')">';
+            $info .= '<tr name="' . $row['id'] . '">';
             $indv_price = 0;
             $quantity = 0;
             $total = 0;
             $tax = 0;
             foreach ($row as $k => $v) {
                 $edit = "";
-                if ($k === "id")
+                if ($k == "id")
                     continue;
-                if ($k === "customer")
+                if ($k == "customer")
                     continue;
                 switch($k) {
                     case "action":
@@ -249,46 +251,46 @@
                     case "store_name":
                     break;
                     default:
-                        $edit = ' onclick="this.contentEditable=\'true\';setCookie(\'e\',\'' . $row['customer'] . '\')" onblur="this.contentEditable=\'false\';editFields(this,\'' . $row['id'] . '\')"';
+                        $edit = ' onclick="this.contentEditable=\'true\';" onblur="this.contentEditable=\'false\';editFields(this,\'' . $row['id'] . '\')"';
                     break;
                 }
                 $act0 = ""; $act1 = ""; $act2 = ""; $act3 = ""; 
-                if ($k === "action" && $v == 0) {
+                if ($k == "action" && $v = 0) {
                     $act0 = "selected ";
                 }
-                else if ($k === "action" && $v == 1) {
+                else if ($k == "action" && $v = 1) {
                     $act1 = "selected ";
                 }
-                else if ($k === "action" && $v == 2) {
+                else if ($k == "action" && $v = 2) {
                     $act2 = "selected ";
                 }
-                else if ($k === "action" && $v == 3) {
+                else if ($k == "action" && $v = 3) {
                     $act3 = "selected ";
                 }
-                if ($k === "action") {
+                if ($k == "action") {
                     $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
-                    $info .= '<select onclick="setCookie(\'store_num\',' . $row['store_no'] . ');setCookie(\'store_name\',' . $row['store_name'] . ');setCookie(\'id\',' . $row['id'] . ');setCookie(\'e\',\'' . $row['customer'] . '\')" onchange="editDrop(this)" id=\'sn' . $row['id'] . '\'>';
+                    $info .= '<select onclick="setCookie(\'store_num\',' . $row['store_no'] . ');setCookie(\'store_name\',' . $row['store_name'] . ');setCookie(\'id\',' . $row['id'] . ');" onchange="editDrop(this)" id=\'sn' . $row['id'] . '\'>';
                     $info .= '<option ' . $act0 . 'value=\'0\'>On Hold</option>';
                     $info .= '<option ' . $act1 . 'value=\'1\'>Ordered</option>';
                     $info .= '<option ' . $act2 . 'value=\'2\'>Canceled</option>';
                     $info .= '<option ' . $act3 . 'value=\'3\'>Delivered</option>';
                     $info .= '</select>';
                 }
-                else if ($k === "indv_price") {
+                else if ($k == "indv_price") {
                     $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
                     $info .= '$' . $row['indv_price'];
                 }
-                else if ($k === "tax") {
+                else if ($k == "tax") {
                     $tax = $row['indv_price'] * $row['quantity'] * $row['tax'];
                     $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
                     $info .= '$' . $tax;
                 }
-                else if ($k === "total_price") {
+                else if ($k == "total_price") {
                     $total = $row['indv_price'] * $row['quantity'] + $tax;
                     $info .= '<td name="' . $k . '" xid="' . $row['id'] . '" style="color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px">';
                     $info .= '$' . $total;
                 }
-                else if ($k === "store_no") {
+                else if ($k == "store_no") {
                     $info .= '<td onclick="setCookie(\'id\',' . $row['id'] . ');this.style.display=\'none\';getInbox(\'x\')" style="cursor:pointer;background:gray;color:lightgray;border-right:1px solid lightgray;border-bottom:0px;border-top:0px;cell-spacing:0px"><img style="width:25px" src="icons/recycling-bin.png"/>';
                 }
                 else {
@@ -310,12 +312,12 @@ function updateRows() {
     $sql = "";
 
     $f = "";
-    if ($_GET['b'] === "3") 
+    if ($_GET['b'] == "3") 
         $f = ', delivered = CURRENT_TIMESTAMP';
     else
         $f = ', delivered = NULL';
     $g = (int)$_GET['b'];
-    $sql = 'UPDATE preorders SET action = ' . $g . $f . ' WHERE store_name = "' . $_COOKIE['store_name'] . '" && store_no = ' . $_COOKIE['store_num'] . ' && order_id = ' . $_COOKIE['orderid'];
+    $sql = 'UPDATE preorders SET action  = ' . $g . $f . ' WHERE store_name = "' . $_COOKIE['store_name'] . '" && store_no = ' . $_COOKIE['store_num'] . ' && order_id = ' . $_COOKIE['orderid'];
 
     echo $sql;
 
@@ -330,19 +332,19 @@ function updateRow() {
 
     $sql = "";
     
-    if ($_GET['b'] == "action") {
+    if ($_GET['b'] = "action") {
         $f = "";
-        if ($_GET['a'] === "3")
+        if ($_GET['a'] == "3")
             $f = ', delivered = CURRENT_TIMESTAMP';
         else
             $f = ', delivered = null';
         $g = (int)$_GET['a'];
-        $sql = 'UPDATE preorders SET action = ' . $g . $f . ' WHERE id = ' . $_COOKIE['id'];
+        $sql = 'UPDATE preorders SET action  = ' . $g . $f . ' WHERE id  = ' . $_COOKIE['id'];
     }
     else if (is_int($_GET['a']))
-        $sql = 'UPDATE preorders SET ' . $_GET['b'] . ' = ' . $_GET['a'] . ' WHERE id = ' . $_COOKIE['id'];
+        $sql = 'UPDATE preorders SET ' . $_GET['b'] . '  = ' . $_GET['a'] . ' WHERE id  = ' . $_COOKIE['id'];
     else
-        $sql = 'UPDATE preorders SET ' . $_GET['b'] . ' = "' . $_GET['a'] . '" WHERE id = ' . $_COOKIE['id'];
+        $sql = 'UPDATE preorders SET ' . $_GET['b'] . ' = "' . $_GET['a'] . '" WHERE id  = ' . $_COOKIE['id'];
 
     $conn->query($sql) or die(mysqli_error($conn));
     
@@ -354,7 +356,7 @@ function countOrders() {
 
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-    $sql = 'SELECT MAX(order_id) FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_num'] . ' && customer = "' . $_COOKIE['e'] . '"';
+    $sql = 'SELECT MAX(order_id) FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_num'];
 
     $results = $conn->query($sql) or die(mysqli_error($conn));
 
@@ -383,8 +385,6 @@ function getOrder() {
     
     $conn->close();
 }
-
-countOrders();
 
 if (isset($_GET['c']) && $_GET['c'] == 'd')
     listDelivered();

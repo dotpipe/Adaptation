@@ -2,13 +2,13 @@
 
 function updateChatFile($con) {
     $filename = $_COOKIE['chatfile'];
-    $sql = 'UPDATE chat SET chat.altered = chat.last, chat.checked = 0, last = CURRENT_TIMESTAMP WHERE filename = "' . $filename . '"';
+    $sql = 'UPDATE chat SET chat.altered = chat.last, chat.checked = 0, last = CURRENT_TIMESTAMP WHERE filename == "' . $filename . '"';
     $results = $con->query($sql);
 }
 
 $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-    $results = $conn->query('SELECT alias FROM ad_revs WHERE username = "' . $_COOKIE['chataddr'] . '"');
+    $results = $conn->query('SELECT alias FROM ad_revs WHERE username == "' . $_COOKIE['chataddr'] . '"');
     
     $c = "";
     if ($results->num_rows > 0) {
@@ -16,7 +16,7 @@ $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or
         $c = $row['alias'];
     }
     
-    $query_res = $conn->query('SELECT filename FROM chat WHERE ((aim = "' . $_COOKIE['chataddr'] . '" && start = "' . $_COOKIE['myemail'] . '") || (aim = "' . $_COOKIE['myemail'] . '" && start = "' . $_COOKIE['chataddr'] . '"))');
+    $query_res = $conn->query('SELECT filename FROM chat WHERE ((aim == "' . $_COOKIE['chataddr'] . '" && start == "' . $_COOKIE['myemail'] . '") || (aim == "' . $_COOKIE['myemail'] . '" && start == "' . $_COOKIE['chataddr'] . '"))');
     $b = "";
     if ($query_res->num_rows > 0) {
         $row = $query_res->fetch_assoc();

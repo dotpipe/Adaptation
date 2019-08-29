@@ -2,7 +2,7 @@
 
     function getTax($conn) {
     
-        $sql = 'SELECT EstimatedCombinedRate FROM taxes WHERE ZipCode = "' . $_COOKIE['zip_code'] . '"';
+        $sql = 'SELECT EstimatedCombinedRate FROM taxes WHERE ZipCode == "' . $_COOKIE['zip_code'] . '"';
         //echo $sql;
         $tax = $conn->query($sql) or die(mysqli_error($conn));
     
@@ -16,7 +16,7 @@
 
         setcookie("orders",0);
         
-        $sql = 'SELECT MAX(order_id) AS max FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'];
+        $sql = 'SELECT MAX(order_id) AS max FROM preorders WHERE store_name == "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'];
     
         $results = $conn->query($sql) or die("AGGHHH");
     

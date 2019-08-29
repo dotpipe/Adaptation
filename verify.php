@@ -23,8 +23,6 @@ $results = $conn->query('SELECT store_uniq, store_creditor, username, password, 
             echo "FALSE1";
             header("Location: ./");
         }
-        session_destroy();
-        //unset($HTTP_RAW_POST_DATA);
         unset($_COOKIE);
         
         if ($_POST['remember'] == "checked")
