@@ -101,6 +101,7 @@ function listConvo() {
   x.options[0] = new Option("You have " + alias.length + " people to chat with!","");
 
   if (alias.length == 1) {
+    alias = alias[0].substr(1, alias[0].length-2);
     x.options[1] = new Option(alias,alias);
   }
   else {
