@@ -2,37 +2,33 @@
 	header("X-Content-Type-Options: nosniff");
 	header("Content-Type: text/html");
 	header("Cache-Control: no-cache");
-	session_start();
-	global $chats, $alias;
 	
+	global $chats, $alias;
+	if (!isset($_SESSION))
+		session_start();
+	setcookie("time",time());
+
 	if (!isset($_COOKIE['vartime']))
 		setcookie("vartime", 1);
 	else if (isset($_COOKIE['remember']))
 		setcookie("vartime",24*60);
 	else
 		setcookie("vartime",1);
-	//if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') 
-	  //  header("Location: https://www.diads.co/");
-	
-	$Storename[] = "Sal's Party Store";
-	$Storename[] = "Hal's Example Store";
-	$Storename[] = "Hale-Bopp Comedty Shop Examples";
-	
-	$Storeslogan[] = "Next to the Chicken House!";
-	$Storeslogan[] = "Behind the Chicken House!";
-	$Storeslogan[] = "Behind the Moon!";
-	
-	// array_merge_recursive()
-	
-	$serial[0][0] = "134123";
-	$serial[0][1] = "1342";
-	$serial[0][2] = "13413";
-	$serial[0][3] = "34123";
-	$serial[0][4] = "13412";
-	$serial[0][5] = "1343";
-	$serial[1][0] = "13123";
-	$serial[1][1] = "13423";
-	$serial[2][0] = "14123";
+		
+	if (isset($_SESSION['ads'])) {
+		foreach ($_SESSION['ads'] as $k => $v) {
+			if ($k === "store_name")
+				$store_name[] = $v;
+		}
+		foreach ($_SESSION['ads'] as $k => $v) {
+			if ($k === "slogan")
+				$store_slogan[] = $v;
+		}
+		foreach ($_SESSION['ads'] as $k => $v) {
+			if ($k === "serial")
+				$serial[] = $v;
+		}
+	}
 	
 	?>
 	<!DOCTYPE html>
@@ -254,7 +250,7 @@
 	  <meta content="Diads is your best place to advertise. Get Followers, Preordering, Reviews from customers and much more." name="description">
 	</head>
 	
-	<body style="background:url('blacksand.jpg');" onload="move();" onunload="">
+	<body style="background:url('blacksand.jpg');" onload="move();menuslide();mapView();mapView();" onunload="">
 	<!-- Loading Progress bar -->
 	<div id="myProgress" style="position:fixed">
 	  <div id="myBar"></div>
@@ -289,6 +285,8 @@
 	  $menu .= '<ul onclick="menuList(\'preorder.php\');">Preorder</ul>';
 	  $menu .= '<ul onclick="menuList(\'inbox.php\');">Inbox</ul>';
 	  $menu .= '<ul onclick="menuList(\'myorders.php\');">My Orders</ul>';
+	  if (isset($_COOKIE) && $_COOKIE['store_cnt'] > 0)
+	    $menu .= '<ul onclick="menuList(\'adsheet.php\');">My Ads</ul>';
 	  $menu .= '<ul><a href="nologin.php" style="color:white;text-decoration:none;font-size:18px;">Logout</a></ul>';
 	  $menu .= '<ul>Logged in as ' . $_COOKIE['myemail'] . '</ul></li>';
 	}
@@ -310,7 +308,7 @@
 	  </div>
 	</section>
 	
-	<section id="page" style="background:url('blacksand.jpg');width:100%">
+	<section id="page" style="z-index:-1;background:url('blacksand.jpg');width:100%">
 		<div class="horizontal-mobi">
 			<div class="table-mobi" style="width:100%;">
 				<dd>
@@ -322,21 +320,21 @@
 	
 	<section id="following" style="background:url('blacksand.jpg');margin-top:95px">
 	
-	<?php for ($j = 0 ; $j < count($Storename) ; $j++) { ?>
+	<?php if (isset($Storename)) { for ($j = 0 ; $j < count($Storename) ; $j++) { ?>
 	
 	    <div class="horizontal-mobi" style="width:100%;background:opacity(0);">
 	
 	     <div class="table-mobi" style="position:static;">
 	
 	<?php for ($i = 0 ; $i < count($serial[$j]) ; $i++) { ?>
-	    <article serial="<?=$serial[$j][$i]?>" class="card" style="margin-left:<?=($i)*750?>px;background:opacity(0);width:750px;border-radius: 10px;border: 5px solid lightgray;">
+	    <article serial="<?=$serial[$j]?>" class="card" style="margin-left:<?=($i)*750?>px;background:opacity(0);width:750px;border-radius: 10px;border: 5px solid lightgray;">
 	        <b><i><?=$Storename[$j]?></i></b>
 	        <hr style="height:1px;width:750px">
 	        <b><?=$Storeslogan[$j]?></b><br>
 	        &#11088;&#11088;&#11088;&#11088;&#127775;<br>
 	        <b style="z-index:2;"><i>Review Now! !</i>
 	        <?php for ($k = 0 ; $k < 5 ; $k++) { ?>
-	          <c class="star" onclick="javascript:confirm_star((<?=$k?>+1),<?=$serial[$j][$i]?>)">&#9734;</c>
+	          <c class="star" onclick="javascript:confirm_star((<?=$k?>+1),<?=$serial[$j]?>)">&#9734;</c><br>
 	        <?php } ?>
 	        </b>
 	    </article>
@@ -347,7 +345,8 @@
 	
 	<?php 
 	}
-	?>
+}
+?>
 	</section>
 	</body>
 	</html>

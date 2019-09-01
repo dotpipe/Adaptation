@@ -116,7 +116,7 @@
                 $table .= '<tr>';
                 $oid[] = Array($row['store_name'] => $row['order_id']);
                 $bool = 0;
-                if ($_GET['c'] == 'li' && $row['customer'] == $_COOKIE['myemail'])
+                if ($_GET['c'] = 'li' && $row['customer'] = $_COOKIE['myemail'])
                     continue;
                 foreach ($row as $k => $v) {
                     if ($k == "id")

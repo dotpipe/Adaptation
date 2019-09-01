@@ -4,7 +4,8 @@ $y = urldecode($_POST['email']);
 
 $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-
+if (!isset($_SESSION))
+    session_start();
 
 setcookie("login","false",time()+60*60*($_COOKIE['vartime']+1));
 $z = [];
@@ -19,11 +20,12 @@ $results = $conn->query('SELECT store_uniq, store_creditor, username, password, 
     if ($results->num_rows > 0) {
         $rows = $results->fetch_assoc();
         if (!password_verify($x, $rows['password'])) {
-            setcookie("login","false",time()+60*60*($_COOKIE['vartime']+1));
+            unset($_COOKIE);
+            //setcookie("login","false",time()+60*60*($_COOKIE['vartime']+1));
             echo "FALSE1";
             header("Location: ./");
+            exit();
         }
-        unset($_COOKIE);
         
         if ($_POST['remember'] == "checked")
             setcookie("vartime",24*60);

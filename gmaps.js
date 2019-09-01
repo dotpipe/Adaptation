@@ -79,6 +79,14 @@ function callFile(str) {
   xhttp.send();
 }
 
+function callFilePost(str) {
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("POST", str, false);
+  xhttp.send();
+  
+}
+
 function listConvo() {
   callFile("chataliases.php?c=1");
   var alias = getCookie("aliases");
@@ -86,7 +94,7 @@ function listConvo() {
   alias = alias.split(",");
   var x = document.getElementById("chatters");
   var h = 0;
-  
+  console.log(alias);
   while (x.childElementCount > h++) {
     x.removeChild(x.firstChild);
   }
@@ -180,10 +188,7 @@ function getInbox(no, data) {
     menuList("login.php");
     return;
   }
-  if (false === true) {
-    document.getElementById('menu').style.width = "600px";
-    document.getElementById('menu').style.scrollY = "hidden";
-    
+  else {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
@@ -191,8 +196,15 @@ function getInbox(no, data) {
         document.getElementById("chatpane").innerHTML = g;
       }
     };
-    xhttp.open("GET", "listorders.php?p=" + no + "&x=" + data, false);
+    xhttp.open("GET", "toads.php?c=" + no + "&p=" + data, false);
     xhttp.send();
+  }
+}
+
+function getAdSheet(no) {
+
+  if (getCookie("login") !== "true") {
+    menuList("login.php");
     return;
   }
   else {
@@ -203,7 +215,26 @@ function getInbox(no, data) {
         document.getElementById("chatpane").innerHTML = g;
       }
     };
-    xhttp.open("GET", "toorders.php?c=" + no + "&p=" + data, false);
+    xhttp.open("GET", "toads.php?c=" + no, false);
+    xhttp.send();
+  }
+}
+
+function getStores(no) {
+
+  if (getCookie("login") !== "true") {
+    menuList("login.php");
+    return;
+  }
+  else {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        g = this.response;
+        document.getElementById("storepane").innerHTML = g;
+      }
+    };
+    xhttp.open("GET", "tostores.php?c=" + no, false);
     xhttp.send();
   }
 }
@@ -583,6 +614,22 @@ function move() {
     var t = vthis;
     var pn = vthis.getAttribute("name");
     callFile("toorders.php?c=u&b=" + pn + "&a=" + t.innerHTML);
+      
+  }
+  
+  function updateRows(vthis) {
+    var t = vthis;
+    var pn = vthis.getAttribute("id");
+    var cookie = vthis.parentNode[0].innerHTML;
+    callFile("toads.php?c=up&b=" + pn + "&a=" + t.innerHTML + "&d=" + cookie);
+      
+  }
+  
+  function updateTime(vthis) {
+    var t = vthis;
+    var scookie = vthis.parentNode[0].innerHTML;
+    var tcookie = vthis.parentNode[3].innerHTML;
+    callFile("toads.php?c=uptime&a=" + t.innerHTML + "&d=" + scookie + "&e=" + tcookie);
       
   }
   
