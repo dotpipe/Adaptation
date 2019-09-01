@@ -114,6 +114,7 @@ function loadMyAds() {
     
     $stores = "";
     $ec = [];
+    
     foreach ($_SESSION['stores'] as $key => $v) {
         if (in_array(array($key => $v), $ec))
             continue;
@@ -125,7 +126,7 @@ function loadMyAds() {
         }
     }
     
-    $sql = 'SELECT serial, franchise.store_name, start, end, seen, advs.flags, url, franchise.zip, total_paid, last_paid_on, store_no, nums FROM ad_revs, franchise, advs WHERE (ad_revs.username = franchise.owner_id || franchise.email = ad_revs.username) && (' . substr($stores,4,strlen($stores)) . ') ORDER BY start ASC';
+    $sql = 'SELECT serial, franchise.store_name, start, end, seen, advs.flags, url, franchise.zip, total_paid, last_paid_on, store_no, nums FROM ad_revs, franchise, advs WHERE (ad_revs.username = franchise.owner_id || franchise.email = ad_revs.username) ' . $stores . ' ORDER BY start ASC';
     
     $res = $conn->query($sql) or die(mysqli_error($conn));
 
