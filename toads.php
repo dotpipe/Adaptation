@@ -52,6 +52,7 @@ function listAds($res) {
         
         $form .= '<tr>';
     }
+    $form .= '</table>';
     echo $form;
 }
 
@@ -112,12 +113,18 @@ function loadMyAds() {
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs") or die(mysqli_error($conn));
     
     $stores = "";
+    $ec = [];
     foreach ($_SESSION['stores'] as $key => $v) {
-        //if (is_array($v)) {
-            foreach ($v as $k => $val)
+        if (in_array(array($key => $v), $ec))
+            continue;
+        else
+            $ec[] = array($key => $v);
+        foreach ($v as $val) {
+            if (is_numeric($val))
                 $stores .= ' || (franchise.store_name = "' . $key . '" && franchise.store_no = ' . $val . ')';
-        //}
+        }
     }
+    
     $sql = 'SELECT serial, franchise.store_name, start, end, seen, advs.flags, url, franchise.zip, total_paid, last_paid_on, store_no, nums FROM ad_revs, franchise, advs WHERE (ad_revs.username = franchise.owner_id || franchise.email = ad_revs.username) && (' . substr($stores,4,strlen($stores)) . ') ORDER BY start ASC';
     
     $res = $conn->query($sql) or die(mysqli_error($conn));

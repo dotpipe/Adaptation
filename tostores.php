@@ -22,7 +22,7 @@ function listStores() {
                     if ($ads_res['end'] > time())
                         $sess[$row['stn']]['running']++;
                     else if ($ads_res['end'] <= time())
-                        $sess[$row['stn']]['stored'] = count(str_getcsv($ads_res['nums'], ","));
+                        $sess[$row['stn']]['stored'] = ($ads_res['nums'] === "0") ? 0 : count(str_getcsv($ads_res['nums'], ","));
                 }
                 else
                     $sess[$row['stn']][$k] = $v;
@@ -42,7 +42,7 @@ function listStores() {
     
     $arrays = [];
     foreach ($sess as $key) {
-        $form .= '<tr onclick="menuList(\'adsheet.php\')>';
+        $form .= '<tr onclick="menuList(\'adsheet.php\')">';
         $i = 0;
         foreach ($key as $k => $v) {
             $form .= '<td class="t" id="' . $k . '" style="text-align:center;background:lightgray;color:black;border-right:1px solid black;border-bottom:1px solid black;">' . $v . '</td>';    
@@ -52,23 +52,6 @@ function listStores() {
     }
     $form .= "</table>";
     echo $form;
-}
-    
-function updateRow() {
-    
-    $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
-    
-    $sql = "";
-    
-    if (is_int($_GET['a']))
-        $sql = 'UPDATE advs SET ' . $_GET['b'] . ' = ' . $_GET['a'] . ' WHERE serial  = ' . $_GET['d'];
-    else
-        $sql = 'UPDATE advs SET ' . $_GET['b'] . ' = "' . $_GET['a'] . '" WHERE serial = ' . $_GET['d'];
-    
-    $conn->query($sql) or die(mysqli_error($conn));
-    
-    $conn->close();
-
 }
 
 listStores();

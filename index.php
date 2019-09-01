@@ -285,8 +285,10 @@
 	  $menu .= '<ul onclick="menuList(\'preorder.php\');">Preorder</ul>';
 	  $menu .= '<ul onclick="menuList(\'inbox.php\');">Inbox</ul>';
 	  $menu .= '<ul onclick="menuList(\'myorders.php\');">My Orders</ul>';
-	  if (isset($_COOKIE) && $_COOKIE['store_cnt'] > 0)
+	  if (isset($_COOKIE) && $_COOKIE['store_cnt'] > 0) {
+	    $menu .= '<ul onclick="menuList(\'mystores.php\');">My Stores</ul>';
 	    $menu .= '<ul onclick="menuList(\'adsheet.php\');">My Ads</ul>';
+	  }
 	  $menu .= '<ul><a href="nologin.php" style="color:white;text-decoration:none;font-size:18px;">Logout</a></ul>';
 	  $menu .= '<ul>Logged in as ' . $_COOKIE['myemail'] . '</ul></li>';
 	}

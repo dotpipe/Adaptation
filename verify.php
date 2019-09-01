@@ -41,6 +41,9 @@ $results = $conn->query('SELECT store_uniq, store_creditor, username, password, 
         if (!isset($_COOKIE['count']) || isset($_COOKIE['count']))
             setcookie("count", 0);
         setcookie("lock", time()+1000);
+
+        $sql = 'SELECT COUNT(*) FROM franchise WHERE (franchise.email = "' . $_COOKIE['myemail'] . '" || franchise.owner_id  = "' . $_COOKIE['myemail'] . '")';
+        $stores = $conn->query($sql) or die (mysqli_error($conn));
         
         header("Location: ./");
     }
