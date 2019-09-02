@@ -4,28 +4,68 @@ if (!isset($_SESSION))
     
 function listStores() {
 
-    $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+    $sess = [];
     
-    $sql = 'SELECT store_no, franchise.store_name AS stn, nums AS running, nums AS seri, seen, franchise.avg_reviews, franchise.addr_str, franchise.zip, total_paid, last_paid_on FROM franchise, ad_revs, advs WHERE (franchise.email = "' . $_COOKIE['myemail'] . '" || franchise.owner_id  = "' . $_COOKIE['myemail'] . '")';
+    $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+    $sql = 'SELECT store_no, franchise.store_name, nums AS running, nums AS stored, seen, franchise.avg_reviews, franchise.addr_str, franchise.zip, total_paid, last_paid_on, end FROM franchise, ad_revs, advs WHERE ad_revs.username = "' . $_COOKIE['myemail'] . '" && (franchise.email = ad_revs.username || franchise.owner_id = ad_revs.username)';
     $stores = $conn->query($sql) or die (mysqli_error($conn));
-    $sql = 'SELECT store_no, franchise.store_name, nums FROM advs, franchise WHERE franchise.store_name = advs.store_name ';
+    $sql = 'SELECT store_no, franchise.store_name, nums FROM franchise, ad_revs, advs WHERE ad_revs.username = "' . $_COOKIE['myemail'] . '" && (franchise.email = ad_revs.username || franchise.owner_id = ad_revs.username) && advs.store_name = franchise.store_name';
+    $ads = $conn->query($sql) or die (mysqli_error($conn));
+    $res = [];
+    $j = 0;
+    $in = [];
+    while ($res = $stores->fetch_assoc()) {
+        $ads->data_seek(0);
+        while ($row = $ads->fetch_assoc()) {
+            if ($res['store_name'] === $row['store_name'] && $res['store_no'] === $row['store_no']) {
+                $in[$j][0] = array($res['store_name'] => $res['store_no']);
+                $in[$j][1] = ($res['stored'] == "0") ? 0 : count(str_getcsv($res['stored']));
+                $j++;
+                break;
+            }
+        }
+    }
+    $stores->data_seek(0);
     if ($stores->num_rows > 0) {
         $row = [];
+        $i = 0;
         while ($row = $stores->fetch_assoc()) {
             $store = "";
-            $sql = 'SELECT store_no, franchise.store_name, nums, end FROM advs, franchise WHERE "' . $row['stn'] . '" = advs.store_name ';
-            $ads = $conn->query($sql) or die (mysqli_error($conn));
-            $ads_res = $ads->fetch_assoc();
-            $i = 0;
+            $sess[$row['store_name']] = [];
+            while ($ads_assoc = $ads->fetch_assoc()) {
+                $i++;
+                if ($ads_assoc['store_name'] === $row['store_name'] && $ads_assoc['store_no'] === $row['store_no'])
+                    break;
+            }
+            $ads->data_seek($i);
             foreach ($row as $k => $v) {
-                if ($k === 'running' || $k === "seri") {
-                    if ($ads_res['end'] > time())
-                        $sess[$row['stn']]['running']++;
-                    else if ($ads_res['end'] <= time())
-                        $sess[$row['stn']]['stored'] = ($ads_res['nums'] === "0") ? 0 : count(str_getcsv($ads_res['nums'], ","));
+                if ($k === "0" || $k === "end")
+                    continue;
+                // Write code to match store no with storename
+                // get list of store nos from nums, and add
+                // accordingly.
+                if ($k === 'running') {
+                    if (!isset($sess[$row['store_name']]['running']))
+                        $sess[$row['store_name']]['running'] = 0;
+                    if ($row['end'] > time()) {
+                        if (!in_array(array($row['store_name'], $row['store_no']), $in))
+                            $sess[$row['store_name']]['running']++;
+                    }
+                }
+                else if ($k === 'stored') {
+                    if (!isset($sess[$row['store_name']]['stored']))
+                        $sess[$row['store_name']]['stored'] = 0;
+                    if ($row['end'] <= time()) {
+                        $g = 0;
+                        $h = 0;
+                        while ($h < count($in) && array($row['store_name'] => $row['store_no']) != $in[$h++][0]);
+                        
+                        $sess[$row['store_name']]['stored'] = $in[$h-1][1];
+                        
+                    }
                 }
                 else
-                    $sess[$row['stn']][$k] = $v;
+                    $sess[$row['store_name']][$k] = $v;
             }
         }
     }
