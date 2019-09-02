@@ -1,5 +1,7 @@
 <?php
 
+    
+// Sidebar for Stores (For window)
 $form = "<h3 onclick=menuList('menu.php')>Menu</h3>";
 $form .= '<li><b style=\'font-size:18px;color:lightgray\' onclick=\'javascript:mapView()\'>Click to Toggle Map</b></li>';
 $form .= '<table style=\'border:1px solid black;padding:3px;spacing:0px;width:250px;height:300px\'>';

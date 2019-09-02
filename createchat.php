@@ -5,6 +5,7 @@ $results = $con->query('SELECT id, filename FROM chat WHERE 1');
 $var = [];
 $temp = 0;
 
+// recover filenames
 while ($var = $results->fetch_assoc()) {
     if (file_exists("xml/" . $var['filename']))
         continue;

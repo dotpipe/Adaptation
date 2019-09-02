@@ -1,4 +1,5 @@
 <?php
+// create new business and shuffle away
 if (!isset($_SESSION))
     session_start();
     
@@ -11,6 +12,7 @@ if (!isset($_SESSION))
     foreach ($_POST as $k=>$v) {
       $arr[$k] = $v;
     }
+    // no duplicates!
     for ($i = 0; $i < count($list); $i++) {
     	if ($list[$i]['store_no'] == $arr['store_no'] && $list[$i]['business'] == $arr['business']) {
     		header("Location: ./");

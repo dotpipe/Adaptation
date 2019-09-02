@@ -99,9 +99,13 @@ function listConvo() {
     x.removeChild(x.firstChild);
   }
   x.options[0] = new Option("You have " + alias.length + " people to chat with!","");
-
+  if (alias[0] === "") {
+    callFile('getstore.php?a=' + getCookie('store_name') + '&b=' + getCookie('store_no'));
+    //callPage();
+    return;
+  }
   if (alias.length == 1) {
-    alias = alias[0].substr(1, alias[0].length-2);
+    console.log(alias);
     x.options[1] = new Option(alias,alias);
   }
   else {
@@ -375,7 +379,10 @@ function focusStore(name,no,zip) {
     if (request.readyState == 4) {
     }
   };
-
+  setCookie("store_name", name);
+  setCookie("store_no", no);
+  setCookie("zip", zip);
+  
   request.open('GET', "getstore.php?a=" + name + "&b=" + no + "&c=" + zip, true);
   request.send(null);
   menuList('menu.php');

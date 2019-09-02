@@ -1,6 +1,8 @@
 <?php
 
 
+    
+// Sidebar for Linking Stores (For window)
 $form = '<h3 onclick=menuList(\'menu.php\');>Menu</h3><li>';
 $form .= '<b style="font-size:18px;color:lightgray" onclick="javascript:mapView()">Click to Toggle Map</b></li>';
 $form .= '<form method="POST" action="link.php"><label style="color:lightgray;">Enter your<br>Store contact<br>information ';

@@ -28,6 +28,8 @@
     
     }
     
+    // preorder entry into database
+    
     $con = mysqli_connect('localhost', 'r0ot3d', 'RTYfGhVbN!3$', 'adrs','3306') or die("Error: Can't connect");
     
     countOrders($con);

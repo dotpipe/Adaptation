@@ -3,7 +3,7 @@
 if (!isset($_SESSION))
     session_start();
 
-function updateRow() {
+function updateRow() { // update propery `b  to value `a` where `serial` is `d` in `advs` (advertisements) 
 
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
@@ -56,6 +56,7 @@ function listAds($res) {
     echo $form;
 }
 
+// enter new ad from newad.php to database TODO
 function newAd() {
     
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs") or die(mysqli_error($conn));
@@ -86,12 +87,13 @@ function newAd() {
     
 }
 
+// load all active ads
 function loadAds() {
     
     $_SESSION['ads'] = array();
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs") or die(mysqli_error($conn));
     
-    $sql = 'SELECT store_name, slogan, description, img, serial, url, zip FROM advs, franchise WHERE end > "' . $_COOKIE['time'] . '" && start < "' . $_COOKIE['time'] . '" ORDER BY start ASC';
+    $sql = 'SELECT store_name, slogan, description, img, serial, url, zip FROM advs, franchise WHERE end > ' . time() . ' && start < ' . time() . ' ORDER BY start ASC';
     
     $res = $conn->query($sql) or die(mysqli_error($conn));
     $sess = [];
@@ -106,6 +108,8 @@ function loadAds() {
     }
     listAds($sess);
 }
+
+//look at my ads
 
 function loadMyAds() {
     
@@ -154,7 +158,7 @@ function loadMyAds() {
     }
     listAds($sess);
 }
-
+// new hit
 function updSeen() {
     
     $_SESSION['ads'] = array();
@@ -165,6 +169,7 @@ function updSeen() {
     $res = $conn->query($sql);
 }
 
+// add hours (+/-) minus hours (spreadsheet on MyAds.php)
 function updTime() {
     
     $_SESSION['ads'] = array();

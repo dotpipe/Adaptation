@@ -1,5 +1,6 @@
 <?php
 
+    // insert tax files to database
     $conn = new mysqli('localhost', "r0ot3d", "RTYfGhVbN!3$", "adrs");
     
     if ($conn->connect_error) {

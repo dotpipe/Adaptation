@@ -2,6 +2,8 @@
 $id = session_id();
 $menu = "";
 
+    
+// Sidebar for Menu options
 setcookie("time",time());
 
 	if (isset($_COOKIE) && isset($_COOKIE['login']) && $_COOKIE['login'] == "true") {

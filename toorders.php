@@ -1,5 +1,6 @@
 <?php
 
+    
     function getTax($con) {
 
         $sql = 'SELECT EstimatedCombinedRate AS taxed FROM taxes WHERE ZipCode = ' . $_COOKIE['zip_code'];
@@ -12,6 +13,7 @@
 
     }
     
+    // my outgoing wishlist
     function shortListOut() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -28,6 +30,7 @@
         
     }
     
+    // my incoming wishlist
     function shortListIn() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -43,6 +46,7 @@
         $conn->close();       
     }
     
+    // orders on hold
     function listHold() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -59,6 +63,7 @@
         $conn->close();         
     }
     
+    // ordered preorders
     function listOrdered() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -75,6 +80,7 @@
         $conn->close();     
     }
     
+    // canceled orders
     function listCanceled() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -91,6 +97,7 @@
         $conn->close();   
     }
     
+    // delivered orders
     function listDelivered() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -107,6 +114,7 @@
         $conn->close();         
     }
 
+    // order list lite
     function shortList($results, $table) {
         $oid = [];
         if ($results->num_rows > 0) {
@@ -159,6 +167,7 @@
         }
     }
     
+    // entire order
     function deleteOrder() {
         
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -181,6 +190,8 @@
         $conn->close();
     }
 
+
+    // my outgoing wishlist
     function myOrders() {
     
         $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -213,6 +224,7 @@
         $conn->close();
     }
     
+    // create table
     function getTable($results, $info) {
         
         $row = [];
@@ -305,6 +317,7 @@
         echo $info;
     }
 
+// update spreadsheet
 function updateRows() {
 
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
@@ -326,6 +339,7 @@ function updateRows() {
 
 }
 
+//
 function updateRow() {
 
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");

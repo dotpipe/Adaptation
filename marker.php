@@ -1,4 +1,6 @@
 <?php
+
+// make new users
   $xml = simplexml_load_file("newusers.xml");
 
   $list = $xml->user;

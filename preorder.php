@@ -1,5 +1,7 @@
 <?php
 
+    
+// Sidebar for Preorder creator
 $form = "<h3 onclick=menuList('menu.php');>Menu</h3><li><b style='font-size:18px;color:lightgray;' onclick=javascript:mapView()>Click to Toggle Map</b><br><br>";
 $form .= '<font style=\'font-size:16;color:red;\'>Preorder Items ' . $_COOKIE['store'] . '</font><br>';
 

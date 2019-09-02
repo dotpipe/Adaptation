@@ -1,6 +1,8 @@
 <?php
 
 
+    
+// Sidebar for Inbox (For window)
 $chat = "<h3 onclick=menuList('menu.php')>Menu</h3>";
 $chat .= '<li><b style=\'font-size:18px;color:lightgray\' onclick=\'javascript:mapView()\'>Click to Toggle Map</b></li>';
 $chat .= '<table style=\'border:1px solid black;padding:3px;spacing:0px;width:250px;height:300px\'>';

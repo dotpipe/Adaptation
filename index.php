@@ -15,6 +15,7 @@
 	else
 		setcookie("vartime",1);
 		
+	// TODO: create these arrays to fillin body ads
 	if (isset($_SESSION['ads'])) {
 		foreach ($_SESSION['ads'] as $k => $v) {
 			if ($k === "store_name")
@@ -191,6 +192,7 @@
 	
 	<script>
 	
+	// progressbar
 	function move() {
 	  var elem = document.getElementById("myBar"); 
 	  var width = 1;
@@ -207,6 +209,7 @@
 	  menuList('menu.php');
 	}
 	
+	// Toggles map from on to off (adview)
 	function mapView() {
 	    var p = document.getElementById("page");
 	    var t = document.getElementById("map");
@@ -227,7 +230,8 @@
 	      t.style.height = (screen.height - 95) + "px";
 	    }
 	  }
-	
+	  
+		// menu hide/appear
 	  function menuslide() {
 	    if (document.getElementById('menu').style.display == "table-cell") {
 	      document.getElementById('menu').style.display = "none";
@@ -244,9 +248,11 @@
 	</script>
 	<script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
 
-	<script src="gmaps.js"></script>
+
+	<script src="gmaps.js"> // my javascript</script>
+	
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3DYtYBqKTgqG46VTRhlGGx-_nD6Vw4yc&libraries=places&callback=honey"
-	  async defer></script>
+	  async defer> // returns google maps</script>
 	  <meta content="Diads is your best place to advertise. Get Followers, Preordering, Reviews from customers and much more." name="description">
 	</head>
 	
@@ -310,6 +316,7 @@
 	  </div>
 	</section>
 	
+	<!-- Map -->
 	<section id="page" style="z-index:-1;background:url('blacksand.jpg');width:100%">
 		<div class="horizontal-mobi">
 			<div class="table-mobi" style="width:100%;">
@@ -328,6 +335,7 @@
 	
 	     <div class="table-mobi" style="position:static;">
 	
+	<!-- body ads -->
 	<?php for ($i = 0 ; $i < count($serial[$j]) ; $i++) { ?>
 	    <article serial="<?=$serial[$j]?>" class="card" style="margin-left:<?=($i)*750?>px;background:opacity(0);width:750px;border-radius: 10px;border: 5px solid lightgray;">
 	        <b><i><?=$Storename[$j]?></i></b>

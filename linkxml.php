@@ -1,5 +1,10 @@
 <?php
 
+
+// Insert new businesses into database
+// TODO: no xml for stores. just database filling.
+// By zip codes.
+
 function sanitize(&$r) {
     $r = filter_var(strip_tags($r), FILTER_SANITIZE_STRING);
 }
@@ -20,7 +25,9 @@ foreach ($xml[$i]->children() as $row) {
     foreach ($row as $k => $v)
         sanitize($v);
     $timeTarget = 0.045; // 45 milliseconds 
-
+    // make it a good password :)
+    // TODO: make it necessary
+    // to login to store for actions
     $cost = 8;
     do {
         $cost++;

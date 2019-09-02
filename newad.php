@@ -2,6 +2,7 @@
 
 setcookie("time",time());
 
+// Sidebar for Ad
 $form = '<h3 onclick=menuList(\'menu.php\');>Menu</h3><li>';
 $form .= '<b style="font-size:18px;color:lightgray" onclick="javascript:mapView()">Click to Toggle Map</b></li>';
 $form .= '<form method="POST" action="toads.php"><label style="color:lightgray;">Enter your<br>Store contact<br>information ';
