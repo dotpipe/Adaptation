@@ -9,6 +9,8 @@ if (!isset($_SESSION))
   
     $list = $xml->links;
     $arr = [];
+    if (count($_POST) < 9)
+      exit();
     foreach ($_POST as $k=>$v) {
       $arr[$k] = $v;
     }

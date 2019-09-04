@@ -146,12 +146,13 @@ function loadMyAds() {
     if ($res->num_rows) {
         $i = 0;
         while ($row = $res->fetch_assoc()) {
-            if (!in_array($row['store_no'], str_getcsv($row['nums'])))
+            if ($row['nums'] === "0")
+            { }
+            else if (!in_array($row['store_no'], str_getcsv($row['nums'])))
                 continue;
             foreach ($row as $k => $v) {
-                if ($k === 'nums')
-                    continue;
-                $sess[$i][$k][] = $v;
+                if ($k !== "nums")
+                    $sess[$i][$k][] = $v;
             }
             $i++;
         }

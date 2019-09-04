@@ -38,7 +38,7 @@ function makeMyFile($cnxn) {
         file_put_contents("xml/" . md5($temp) . ".xml", "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
         chmod('xml/' . md5($temp), 0644);
     }
-    $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES (null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';
+    $sql = 'INSERT INTO chat(id,start,aim,filename,last,altered,checked) VALUES(null, "' . $_COOKIE["myemail"] . '", "' . $_COOKIE["store_id"] . '", "' . md5($temp) . '.xml", CURRENT_TIMESTAMP,null,0)';
 
     $results = $cnxn->query($sql) or die(mysqli_error($cnxn));
     return 0;

@@ -7,24 +7,12 @@ function listStores() {
     $sess = [];
     
     $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
-    $sql = 'SELECT store_no, franchise.store_name, nums AS running, nums AS stored, seen, franchise.avg_reviews, franchise.addr_str, franchise.zip, total_paid, last_paid_on, end FROM franchise, ad_revs, advs WHERE ad_revs.username = "' . $_COOKIE['myemail'] . '" && (franchise.email = ad_revs.username || franchise.owner_id = ad_revs.username)';
+    $sql = 'SELECT store_no, franchise.store_name, nums AS running, nums AS stored, seen, franchise.avg_reviews, franchise.addr_str, franchise.zip, total_paid, last_paid_on, end FROM franchise, ad_revs, advs WHERE ad_revs.username = "' . $_COOKIE['myemail'] . '" && (franchise.email = ad_revs.username || franchise.owner_id = ad_revs.username) && advs.store_name = franchise.store_name';
     $stores = $conn->query($sql) or die (mysqli_error($conn));
     $sql = 'SELECT store_no, franchise.store_name, nums FROM franchise, ad_revs, advs WHERE ad_revs.username = "' . $_COOKIE['myemail'] . '" && (franchise.email = ad_revs.username || franchise.owner_id = ad_revs.username) && advs.store_name = franchise.store_name';
     $ads = $conn->query($sql) or die (mysqli_error($conn));
     $res = [];
     $j = 0;
-    $in = [];
-    while ($res = $stores->fetch_assoc()) {
-        $ads->data_seek(0);
-        while ($row = $ads->fetch_assoc()) {
-            if ($res['store_name'] === $row['store_name'] && $res['store_no'] === $row['store_no']) {
-                $in[$j][0] = array($res['store_name'] => $res['store_no']);
-                $in[$j][1] = ($res['stored'] == "0") ? 0 : count(str_getcsv($res['stored']));
-                $j++;
-                break;
-            }
-        }
-    }
     $stores->data_seek(0);
     if ($stores->num_rows > 0) {
         $row = [];
@@ -32,12 +20,6 @@ function listStores() {
         while ($row = $stores->fetch_assoc()) {
             $store = "";
             $sess[$row['store_name']] = [];
-            while ($ads_assoc = $ads->fetch_assoc()) {
-                $i++;
-                if ($ads_assoc['store_name'] === $row['store_name'] && $ads_assoc['store_no'] === $row['store_no'])
-                    break;
-            }
-            $ads->data_seek($i);
             foreach ($row as $k => $v) {
                 if ($k === "0" || $k === "end")
                     continue;
@@ -57,11 +39,9 @@ function listStores() {
                         $sess[$row['store_name']]['stored'] = 0;
                     if ($row['end'] <= time()) {
                         $g = 0;
-                        $h = 0;
-                        while ($h < count($in) && array($row['store_name'] => $row['store_no']) != $in[$h++][0]);
-                        
-                        $sess[$row['store_name']]['stored'] = $in[$h-1][1];
-                        
+                        $sess[$row['store_name']]['stored'] = count(str_getcsv($row['stored']));
+                        // if (in_array(array($row['store_name'] => $row['store_no']), $in[$row['store_name']]))
+                         //   $sess[$row['store_name']]['stored'] = count($in[$row['store_name']][$row['store_no']]);
                     }
                 }
                 else

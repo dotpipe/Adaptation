@@ -291,12 +291,39 @@ function glaze(address) {
   });
 }
 
+function makeZipStores(a) {
+  callFile("makezips.php?a=" + a);
+}
+
 function collectXML (position) {
   var t = position.coords;
   var map = new google.maps.Map(
     document.getElementById('map'),
     {center: {lat: position.coords.latitude, lng: position.coords.longitude}, zoom: 13});
-
+  var geocoder = new google.maps.Geocoder;
+  geocoder.geocode({'location':{lat: position.coords.latitude, lng: position.coords.longitude}}, function(results, status) {
+    if (status === 'OK') {
+      if (results[0]) {
+        map.setZoom(11);
+        var marker = new google.maps.Marker({
+          position: {lat: position.coords.latitude, lng: position.coords.longitude},
+          map: map
+        });
+        console.log(results);
+        if (results[0].address_components[6].long_name !== undefined) {
+          setCookie("site_zip_code", results[0].address_components[6].long_name);
+          makeZipStores(getCookie("site_zip_code"));
+        }
+        infowindow.setContent("<div>Me&nbsp;&nbsp;&nbsp;<br></div>");
+        infowindow.open(map, marker);
+      } else {
+        window.alert('No results found');
+      }
+    } else {
+      window.alert('Geocoder failed due to: ' + status);
+    }
+  });
+    
   var input;
   var autocomplete;
   //if (null != document.getElementById('addr')) {
@@ -312,7 +339,8 @@ function collectXML (position) {
   infowindow.setContent(infowindowContent);
 
   // Change this depending on the name of your PHP or XML file
-  downloadUrl('branches.xml', function(data) {
+  var xml_file = getCookie("site_zip_code") + ".xml";
+  downloadUrl(xml_file, function(data) {
     var xml = data.responseXML;
     var markers = xml.documentElement.getElementsByTagName('links');
     Array.prototype.forEach.call(markers, function(markerElem) {
@@ -324,12 +352,9 @@ function collectXML (position) {
         address = address + ", " + markerElem.getAttribute('city');
       if (!address.includes(markerElem.getAttribute('state')))
         address = address + ", " + markerElem.getAttribute('state');
-      if (!address.includes(markerElem.getAttribute('zip')))
-        address = address + ", " + markerElem.getAttribute('zip');
-      if (!address.includes(markerElem.getAttribute('country')))
-        address = address + ", " + markerElem.getAttribute('country');
+    //  if (!address.includes(markerElem.getAttribute('country')))
+      //  address = address + ", " + markerElem.getAttribute('country');
       var biz = markerElem.getAttribute('business');
-      var type = markerElem.getAttribute('type');
       var point = new google.maps.LatLng(
           parseFloat(markerElem.getAttribute('lat')),
           parseFloat(markerElem.getAttribute('long'))
@@ -358,7 +383,7 @@ function collectXML (position) {
           var y = encodeURI(no);
           marker.addListener('click', function() {
            var infowindow = new google.maps.InfoWindow({
-              content: '<p onclick="focusStore(\'' + x + '\',\'' + y + '\',' + getCookie("zip_code") + ');"><u>' + name + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<br><u>' + biz + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+              content: '<div onclick="focusStore(\'' + x + '\',\'' + y + '\',' + getCookie("site_zip_code") + ');"><u>' + name + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<u>' + biz + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<u>' + address + '</u>&nbsp;&nbsp;&nbsp;&nbsp;</div><br>'
   
             });
             infowindow.open(map, marker);
@@ -498,12 +523,10 @@ function review(i,ts) {
 }
 
 function confirm_star(i,ts) {
-
   if (confirm("You chose " + i + " stars!")) {
     revitup(i,ts);
     review(i,ts);
   }
-
 }
 
 function setCookie(cname, cvalue, exdays) {
@@ -653,3 +676,134 @@ function move() {
     var vn = t[t.selectedIndex].value;
     callFile("toorders.php?c=g&b=" + vn);
   }
+  
+  function choseKeyword(keywrd) {
+    if (keywrd === "")
+      return;
+    document.getElementById("div-keys").style.display = "visible";
+    var div_out = document.createElement("div");
+    div_out.style = 'margin:3px;border-right:2px solid white;background:lightblue;border-radius:10px;color:black;width:55px;font-size:12px;display:table-cell;height:13px;vertical-align:middle;';
+    var div_word = document.createElement("div");
+    div_word.style = 'margin:3px;width:45px;background:lightblue;display:table-cell;font-size:10px;padding:0px;';
+    div_word.className = 'key-names';
+    div_word.innerHTML = keywrd;
+    div_out.appendChild(div_word);
+    var div_final = document.createElement("div");
+    div_final.style = 'background:lightblue;display:table-cell;font-size:10px;;padding:0px';
+    div_final.setAttribute("onclick","insertTagInput();this.parentNode.parentNode.removeChild(this.parentNode);");
+    div_final.innerHTML = "&times;";
+    div_out.appendChild(div_final);
+    document.getElementById("keywrds").insertBefore(div_out,document.getElementById("keywrds").lastChild);
+  }
+  
+  function keywordLookup(keys,j) {
+    var dense = keys.value.length;
+    term = keys.value;
+    if (dense > 10)
+      keys.value = term.substr(0,10);
+    if (j === 13) {
+      term = term.replace(/\b(?:slut|fuck|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit?|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
+      if (term.length < dense || term == undefined) {
+        alert("Watch it, bud");
+        keys.value = "";
+        return;
+      }
+      
+      setCookie("word",term);
+      def = term;
+      def = def;
+      var urlstr = "keyword.php?b=2&str=";
+      //document.getElementById("div-keys").style.display = "table";
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          var g = this.responseText;
+          if (g === undefined || g === "") {
+            console.log(g);
+            newWord(def);
+            return;
+          }
+          var h = document.getElementById('div-keys');
+          h.innerHTML = g;
+        }
+      };
+      xhttp.open("GET", urlstr + def, false);
+      xhttp.send();
+      if (document.getElementById("keywrds").childElementCount > 4)
+        document.getElementById("insWrd").parentNode.removeChild(document.getElementById("insWrd"));
+      choseKeyword(def);
+      keys.value = "";
+      return;
+    }
+    var urlstr = "keyword.php?b=2&str=";
+    
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var g = this.responseText;
+        if (g === undefined || g === "") {
+          document.getElementById("div-keys").innerHTML = "";
+          return;
+        }
+        var h = document.getElementById('div-keys');
+        h.innerHTML = g;
+      }
+    };
+    xhttp.open("GET", urlstr + term, false);
+    xhttp.send();
+  }
+  
+  function insertTagInput() {
+    if (document.getElementById("keywrds").lastChild.tagName == "INPUT")
+      return;
+    var x = document.createElement("input");
+    x.setAttribute("id", "insWrd");
+    x.style = 'display:table-cell;width:40px;color:black;border-radius:10px;border:0px solid white;';
+    x.setAttribute("onkeypress",'keywordLookup(this,event.keyCode);');
+    document.getElementById("keywrds").append(x);
+  }
+  
+  function newWord(indef) {
+    if (indef === "" || indef === undefined)
+      return;
+    if (document.getElementById("div-keys").childElementCount > 0)
+      document.getElementById("div-keys").removeChild(document.getElementById("div-keys").firstChild);
+    var block = document.createElement("div");
+    block.id = "defineKey";
+    var keyword = document.createElement("div");
+    keyword.id = "word";
+    keyword.style = "width:160px;font-size:14px;text-decoration:bold;";
+    keyword.innerHTML = indef;
+    block.append(keyword);
+    var hr = document.createElement("hr");
+    block.append(hr);
+    var inputdef = document.createElement("input");
+    inputdef.id = "insDef";
+    inputdef.style = "width:150px;color:black;border-radius:10px;border:0px solid white;";
+    inputdef.setAttribute("onkeypress", "defineWord(event.keyCode);");
+    inputdef.type = "text";
+    inputdef.max = 35;
+    inputdef.min = 15;
+    block.append(inputdef);
+    document.getElementById("div-keys").append(block);
+  }
+  
+function defineWord(j) {
+  if (document.getElementById("insDef").value.length < 15)
+    return;
+  if (j == 13) {
+    var deflen = document.getElementById("insDef").value.length;
+    var indef = document.getElementById("insDef").value;
+    console.log(indef);
+    var def = indef.replace(/\b(?:slut|fuck|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
+    if (def.length < deflen) {
+      alert("Watch it, bud");
+      document.getElementById("insDef").value = "";
+      return;
+    }
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "keyword.php?a=" + getCookie("word") + "&b=1&c=" + indef, false);
+    xhttp.send();
+    document.getElementById("div-keys").removeChild(document.getElementById("div-keys").firstChild);
+  }
+}
