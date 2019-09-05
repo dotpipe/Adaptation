@@ -685,15 +685,21 @@ function move() {
     div_out.style = 'margin:3px;border-right:2px solid white;background:lightblue;border-radius:10px;color:black;width:55px;font-size:12px;display:table-cell;height:13px;vertical-align:middle;';
     var div_word = document.createElement("div");
     div_word.style = 'margin:3px;width:45px;background:lightblue;display:table-cell;font-size:10px;padding:0px;';
-    div_word.className = 'key-names';
     div_word.innerHTML = keywrd;
     div_out.appendChild(div_word);
+    var div_hid = document.createElement("input");
+    div_hid.type = "hidden";
+    div_hid.className = 'key-names';
+    div_hid.value = keywrd;
+    div_hid.name = "key" + (document.getElementsByClassName("key-names").length+1);
+    div_word.appendChild(div_hid);
     var div_final = document.createElement("div");
-    div_final.style = 'background:lightblue;display:table-cell;font-size:10px;;padding:0px';
+    div_final.style = 'background:lightblue;display:table-cell;font-size:10px;padding:0px';
     div_final.setAttribute("onclick","insertTagInput();this.parentNode.parentNode.removeChild(this.parentNode);");
     div_final.innerHTML = "&times;";
     div_out.appendChild(div_final);
     document.getElementById("keywrds").insertBefore(div_out,document.getElementById("keywrds").lastChild);
+    document.getElementById("insWrd").value = "";
   }
   
   function keywordLookup(keys,j) {
@@ -701,14 +707,15 @@ function move() {
     term = keys.value;
     if (dense > 10)
       keys.value = term.substr(0,10);
-    if (j === 13) {
+    console.log(j);
+    if (j == 44) {
       term = term.replace(/\b(?:slut|fuck|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit?|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
       if (term.length < dense || term == undefined) {
         alert("Watch it, bud");
         keys.value = "";
         return;
       }
-      
+      keys.value = "";
       setCookie("word",term);
       def = term;
       def = def;
@@ -719,12 +726,13 @@ function move() {
         if (this.readyState == 4 && this.status == 200) {
           var g = this.responseText;
           if (g === undefined || g === "") {
-            console.log(g);
+            document.getElementById("insWrd").value = "";
             newWord(def);
             return;
           }
           var h = document.getElementById('div-keys');
           h.innerHTML = g;
+          keys.value = "";
         }
       };
       xhttp.open("GET", urlstr + def, false);
@@ -732,7 +740,7 @@ function move() {
       if (document.getElementById("keywrds").childElementCount > 4)
         document.getElementById("insWrd").parentNode.removeChild(document.getElementById("insWrd"));
       choseKeyword(def);
-      keys.value = "";
+      document.getElementById("insWrd").value = "";
       return;
     }
     var urlstr = "keyword.php?b=2&str=";
@@ -758,7 +766,7 @@ function move() {
       return;
     var x = document.createElement("input");
     x.setAttribute("id", "insWrd");
-    x.style = 'display:table-cell;width:40px;color:black;border-radius:10px;border:0px solid white;';
+    x.style = 'display:table-cell;width:100%;color:black;border-radius:10px;border:0px solid white;';
     x.setAttribute("onkeypress",'keywordLookup(this,event.keyCode);');
     document.getElementById("keywrds").append(x);
   }
@@ -779,31 +787,54 @@ function move() {
     block.append(hr);
     var inputdef = document.createElement("input");
     inputdef.id = "insDef";
-    inputdef.style = "width:150px;color:black;border-radius:10px;border:0px solid white;";
-    inputdef.setAttribute("onkeypress", "defineWord(event.keyCode);");
+    inputdef.style = "display:table-cell;width:100%;color:black;border-radius:10px;border:0px solid white;";
     inputdef.type = "text";
-    inputdef.max = 35;
-    inputdef.min = 15;
+    inputdef.max = "35";
+    inputdef.min = "15";
     block.append(inputdef);
+    var button = document.createElement("div");
+    button.style = "background:black;display:table-cell;color:green";
+    button.name = "accept";
+    button.innerHTML = "&check;";
+    button.setAttribute("onclick","defineWord(this)");
+    block.append(button);
     document.getElementById("div-keys").append(block);
   }
   
-function defineWord(j) {
-  if (document.getElementById("insDef").value.length < 15)
+function defineWord(t) {
+  if (t.tagName !== "DIV" && t.name !== "accept")
     return;
-  if (j == 13) {
-    var deflen = document.getElementById("insDef").value.length;
-    var indef = document.getElementById("insDef").value;
-    console.log(indef);
-    var def = indef.replace(/\b(?:slut|fuck|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
-    if (def.length < deflen) {
-      alert("Watch it, bud");
-      document.getElementById("insDef").value = "";
-      return;
-    }
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "keyword.php?a=" + getCookie("word") + "&b=1&c=" + indef, false);
-    xhttp.send();
-    document.getElementById("div-keys").removeChild(document.getElementById("div-keys").firstChild);
+  var deflen = document.getElementById("insDef").value.length;
+  var indef = document.getElementById("insDef").value;
+  console.log(indef);
+  var def = indef.replace(/\b(?:slut|fuck|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
+  if (def.length < deflen) {
+    alert("Watch it, bud");
+    document.getElementById("insDef").value = "";
+    return;
   }
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", "keyword.php?a=" + getCookie("word") + "&b=1&c=" + indef, false);
+  xhttp.send();
+  document.getElementById("div-keys").removeChild(document.getElementById("div-keys").firstChild);
+}
+
+function getForm() {
+  var t = document.getElementsByClassName("business-form");
+  var xt = document.getElementsByClassName("key-names");
+  if (xt.length + t.length < 12) {
+    alert("Please fill out all boxes, and use at least 3 tags");
+    return;
+  }
+  var str = "link.php";
+  for (var i = 0 ; i < t.length ; i++) {
+    str = str + "&" + t[i].name + "=" + encodeURI(t[i].value);
+  }
+  for (var i = 0 ; i < xt.length ; i++) {
+    str = str + "&" + xt[i].name + "=" + encodeURI(xt[i].value);
+  }
+  str = str.replace(/(&)/,"?");
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", str, false);
+  xhttp.send();
 }

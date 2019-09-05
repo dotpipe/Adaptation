@@ -3,23 +3,9 @@
 if (!isset($_SESSION))
     session_start();
     
-  if (!file_exists('branches.xml'))
-    file_put_contents('branches.xml', "<?xml version='1.0'?><accounts></accounts>");
-  $xml = simplexml_load_file('branches.xml');
-  
     $list = $xml->links;
     $arr = [];
-    if (count($_POST) < 9)
-      exit();
-    foreach ($_POST as $k=>$v) {
-      $arr[$k] = $v;
-    }
-    // no duplicates!
-    for ($i = 0; $i < count($list); $i++) {
-    	if ($list[$i]['store_no'] == $arr['store_no'] && $list[$i]['business'] == $arr['business']) {
-    		header("Location: ./");
-    	}
-    }
+    
     $dom = new \DomDocument();
     $dom->load('branches.xml');
   
@@ -27,7 +13,7 @@ if (!isset($_SESSION))
     $x = $dom->getElementsByTagName("accounts")[0];
   
     $tmp = $dom->createElement("links");
-    foreach ($_POST as $k=>$v) {
+    foreach ($_GET as $k=>$v) {
       $tmp->setAttribute($k,$v);
     }
      $x->appendChild($tmp);

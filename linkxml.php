@@ -11,8 +11,6 @@ function sanitize(&$r) {
 
 $conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
 
-
-
 if (!file_exists('branches.xml'))
     file_put_contents('branches.xml', "<?xml version='1.0'?><accounts></accounts>");
 
@@ -36,9 +34,11 @@ foreach ($xml[$i]->children() as $row) {
         $end = microtime(true);
     } while (($end - $start) < $timeTarget);
     
-    $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,manager,addr_str,city,state,password,phone,email)
+    
+    $sql = 'INSERT INTO franchise(id,store_name,store_no,owner_id,manager,addr_str,city,state,password,phone,email,zip,avg_ads_hr,views,avg_views_day,reviews,avg_reviews,key1,key2,key3,key4,key5)
         VALUES (null,"' . $row['business'] . '","' . $row['store_no'] . '","' . $row['email'] . '","' . $row['manager'] . '","' . 
-        $row['address'] . ', ' . $row['city'] . ', ' . $row['state'] . '","' . $row['city'] . '","' . $row['state'] . '","' . $password1 . '","' . $row['phone'] . '","' . $row['store_email'] . '")';
+        $row['address'] . ', ' . $row['city'] . ', ' . $row['state'] . ', ' . $row['zip'] . '","' . $row['city'] . '","' . $row['state'] . '","' . $password1 . '","' . $row['phone'] . '","' . $row['store_email'] . '",
+        ' . $row['zip'] . ',0,0,0,0,0,"' . $row['key1'] . '","' . $row['key2'] . '","' . $row['key3'] . '","' . $row['key4'] . '","' . $row['key5'] . '")';
     
     $result = mysqli_query($conn, $sql);
     if (! empty($result)) {
@@ -57,6 +57,7 @@ Insert XML Data to MySql Table Output
 if ($affectedRow > 0) {
     $message = $affectedRow . " records inserted";
     echo $message;
+    file_put_contents("branches.xml", "<?xml version=\'1.0\'?><accounts></accounts>");
 }
 header("Location: ./");
 ?>
