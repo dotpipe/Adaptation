@@ -79,6 +79,20 @@ function callFile(str) {
   xhttp.send();
 }
 
+function callRequest(str) {
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //setCookie("aliases",this.response,1);
+      //console.log(this.response);
+      listConvoFunc(this.response)//
+    }
+  };
+  xhttp.open("GET", str, false);
+  xhttp.send();
+}
+
 function callFilePost(str) {
 
   var xhttp = new XMLHttpRequest();
@@ -88,19 +102,21 @@ function callFilePost(str) {
 }
 
 function listConvo() {
-  callFile("chataliases.php?c=1");
-  var alias = getCookie("aliases");
+  callRequest("chat/chataliases.php?c=1");
+}
+
+function listConvoFunc(alias) {
+  
   alias = alias.substring(1,alias.length-1);
   alias = alias.split(",");
   var x = document.getElementById("chatters");
   var h = 0;
-  console.log(alias);
   while (x.childElementCount > h++) {
     x.removeChild(x.firstChild);
   }
   x.options[0] = new Option("You have " + alias.length + " people to chat with!","");
   if (alias[0] === "") {
-    callFile('getstore.php?a=' + getCookie('store_name') + '&b=' + getCookie('store_no'));
+    callFile('stores/getstore.php?a=' + getCookie('store_name') + '&b=' + getCookie('store_no'));
     //callPage();
     return;
   }
@@ -120,7 +136,7 @@ function loginUnsuccessful() {
   y++;
   setCookie("count", y);
   document.getElementById("warning").value = "Wrong Email/Password (" + y + "/3)";
-  menuList('login.php');
+  menuList('sidebar/login.php');
 }
 
 function logout() {
@@ -131,7 +147,7 @@ function logout() {
       return;
     }
   };
-  xhttp.open("GET", "nologin.php", true);
+  xhttp.open("GET", "user/nologin.php", true);
   xhttp.send();
 
   localStorage.clear();
@@ -146,26 +162,41 @@ function getOption() {
   var x = document.getElementById("chatters");
   var idx = x.options[x.selectedIndex];
   var str = idx.value;
-  if (str.charAt(0) === '"')
-    str = str.substr(1,str.length-2);
   if (str == "")
     return;
   setCookie("nodeNo", x.selectedIndex);
   setCookie("chataddr", str);
-  callPage();
+  callPage(str);
 }
 
-function callPage() {
-  callFile("createchat.php");
-  callFile("chataliases.php?c=2");
-  var x = getCookie("chatfile");
+function callPage(str1) {
+  var x = document.getElementById("chatters");
+  var idx = x.options[getCookie("nodeNo")];
+  var str = idx.value;
+  callFile("chat/createchat.php");
+  //callFile("chat/chataliases.php?c=2&d=" + str);
+  //var x = getCookie("chatfile");
+  var xhttp = new XMLHttpRequest();
+  var x = "";
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      x = this.response;
+    }
+  };
+  
+  xhttp.open("GET", "chat/chataliases.php?c=2&d=" + str, false);
+  xhttp.send();
+  x = x.substr(1,x.length-2);
+  console.log(x);
+  setCookie("chatfile",x);
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       //clearChat();
     }
   };
-  xhttp.open("POST", "xml/" + x, false);
+  
+  xhttp.open("GET", "xml/" + x, false);
   xhttp.send();
   var s = xhttp.responseXML.firstChild;
   var xsltProcessor = new XSLTProcessor();
@@ -185,12 +216,13 @@ function callPage() {
   document.getElementById("chatpane").append(outputText);
   var x = document.getElementById("in-window");
   x.scroll(0,x.childElementCount*20);
+
 }
 
 function getInbox(no, data) {
 
   if (getCookie("login") !== "true") {
-    menuList("login.php");
+    menuList("user/login.php");
     return;
   }
   else {
@@ -201,15 +233,14 @@ function getInbox(no, data) {
         document.getElementById("chatpane").innerHTML = g;
       }
     };
-    xhttp.open("GET", "toads.php?c=" + no + "&p=" + data, false);
+    xhttp.open("GET", "ads/toads.php?c=" + no + "&p=" + data, false);
     xhttp.send();
   }
 }
 
 function getAdSheet(no) {
-
   if (getCookie("login") !== "true") {
-    menuList("login.php");
+    menuList("sidebar/login.php");
     return;
   }
   else {
@@ -220,7 +251,7 @@ function getAdSheet(no) {
         document.getElementById("chatpane").innerHTML = g;
       }
     };
-    xhttp.open("GET", "toads.php?c=" + no, false);
+    xhttp.open("GET", "ads/toads.php?c=" + no, false);
     xhttp.send();
   }
 }
@@ -228,7 +259,7 @@ function getAdSheet(no) {
 function getStores(no) {
 
   if (getCookie("login") !== "true") {
-    menuList("login.php");
+    menuList("sidebar/login.php");
     return;
   }
   else {
@@ -239,21 +270,99 @@ function getStores(no) {
         document.getElementById("storepane").innerHTML = g;
       }
     };
-    xhttp.open("GET", "tostores.php?c=" + no, false);
+    xhttp.open("GET", "stores/tostores.php?c=" + no, false);
     xhttp.send();
   }
+}
+
+function getConduct() {
+
+  var z = document.getElementById("chatters");
+  var idx = z.options[getCookie("nodeNo")];
+  z.selectedIndex = getCookie("nodeNo");
+  var str = idx.value;
+  
+  var xhttp = new XMLHttpRequest();
+  var r_val = "";
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      setCookie("conductOn",this.responseText);
+    }
+  };
+  xhttp.open("GET", "chat/chataliases.php?c=3&d=" + str, false);
+  xhttp.send();
+  console.log(getCookie("conductOn"));
+}
+
+function flagComment(r_val) {
+
+  var z = document.getElementById("chatters");
+  var idx = z.options[getCookie("nodeNo")];
+  z.selectedIndex = getCookie("nodeNo");
+  var str = idx.value;
+  
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      
+    }
+  };
+  var tyd = r_val.parentNode.previousElementSibling;
+  
+  console.log(r_val.parentNode.previousElementSibling);
+  xhttp.open("GET", "chat/chataliases.php?c=6&d=" + str + "&msg=" + tyd.innerHTML + "&time=" + tyd.getAttribute("time"), false);
+  xhttp.send();
+  console.log(getCookie("conductOn"));
+}
+
+function setConduct() {
+
+  var z = document.getElementById("chatters");
+  var idx = z.options[getCookie("nodeNo")];
+  z.selectedIndex = getCookie("nodeNo");
+  var str = idx.value;
+  
+  var xhttp = new XMLHttpRequest();
+  var r_val = "";
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      setCookie("conductOn",this.responseText);
+    }
+  };
+  xhttp.open("GET", "chat/chataliases.php?c=5&d=" + str, false);
+  xhttp.send();
+  console.log(getCookie("conductOn"));
 }
 
 function goChat(i,j) {
   if (j == 13) {
     var y = i.cloneNode();
     i.value = "";
+    var v = y.value;
+    var t = y.value;
     
-    callFile("chat.php?a=" + y.value);
+    t = v.replace(/\b(?:slut|fuck|fucking|fuckin|whore|asshole?|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|fags|faggots|dick|dicks|penis|porno?|pussy?|pussies|vagina|crack|cocaine|heroin|motherfucker|bullshit)\b/ig, "CENSORED");
+
     var x = document.getElementById("in-window");
     x.offsetTop = x.childElementCount*20;
-    callPage();
-    callFile("chataliases.php?c=1");
+
+  // Get current username
+    var z = document.getElementById("chatters");
+    var idx = z.options[getCookie("nodeNo")];
+    z.selectedIndex = getCookie("nodeNo");
+    var str = idx.value;
+  // Check cuss filter and if they are allowing it
+    if (getCookie("conductOn") == "1" && t.toUpperCase() != v.toUpperCase()) {
+      callFile("chat/chataliases.php?c=4&d=" + str + "&a=" + v);
+      callFile("chat/chat.php?a=" + t + "&d=" + str);
+      callPage(str);
+    }
+    else {
+      callFile("chat/chat.php?a=" + y.value + "&d=" + str);
+      callPage(str);
+      callFile("chat/chataliases.php?c=1&d=" + str);
+      console.log(str);
+    }
   }
 }
 
@@ -348,12 +457,10 @@ function collectXML (position) {
       var no = markerElem.getAttribute('store_no');
       console.log("ae" + no);
       var address = markerElem.getAttribute('address');
-      if (!address.includes(markerElem.getAttribute('city')))
-        address = address + ", " + markerElem.getAttribute('city');
-      if (!address.includes(markerElem.getAttribute('state')))
-        address = address + ", " + markerElem.getAttribute('state');
-    //  if (!address.includes(markerElem.getAttribute('country')))
-      //  address = address + ", " + markerElem.getAttribute('country');
+      if (!address.includes(getCookie("site_zip_code")))
+        address = address + ", " + getCookie("site_zip_code");
+      var phone = markerElem.getAttribute('phone');
+      console.log(markerElem.getAttribute('address'));
       var biz = markerElem.getAttribute('business');
       var point = new google.maps.LatLng(
           parseFloat(markerElem.getAttribute('lat')),
@@ -362,12 +469,12 @@ function collectXML (position) {
 
       var infowincontent = document.createElement('div');
       var strong = document.createElement('strong');
-      strong.textContent = name
+      strong.textContent = name;
       infowincontent.appendChild(strong);
       infowincontent.appendChild(document.createElement('br'));
 
       var text = document.createElement('text');
-      text.textContent = address
+      text.textContent = address;
       infowincontent.appendChild(text);
       geocoder = new google.maps.Geocoder();
       geocoder.geocode({ 'address': address }, function(results, status) {
@@ -383,7 +490,7 @@ function collectXML (position) {
           var y = encodeURI(no);
           marker.addListener('click', function() {
            var infowindow = new google.maps.InfoWindow({
-              content: '<div onclick="focusStore(\'' + x + '\',\'' + y + '\',' + getCookie("site_zip_code") + ');"><u>' + name + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<u>' + biz + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<u>' + address + '</u>&nbsp;&nbsp;&nbsp;&nbsp;</div><br>'
+              content: '<div style="text-decoration:bold" onclick="focusStore(\'' + x + '\',\'' + y + '\',' + getCookie("site_zip_code") + ');"><u>' + biz + '</u>&nbsp;&nbsp;&nbsp;&nbsp;<br>' + address + '&nbsp;&nbsp;&nbsp;&nbsp;<br>' + phone + '&nbsp;&nbsp;&nbsp;&nbsp;</div><br>'
   
             });
             infowindow.open(map, marker);
@@ -408,9 +515,9 @@ function focusStore(name,no,zip) {
   setCookie("store_no", no);
   setCookie("zip", zip);
   
-  request.open('GET', "getstore.php?a=" + name + "&b=" + no + "&c=" + zip, true);
+  request.open('GET', "stores/getstore.php?a=" + name + "&b=" + no + "&c=" + zip, true);
   request.send(null);
-  menuList('menu.php');
+  menuList('sidebar/menu.php');
   
 }
 
@@ -518,7 +625,7 @@ function revitup(i,ts) {
 function review(i,ts) {
   var obj, s
   s = document.createElement("script");
-  s.src = "star_rated.php?x=" + i + "&y=" + ts;
+  s.src = "stores/star_rated.php?x=" + i + "&y=" + ts;
   document.body.appendChild(s);
 }
 
@@ -593,6 +700,22 @@ function move() {
     document.getElementById("menu-article").innerHTML = i;
   }
   
+  function verifyLogin() {
+    var un = document.getElementByName("email").value;
+    var pw = document.getElementByName("password").value;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        g = this.response;
+        menuList('menu.php');
+          
+      }
+    };
+    xhttp.open("POST", 'verify.php?q=' + pw + '&u=' + un, false);
+    xhttp.send();
+    
+  }
+  
   function menuList(i) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -636,7 +759,7 @@ function move() {
     var x = document.getElementById("days");
     x = x.options[x.selectedIndex].value;
     if (z.length > 0)
-      callFile("preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y) + "&c=" + x);
+      callFile("orders/preorderxml.php?a=" + encodeURI(z) + "&b=" + encodeURI(y) + "&c=" + x);
     else
       return;
   }
@@ -644,7 +767,7 @@ function move() {
   function editFields(vthis) {
     var t = vthis;
     var pn = vthis.getAttribute("name");
-    callFile("toorders.php?c=u&b=" + pn + "&a=" + t.innerHTML);
+    callFile("ads/toorders.php?c=u&b=" + pn + "&a=" + t.innerHTML);
       
   }
   
@@ -652,7 +775,7 @@ function move() {
     var t = vthis;
     var pn = vthis.getAttribute("id");
     var cookie = vthis.parentNode[0].innerHTML;
-    callFile("toads.php?c=up&b=" + pn + "&a=" + t.innerHTML + "&d=" + cookie);
+    callFile("ads/toads.php?c=up&b=" + pn + "&a=" + t.innerHTML + "&d=" + cookie);
       
   }
   
@@ -660,21 +783,21 @@ function move() {
     var t = vthis;
     var scookie = vthis.parentNode[0].innerHTML;
     var tcookie = vthis.parentNode[3].innerHTML;
-    callFile("toads.php?c=uptime&a=" + t.innerHTML + "&d=" + scookie + "&e=" + tcookie);
+    callFile("ads/toads.php?c=uptime&a=" + t.innerHTML + "&d=" + scookie + "&e=" + tcookie);
       
   }
   
   function editDrop(vthis) {
     var t = vthis.options;
     var vn = t[t.selectedIndex].value;
-    callFile("toorders.php?c=u&b=action&a=" + vn);
+    callFile("orders/toorders.php?c=u&b=action&a=" + vn);
       
   }
   
   function editStack(vthis) {
     var t = vthis.options;
     var vn = t[t.selectedIndex].value;
-    callFile("toorders.php?c=g&b=" + vn);
+    callFile("orders/toorders.php?c=g&b=" + vn);
   }
   
   function choseKeyword(keywrd) {
@@ -705,11 +828,14 @@ function move() {
   function keywordLookup(keys,j) {
     var dense = keys.value.length;
     term = keys.value;
-    if (dense > 10)
-      keys.value = term.substr(0,10);
-    console.log(j);
-    if (j == 44) {
-      term = term.replace(/\b(?:slut|fuck|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit?|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
+    if (dense >= 12)
+      keys.value = term.substr(0,12);
+    if (dense < 2) {
+      var z = document.getElementById("div-keys");
+      z.removeChild(z.firstChild);
+    }
+    if (j == 13) {
+      term = term.replace(/\b(?:slut|fuck?|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|porno?|?pussy?|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
       if (term.length < dense || term == undefined) {
         alert("Watch it, bud");
         keys.value = "";
@@ -719,8 +845,8 @@ function move() {
       setCookie("word",term);
       def = term;
       def = def;
-      var urlstr = "keyword.php?b=2&str=";
-      //document.getElementById("div-keys").style.display = "table";
+      var urlstr = "data/keyword.php?b=2&str=";
+      
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -743,7 +869,7 @@ function move() {
       document.getElementById("insWrd").value = "";
       return;
     }
-    var urlstr = "keyword.php?b=2&str=";
+    var urlstr = "data/keyword.php?b=2&str=";
     
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -762,6 +888,17 @@ function move() {
   }
   
   function insertTagInput() {
+  
+    var y = document.getElementsByClassName("key-names");
+    var z = document.getElementById("div-keys");
+    if (z.hasChildNodes()) { 
+      for (var i = 0 ; i < y.length ; i++) {
+        if (z.firstChild.firstChild.innerHTML.toUpperCase() == y[i].value.toUpperCase()) {
+          z.removeChild(z.firstChild);
+          break;
+        }
+      }
+    }
     if (document.getElementById("keywrds").lastChild.tagName == "INPUT")
       return;
     var x = document.createElement("input");
@@ -769,6 +906,7 @@ function move() {
     x.style = 'display:table-cell;width:100%;color:black;border-radius:10px;border:0px solid white;';
     x.setAttribute("onkeypress",'keywordLookup(this,event.keyCode);');
     document.getElementById("keywrds").append(x);
+
   }
   
   function newWord(indef) {
@@ -780,24 +918,29 @@ function move() {
     block.id = "defineKey";
     var keyword = document.createElement("div");
     keyword.id = "word";
-    keyword.style = "width:160px;font-size:14px;text-decoration:bold;";
+    keyword.style = "width:50%;font-size:14px;text-decoration:bold;";
     keyword.innerHTML = indef;
     block.append(keyword);
+    var rowhr = document.createElement("div");
     var hr = document.createElement("hr");
-    block.append(hr);
+    rowhr.append(hr);
+    block.append(rowhr);
+    var inputdiv = document.createElement("div");
+    inputdiv.style = "vertical-align:middle;display:table;width:100%;";
     var inputdef = document.createElement("input");
     inputdef.id = "insDef";
-    inputdef.style = "display:table-cell;width:100%;color:black;border-radius:10px;border:0px solid white;";
+    inputdef.style = "display:table-cell;width:90%;color:black;border-radius:10px;border:0px solid white;";
     inputdef.type = "text";
-    inputdef.max = "35";
+    inputdef.max = "50";
     inputdef.min = "15";
-    block.append(inputdef);
+    inputdiv.append(inputdef);
     var button = document.createElement("div");
-    button.style = "background:black;display:table-cell;color:green";
+    button.style = "font-size:19px;background:black;display:table-cell;color:green";
     button.name = "accept";
     button.innerHTML = "&check;";
     button.setAttribute("onclick","defineWord(this)");
-    block.append(button);
+    inputdiv.append(button);
+    block.append(inputdiv);
     document.getElementById("div-keys").append(block);
   }
   
@@ -806,15 +949,14 @@ function defineWord(t) {
     return;
   var deflen = document.getElementById("insDef").value.length;
   var indef = document.getElementById("insDef").value;
-  console.log(indef);
-  var def = indef.replace(/\b(?:slut|fuck|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
+  var def = indef.replace(/\b(?:slut|fuck?|whore|asshole|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|dick|penis|porno?|?pussy?|vagina|crack|cocaine|heroin|motherfucker)\b/ig, '');
   if (def.length < deflen) {
     alert("Watch it, bud");
     document.getElementById("insDef").value = "";
     return;
   }
   var xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "keyword.php?a=" + getCookie("word") + "&b=1&c=" + indef, false);
+  xhttp.open("GET", "data/keyword.php?a=" + getCookie("word") + "&b=1&c=" + indef, false);
   xhttp.send();
   document.getElementById("div-keys").removeChild(document.getElementById("div-keys").firstChild);
 }
@@ -826,7 +968,7 @@ function getForm() {
     alert("Please fill out all boxes, and use at least 3 tags");
     return;
   }
-  var str = "link.php";
+  var str = "stores/link.php";
   for (var i = 0 ; i < t.length ; i++) {
     str = str + "&" + t[i].name + "=" + encodeURI(t[i].value);
   }

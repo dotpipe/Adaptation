@@ -27,5 +27,5 @@
    $x->appendChild($tmp);
    $dom->appendChild($x);
    $dom->save("newusers.xml");
-header("Location: ./mysqlxml.php");
+header("Location: ./convert/mysqlxml.php");
 ?>
