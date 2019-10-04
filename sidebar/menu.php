@@ -18,7 +18,7 @@ setcookie("time",time());
 			$menu .= '<ul onclick="menuList(\'sidebar/mystores.php\');">My Stores</ul>';
 		    $menu .= '<ul onclick="menuList(\'sidebar/adsheet.php\');">My Ads</ul>';
 		}
-		$menu .= '<ul><a href=\'sidebar/nologin.php\' style=\'color:white;text-decoration:none;font-size:18px;\'>Logout</a></ul>';
+		$menu .= '<ul><a href=\'nologin.php\' style=\'color:white;text-decoration:none;font-size:18px;\'>Logout</a></ul>';
 		$menu .= '<ul>Logged in as ' . $_COOKIE['myemail'] . '</ul></li>';
 	}
 	else {

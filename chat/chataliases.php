@@ -1,7 +1,7 @@
 <?php
 
 function getaliases($con) {
-    $results = $con->query('SELECT username FROM ad_revs, chat WHERE (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") ORDER BY last DESC') or die (mysqli_error($con));
+    $results = $con->query('SELECT username FROM ad_revs, chat WHERE username != "' . $_COOKIE['myemail'] . '" && (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") ORDER BY last DESC') or die (mysqli_error($con));
     
     $c = [];
     $d = [];
@@ -27,7 +27,7 @@ function getconduct($cnxn) {
     if ($results->num_rows == 1) {
         $row = $results->fetch_assoc();
         $d = $row['conduct_on'];
-        echo json_encode($row['aim']);
+        echo $row['conduct_on'];
         setcookie("conductOn", $d);
     }
     else
@@ -90,18 +90,19 @@ function setconduct($con) {
 
 function newconduct($cxn) {
     
-    $results = $cxn->query('SELECT conduct_on, id FROM chat WHERE "' . $_COOKIE['chatfile'] . '"') or die(mysqli_error($cxn));
+    $results = $cxn->query('SELECT conduct_on, id FROM chat WHERE (aim = "' . $_COOKIE['myemail'] . '" && start = "' .  $_GET['d'] . '") || (aim = "' . $_GET['d'] . '" && start = "' .  $_COOKIE['myemail'] . '")') or die(mysqli_error($cxn));
 
     $row = [];
     
     if ($results->num_rows == 1) {
         $row = $results->fetch_assoc();
-        $d = $row['conduct_on'];
-        echo json_encode($d);
-        setcookie("chatfile", $d);
+        $d[0] = $row['conduct_on'];
+        echo json_encode($d[0]);
+        setcookie("chatfile", $d[0]);
+        $d[1] = $row['id'];
     // Insert new record of banned language
-        $sql = 'INSERT INTO conduct(serial_id,chat_id,conduct_on,message,date,flagged)
-            VALUES (null,"' . $row['id'] . '",' . $row['conductOn'] . ',"' . $_GET['a'] . '",CURRENT_TIMESTAMP,0,"' . $_COOKIE['myemail'] . '")';
+        $sql = 'INSERT INTO conduct(serial_id,chat_id,conduct_on,message,date,flagged,username)
+            VALUES (null,' . (int)$d[1] . ',' . (int)$d[0] . ',"' . $_GET['a'] . '",CURRENT_TIMESTAMP,0,"' . $_COOKIE['myemail'] . '")';
         $results = $cxn->query($sql) or die(mysqli_error($cxn));
     }
 }

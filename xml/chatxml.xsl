@@ -16,15 +16,16 @@
 		/* Position the tooltip text - see examples below! */
         position: absolute; z-index: 3; }
         
-	.tooltip .tooltiptext { top: -5px; right: 105%; }
+	.tooltip .tooltiptext { top: 0px; right: 140%; }
 	
 	/* Show the tooltip text when you mouse over the tooltip container */
 	.tooltip:hover .tooltiptext { visibility: visible; }
 	.tooltip .tooltiptext::after { content: " "; position: absolute; top: 50%; left: 100%; /* To the right of the tooltip */
-		margin-top: -5px; border-width: 5px;
-        border-style: solid; border-color: transparent transparent transparent white;
-}
+		margin-top: -7px; border-width: 5px;
+        border-style: solid; border-color: transparent transparent transparent white; }
    </style>
+   
+		<script src="gmaps.js"></script>
 		<table>
 			<tr>
 				<td>
@@ -40,14 +41,14 @@
 					<div id="in-window">
 						<xsl:for-each select="messages/msg">
 							<p style="display:table-row">
-								<div class="tooltip flag" time="{text/@time}" alias="{text/@alias}" style="height:12px;display:table-cell;font-size:12px;background:black;color:white;width:100%">
+								<div class="tooltip flag" time="{text/@time}" alias="{text/@alias}" style="height:10px;display:table-cell;font-size:12px;background:black;color:white;width:100%">
 									<xsl:value-of select="text/@alias"/>
 									<xsl:text>: </xsl:text>
 									<xsl:value-of select="text"/>
 								</div>
-								<div id="flag" class="tooltip" style="display:table-cell">
+								<div id="flag" onclick="this.className='tooltip';toggleFlagComment(this);" style="display:table-cell">
 									...
-									<span class="tooltiptext" onclick="flagComment(this)">Flag comment</span>
+									<span class="tooltiptext" style="display:none" onclick="flagComment(this)">Flag Comment</span>
 								</div>
 							</p>
 						</xsl:for-each>

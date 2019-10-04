@@ -107,6 +107,10 @@ function listConvo() {
 
 function listConvoFunc(alias) {
   
+  if (getCookie("login") !== "true") {
+    menuList("sidebar/login.php");
+    return;
+  }
   alias = alias.substring(1,alias.length-1);
   alias = alias.split(",");
   var x = document.getElementById("chatters");
@@ -147,7 +151,7 @@ function logout() {
       return;
     }
   };
-  xhttp.open("GET", "user/nologin.php", true);
+  xhttp.open("GET", "nologin.php", true);
   xhttp.send();
 
   localStorage.clear();
@@ -222,7 +226,7 @@ function callPage(str1) {
 function getInbox(no, data) {
 
   if (getCookie("login") !== "true") {
-    menuList("user/login.php");
+    menuList("login.php");
     return;
   }
   else {
@@ -287,6 +291,7 @@ function getConduct() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       setCookie("conductOn",this.responseText);
+      return this.responseText;
     }
   };
   xhttp.open("GET", "chat/chataliases.php?c=3&d=" + str, false);
@@ -315,23 +320,27 @@ function flagComment(r_val) {
   console.log(getCookie("conductOn"));
 }
 
-function setConduct() {
-
+function setConduct(th) {
+  
   var z = document.getElementById("chatters");
   var idx = z.options[getCookie("nodeNo")];
   z.selectedIndex = getCookie("nodeNo");
   var str = idx.value;
   
   var xhttp = new XMLHttpRequest();
-  var r_val = "";
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       setCookie("conductOn",this.responseText);
+      
     }
   };
   xhttp.open("GET", "chat/chataliases.php?c=5&d=" + str, false);
   xhttp.send();
-  console.log(getCookie("conductOn"));
+  
+  if (getCookie("conductOn") == 0)
+    th.style.color = "red";
+  else
+    th.style.color = "green";
 }
 
 function goChat(i,j) {
@@ -339,7 +348,7 @@ function goChat(i,j) {
     var y = i.cloneNode();
     i.value = "";
     var v = y.value;
-    var t = y.value;
+    var t = "";
     
     t = v.replace(/\b(?:slut|fuck|fucking|fuckin|whore|asshole?|tard|fucker|nigger|blackie|queer|noose|slave|retard|shit|ass|damn?|anal|sex|bitch|twat|cunt|fag|faggot|fags|faggots|dick|dicks|penis|porno?|pussy?|pussies|vagina|crack|cocaine|heroin|motherfucker|bullshit)\b/ig, "CENSORED");
 
@@ -351,17 +360,19 @@ function goChat(i,j) {
     var idx = z.options[getCookie("nodeNo")];
     z.selectedIndex = getCookie("nodeNo");
     var str = idx.value;
+    getConduct();
   // Check cuss filter and if they are allowing it
-    if (getCookie("conductOn") == "1" && t.toUpperCase() != v.toUpperCase()) {
+    if (getCookie("conductOn") == 1 && t.toUpperCase() != v.toUpperCase()) {
       callFile("chat/chataliases.php?c=4&d=" + str + "&a=" + v);
       callFile("chat/chat.php?a=" + t + "&d=" + str);
       callPage(str);
+      console.log(str + "FFFFFF");
     }
     else {
       callFile("chat/chat.php?a=" + y.value + "&d=" + str);
       callPage(str);
       callFile("chat/chataliases.php?c=1&d=" + str);
-      console.log(str);
+      console.log(str + "aFA");
     }
   }
 }
@@ -979,4 +990,11 @@ function getForm() {
   var xhttp = new XMLHttpRequest();
   xhttp.open("GET", str, false);
   xhttp.send();
+}
+
+function toggleFlagComment(th) {
+  if (th.firstElementChild.style.display == "none")
+    th.firstElementChild.style.display = 'block';
+  else
+    th.firstElementChild.style.display = 'none';
 }

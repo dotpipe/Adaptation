@@ -6,7 +6,7 @@ $chat = '<div id="startchat" loaded="0"><h3 style="color:wine" onclick=menuList(
 $chat .= '<li><b style="font-size:18px;color:lightgray" onclick="javascript:mapView()">Click to Toggle Map</b></li>';
 $chat .= '<table style="border:1px solid black;padding:3px;spacing:0px;width:250px;">';
 $chat .= '<tr><td><select id="chatters" onclick="listConvo()" onchange="getOption()"><option default value="" label="Click To see chats waiting"></select></td>';
-$chat .= '<td><button onclick=\'clearChat()\' style="border-radius:50%;color:green">&check;</button></td></tr></table>';
+$chat .= '<td><button onclick=\'setConduct(this)\' style="border-radius:50%;color:green">&check;</button></td></tr></table>';
 $chat .= '<div id="chatpane">';
 $chat .= '<table>';
 $chat .= '<tr><td><b id="contact" style="font-size:15px;color:red">Cheri</b> : : </td></tr>';
