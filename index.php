@@ -189,9 +189,27 @@
 	}
 	
 	</style>
-	
+
+	<script src="/gmaps.js"></script>
 	<script>
-	
+	 
+	 function fillMenu(i) {
+		document.getElementById("menu-article").innerHTML = "";
+		//i.parseFromString
+		
+		document.getElementById("menu-article").innerHTML = i;
+	}
+	 function menuList(i) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			g = this.response;
+			fillMenu(g);
+		}
+		};
+		xhttp.open("GET", i, false);
+		xhttp.send();
+	}
 	// progressbar
 	function move() {
 	  var elem = document.getElementById("myBar"); 
@@ -247,9 +265,6 @@
 	
 	</script>
 	<script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
-
-
-	<script src="gmaps.js"> // my javascript</script>
 	
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3DYtYBqKTgqG46VTRhlGGx-_nD6Vw4yc&libraries=places&callback=honey"
 	  async defer> // returns google maps</script>

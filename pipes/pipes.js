@@ -106,8 +106,8 @@
 //  Insert a callback function by useing call-pipe
 	const getActivity = async (opts_req, opts) => {
 		let g = await __grab(opts_req, opts);
-		if (elem.hasAttribute("call-pipe")) {
-			var t = elem.getAttribute("call-pipe");
+		if (elem.hasAttribute("callback")) {
+			var t = elem.getAttribute("callback");
 			return (t)(g);
 		}
 		return;
