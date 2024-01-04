@@ -1,26 +1,33 @@
 <?php
 
-function defineKeys() {
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs", 3306);
-    
-    $sql = 'INSERT INTO keywords(id,keyword,definition) VALUES(null,"' . $_GET['a'] . '", "' . $_GET['c']. '")';
-
-    $results = $conn->query($sql) or die(mysqli_error($conn));
+include("db.php");
+function defineKeys($conn) {
+    $sql = 'INSERT INTO keywords(keyword, definition) VALUES(:keyword, :definition)';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':keyword', $_GET['a']);
+    $stmt->bindParam(':definition', $_GET['c']);
+    $stmt->execute();
     
 }
 
-function lookupKeys() {
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs", 3306);
+function lookupKeys($conn) {
+    $sql = 'SELECT keyword, definition FROM keywords WHERE keyword LIKE :str ORDER BY keyword ASC';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindValue(':str', $_GET['str'] . '%');
+    $stmt->execute();
     
-    $sql = 'SELECT keyword, definition FROM keywords WHERE keyword LIKE "' . $_GET['str'] . '%" ORDER BY keyword ASC';
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    $results = $conn->query($sql) or die(mysqli_error($conn));
-    
-    $i = 0;
-    if ($results->num_rows === 0)
+    if (count($results) === 0) {
         return;
-    $form = ''; // '<div id="div-keys" style="width:200px;border-radius:25%;border:2px solid lightblue;background:lightgray;display:table;">';
-    while ($i < 2 && $row = $results->fetch_assoc()) {
+    }
+    
+    $form = '';
+    $i = 0;
+    foreach ($results as $row) {
+        if ($i >= 2) {
+            break;
+        }
         $form .= '<div onclick="choseKeyword(\'' . $row['keyword'] . '\');this.parentNode.removeChild(this);" style="width:130px;display:table-cell;padding:10px;margin:10px;border-radius:25px;border:2px dashes white;background:black;">';
         $form .= '<b style="font-size:14px">' . $row['keyword'] . '</b><br>';
         $form .= '<i><font style="width:90px;font-size:11px">' . $row['definition'] . '</font></i>';
@@ -32,7 +39,7 @@ function lookupKeys() {
 }
 
 if ($_GET['b'] == 2 && strlen($_GET['str']) > 1)
-    lookupKeys();    
+    lookupKeys($conn);    
 else if ($_GET['b'] == 1)
-    defineKeys();
+    defineKeys($conn);
 ?>

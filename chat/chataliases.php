@@ -1,68 +1,81 @@
 <?php
 
+include("db.php");
 function getaliases($con) {
-    $results = $con->query('SELECT username FROM ad_revs, chat WHERE username != "' . $_COOKIE['myemail'] . '" && (aim = "' . $_COOKIE['myemail'] . '" || start = "' .  $_COOKIE['myemail'] . '") ORDER BY last DESC') or die (mysqli_error($con));
+    $sql = 'SELECT username FROM ad_revs, chat WHERE username != :myemail AND (aim = :myemail OR start = :myemail) ORDER BY last DESC';
+    $stmt = $con->prepare($sql);
+    $stmt->bindParam(':myemail', $_COOKIE['myemail']);
+    $stmt->execute();
     
     $c = [];
-    $d = [];
-    if ($results->num_rows > 0) {
-        while ($row = $results->fetch_assoc()) {
-            $c[] = $row['username'];
-        }
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $c[] = $row['username'];
     }
     
-    $f = [];
-    foreach ($c as $v)
-        $f[] = $v;
-    
-    $f = array_unique($f);
+    $f = array_unique($c);
     echo json_encode($f);
     
 }
 
 function getconduct($cnxn) {
-    $results = $cnxn->query('SELECT filename, id, conduct_on FROM chat WHERE (aim = "' . $_COOKIE['myemail'] . '" && start = "' .  $_GET['d'] . '") || (aim = "' . $_GET['d'] . '" && start = "' .  $_COOKIE['myemail'] . '") LIMIT 1') or die(mysqli_error($cnxn));
-
-// Check if the store has conduct flag on/off
-    if ($results->num_rows == 1) {
-        $row = $results->fetch_assoc();
+    $sql = 'SELECT filename, id, conduct_on FROM chat WHERE (aim = :myemail1 AND start = :start1) OR (aim = :start2 AND start = :myemail2) LIMIT 1';
+    $stmt = $cnxn->prepare($sql);
+    $stmt->bindParam(':myemail1', $_COOKIE['myemail']);
+    $stmt->bindParam(':start1', $_GET['d']);
+    $stmt->bindParam(':start2', $_GET['d']);
+    $stmt->bindParam(':myemail2', $_COOKIE['myemail']);
+    $stmt->execute();
+    
+    if ($stmt->rowCount() == 1) {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $d = $row['conduct_on'];
         echo $row['conduct_on'];
         setcookie("conductOn", $d);
-    }
-    else
+    } else {
         echo 1;
+    }
 }
 
 function flagComment($cn) {
+    $sql = 'SELECT filename, conduct_on, id FROM chat WHERE (aim = :myemail1 AND start = :start1) OR (aim = :start2 AND start = :myemail2)';
+    $stmt = $cn->prepare($sql);
+    $stmt->bindParam(':myemail1', $_COOKIE['myemail']);
+    $stmt->bindParam(':start1', $_GET['d']);
+    $stmt->bindParam(':start2', $_GET['d']);
+    $stmt->bindParam(':myemail2', $_COOKIE['myemail']);
+    $stmt->execute();
     
-    $results = $cn->query('SELECT filename, conduct_on, id FROM chat WHERE (aim = "' . $_COOKIE['myemail'] . '" && start = "' .  $_GET['d'] . '") || (aim = "' . $_GET['d'] . '" && start = "' .  $_COOKIE['myemail'] . '")') or die(mysqli_error($con));
-
-    $row = [];
-    $row = [];
-    
-    if ($results->num_rows == 1) {
-        $row = $results->fetch_assoc();
+    if ($stmt->rowCount() == 1) {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $d[0] = $row['id'];
         echo json_encode($d[0]);
         setcookie("chatfile", $row['filename']);
-    // Insert new record of banned language
-        $time = date("Y-m-d H:i:s",$_GET['time']);
-        echo "\n" . $row['id'] . "\n";
+    
+        $time = date("Y-m-d H:i:s", $_GET['time']);
         $id = $d[0];
         $d[1] = $row['conduct_on'];
-        $sql = 'INSERT INTO conduct(serial_id,chat_id,conduct_on,message,date,flagged,username)
-            VALUES (null,' . (int)$d[0] . ',' . (int)$d[1] . ',"' . $_GET['msg'] . '","' . $time . '",1,"' . $_GET['d'] . '")';
-        $results = $cn->query($sql) or die(mysqli_error($cn));
+        $sql = 'INSERT INTO conduct(serial_id,chat_id,conduct_on,message,date,flagged,username) VALUES (null, :chat_id, :conduct_on, :msg, :time, 1, :username)';
+        $stmt = $cn->prepare($sql);
+        $stmt->bindParam(':chat_id', $id);
+        $stmt->bindParam(':conduct_on', $d[1]);
+        $stmt->bindParam(':msg', $_GET['msg']);
+        $stmt->bindParam(':time', $time);
+        $stmt->bindParam(':username', $_GET['d']);
+        $stmt->execute();
     }
 }
 
 function getfilename($con) {
-
-// Retrieve filename of chat
-    $results = $con->query('SELECT filename, id FROM chat WHERE (aim = "' . $_COOKIE['myemail'] . '" && start = "' .  $_GET['d'] . '") || (aim = "' . $_GET['d'] . '" && start = "' .  $_COOKIE['myemail'] . '")') or die(mysqli_error($con));
-    if ($results->num_rows == 1) {
-        $row = $results->fetch_assoc();
+    $sql = 'SELECT filename, id FROM chat WHERE (aim = :myemail1 AND start = :start1) OR (aim = :start2 AND start = :myemail2)';
+    $stmt = $con->prepare($sql);
+    $stmt->bindParam(':myemail1', $_COOKIE['myemail']);
+    $stmt->bindParam(':start1', $_GET['d']);
+    $stmt->bindParam(':start2', $_GET['d']);
+    $stmt->bindParam(':myemail2', $_COOKIE['myemail']);
+    $stmt->execute();
+    
+    if ($stmt->rowCount() == 1) {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $d = $row['filename'];
         echo json_encode($d);
         setcookie("chatfile", $d);
@@ -70,44 +83,58 @@ function getfilename($con) {
 }
 
 function setconduct($con) {
-
-    $results = $con->query('SELECT aim, conduct_on FROM chat WHERE filename = "'. $_COOKIE['chatfile'] . '"') or die(mysqli_error($con));
-    if ($results->num_rows == 1) {
-        $row = $results->fetch_assoc();
+    $sql = 'SELECT aim, conduct_on FROM chat WHERE filename = :chatfile';
+    $stmt = $con->prepare($sql);
+    $stmt->bindParam(':chatfile', $_COOKIE['chatfile']);
+    $stmt->execute();
+    
+    if ($stmt->rowCount() == 1) {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $d = $row['conduct_on'];
     
-    // Only a store can set the conduct flag
-    // Stores are always the 'aim' column
-    // People aren't called by stores, it's vice versa
-        if ($row['aim'] != $_COOKIE['myemail'])
+        // Only a store can set the conduct flag
+        // Stores are always the 'aim' column
+        // People aren't called by stores, it's vice versa
+        if ($row['aim'] != $_COOKIE['myemail']) {
             return;
+        }
+    
         echo json_encode($d);
         setcookie("chatfile", $d);
         $bool = ($d == 1) ? 0 : 1;
-        $return = $con->query('UPDATE chat SET conduct_on = ' . $bool . ' WHERE filename = "'. $_COOKIE['chatfile'] . '"');
+        $sql = 'UPDATE chat SET conduct_on = :bool WHERE filename = :chatfile';
+        $stmt = $con->prepare($sql);
+        $stmt->bindParam(':bool', $bool);
+        $stmt->bindParam(':chatfile', $_COOKIE['chatfile']);
+        $stmt->execute();
     }
 }
 
 function newconduct($cxn) {
+    $sql = 'SELECT conduct_on, id FROM chat WHERE (aim = :myemail1 AND start = :start1) OR (aim = :start2 AND start = :myemail2)';
+    $stmt = $cxn->prepare($sql);
+    $stmt->bindParam(':myemail1', $_COOKIE['myemail']);
+    $stmt->bindParam(':start1', $_GET['d']);
+    $stmt->bindParam(':start2', $_GET['d']);
+    $stmt->bindParam(':myemail2', $_COOKIE['myemail']);
+    $stmt->execute();
     
-    $results = $cxn->query('SELECT conduct_on, id FROM chat WHERE (aim = "' . $_COOKIE['myemail'] . '" && start = "' .  $_GET['d'] . '") || (aim = "' . $_GET['d'] . '" && start = "' .  $_COOKIE['myemail'] . '")') or die(mysqli_error($cxn));
-
-    $row = [];
-    
-    if ($results->num_rows == 1) {
-        $row = $results->fetch_assoc();
+    if ($stmt->rowCount() == 1) {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $d[0] = $row['conduct_on'];
         echo json_encode($d[0]);
         setcookie("chatfile", $d[0]);
         $d[1] = $row['id'];
-    // Insert new record of banned language
-        $sql = 'INSERT INTO conduct(serial_id,chat_id,conduct_on,message,date,flagged,username)
-            VALUES (null,' . (int)$d[1] . ',' . (int)$d[0] . ',"' . $_GET['a'] . '",CURRENT_TIMESTAMP,0,"' . $_COOKIE['myemail'] . '")';
-        $results = $cxn->query($sql) or die(mysqli_error($cxn));
+        // Insert new record of banned language
+        $sql = 'INSERT INTO conduct(serial_id,chat_id,conduct_on,message,date,flagged,username) VALUES (null, :chat_id, :conduct_on, :msg, CURRENT_TIMESTAMP, 0, :username)';
+        $stmt = $cxn->prepare($sql);
+        $stmt->bindParam(':chat_id', $d[1]);
+        $stmt->bindParam(':conduct_on', $d[0]);
+        $stmt->bindParam(':msg', $_GET['a']);
+        $stmt->bindParam(':username', $_COOKIE['myemail']);
+        $stmt->execute();
     }
 }
-
-$conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 if ($_GET['c'] == 1)
     getaliases($conn);

@@ -1,6 +1,6 @@
 <?php
 
-
+include("db.php");
 // Insert new businesses into database
 // TODO: no xml for stores. just database filling.
 // By zip codes.
@@ -8,8 +8,6 @@
 function sanitize(&$r) {
     $r = filter_var(strip_tags($r), FILTER_SANITIZE_STRING);
 }
-
-$conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 if (!file_exists('branches.xml'))
     file_put_contents('branches.xml', "<?xml version='1.0'?><accounts></accounts>");

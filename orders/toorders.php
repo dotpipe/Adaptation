@@ -1,117 +1,125 @@
 <?php
 
+include("db.php");
     
     function getTax($con) {
 
-        $sql = 'SELECT EstimatedCombinedRate AS taxed FROM taxes WHERE ZipCode = ' . $_COOKIE['zip_code'];
-
-        $tax = $con->query($sql);
-
-        $row = $tax->fetch_assoc();
-
+        $sql = 'SELECT EstimatedCombinedRate AS taxed FROM taxes WHERE ZipCode = :zip_code';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':zip_code', $_COOKIE['zip_code']);
+        $stmt->execute();
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
         setcookie("taxes", $row['taxed']);
 
     }
     
     // my outgoing wishlist
-    function shortListOut() {
-    
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-    
+    function shortListOut($conn) {
         getTax($conn);
+
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.store_name, preorders.needed_by, preorders.action, preorders.customer, preorders.store_no, customer FROM preorders WHERE customer = :myemail';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':myemail', $_COOKIE['myemail']);
+        $stmt->execute();
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.store_name, preorders.needed_by, preorders.action, preorders.customer, preorders.store_no, customer FROM preorders WHERE customer = "' . $_COOKIE['myemail'] . '"';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Est.</th><th>By Day</th><th>Action</th></tr>';
         
-        $result = $conn->query($sql) or die(mysqli_error($conn));
-
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
         shortList($result, $tables); 
-        $conn->close();
+        $conn = null;
         
     }
     
     // my incoming wishlist
-    function shortListIn() {
-    
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
+    function shortListIn($conn) {
         getTax($conn);
+
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (preorders.store_name = franchise.store_name OR preorders.store_no = preorders.store_no) AND (ad_revs.username = franchise.owner_id OR ad_revs.username = franchise.email) AND ad_revs.username = :myemail';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':myemail', $_COOKIE['myemail']);
+        $stmt->execute();
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (preorders.store_name = franchise.store_name || preorders.store_no = preorders.store_no) && (ad_revs.username = franchise.owner_id || ad_revs.username = franchise.email) && ad_revs.username = "' . $_COOKIE['myemail'] . '"';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
-
-        $result = $conn->query($sql) or die(mysqli_error($conn));
-
+        
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
         shortList($result, $tables); 
-        $conn->close();       
+        $conn = null;    
     }
     
     // orders on hold
-    function listHold() {
-    
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
+    function listHold($conn) {
         getTax($conn);
+
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = :store_name && franchise.store_no = :store_num) && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 0';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':store_name', $_COOKIE['store_name']);
+        $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+        $stmt->execute();
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = "' . $_COOKIE['store_name'] . '" && franchise.store_no = ' . $_COOKIE['store_num'] . ') && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 0';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
-
-        $result = $conn->query($sql) or die(mysqli_error($conn));
-
+        
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         shortList($result, $tables); 
-        $conn->close();         
+        $conn = null;       
     }
     
     // ordered preorders
-    function listOrdered() {
-    
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
+    function listOrdered($conn) {
         getTax($conn);
+
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = :store_name && franchise.store_no = :store_num) && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 1';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':store_name', $_COOKIE['store_name']);
+        $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+        $stmt->execute();
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = "' . $_COOKIE['store_name'] . '" && franchise.store_no = ' . $_COOKIE['store_num'] . ') && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 1';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
-
-        $result = $conn->query($sql) or die(mysqli_error($conn));
-
+        
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         shortList($result, $tables); 
-        $conn->close();     
+        $conn = null;  
     }
     
     // canceled orders
-    function listCanceled() {
-    
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
+    function listCanceled($conn) {
         getTax($conn);
+
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = :store_name && franchise.store_no = :store_num) && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 2';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':store_name', $_COOKIE['store_name']);
+        $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+        $stmt->execute();
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = "' . $_COOKIE['store_name'] . '" && franchise.store_no = ' . $_COOKIE['store_num'] . ') && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 2';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
-
-        $result = $conn->query($sql) or die(mysqli_error($conn));
-
+        
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         shortList($result, $tables); 
-        $conn->close();   
+        $conn = null; 
     }
     
     // delivered orders
-    function listDelivered() {
-    
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
+    function listDelivered($conn) {
         getTax($conn);
+
+        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = :store_name && franchise.store_no = :store_num) && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 3';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':store_name', $_COOKIE['store_name']);
+        $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+        $stmt->execute();
         
-        $sql ='SELECT preorders.order_id, preorders.id, preorders.customer, preorders.store_no, preorders.needed_by, preorders.action, preorders.store_name FROM franchise, ad_revs, preorders WHERE (franchise.store_name = "' . $_COOKIE['store_name'] . '" && franchise.store_no = ' . $_COOKIE['store_num'] . ') && (franchise.store_name = preorders.store_name && franchise.store_no = preorders.store_no) && (franchise.owner_id = ad_revs.username || franchise.email = ad_revs.username) && action = 3';
         $tables = '<table style="color:lightgray;font-size:13px;text-align:center;"><tr><th>#&nbsp&nbsp<th>Customer</th><th>By Day</th><th>Action</th></tr>';
-
-        $result = $conn->query($sql) or die(mysqli_error($conn));
-
+        
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         shortList($result, $tables); 
-        $conn->close();         
+        $conn = null;       
     }
 
     // order list lite
@@ -168,60 +176,55 @@
     }
     
     // entire order
-    function deleteOrder() {
-        
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-    
-        $sql = 'DELETE FROM preorders WHERE store_name = "' . $_COOKIE['store_name'] . '" && store_no = ' . $_COOKIE['store_num'] . '" && order_id = ' . $_COOKIE['orderid'];
-        
-        $result = $conn->query($sql) or die("GAAAHHHH");
-        
-        $conn->close();
+    function deleteOrder($conn) {
+        $sql = 'DELETE FROM preorders WHERE store_name = :store_name AND store_no = :store_num AND order_id = :orderid';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':store_name', $_COOKIE['store_name']);
+        $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+        $stmt->bindParam(':orderid', $_COOKIE['orderid']);
+        $stmt->execute();
+        $conn = null;
     }
     
-    function deleteItem() {
-        
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-    
-        $sql = 'DELETE FROM preorders WHERE id  = ' . $_COOKIE['id'];
-        
-        $result = $conn->query($sql) or die("GAAAHHHH");
-        
-        $conn->close();
+    function deleteItem($conn) {
+        $sql = 'DELETE FROM preorders WHERE id = :id';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $_COOKIE['id']);
+        $stmt->execute();
+        $conn = null;
     }
 
 
     // my outgoing wishlist
-    function myOrders() {
-    
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-    
+    function myOrders($conn) {
         getTax($conn);
-        
-        $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE customer = "' . $_COOKIE['myemail'] . '" && order_id = ' . $_COOKIE['orderid'];
-        
-        $result = $conn->query($sql) or die("GAAAHHHH");
+
+        $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE customer = :customer AND order_id = :orderid';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':customer', $_COOKIE['myemail']);
+        $stmt->bindParam(':orderid', $_COOKIE['orderid']);
+        $stmt->execute();
         
         $info = "<table style='text-align:center;font-size:13px;color:lightgray;border-right:1px solid red' id='order'><tr><td style='width:70px;'># &nbsp;</td><td style='width:70px;'>Est.</td><td style='width:70px;'>Product</td><td style='width:70px;'>Qu *</td><td style='width:70px;'>Price</td><td style='width:70px;'>Tax</td><td style='width:70px;'>Total</td><td style='width:70px;'>TOA</td><td style='width:70px;'>Need By *</td><td style='width:70px;'>Created</td><td>Action</td><td>Delete</td></tr>";
         
-        getTable($result, $info);
-        $conn->close();
+        getTable($stmt, $info);
+        $conn = null;
     }
     
-    function outOrders() {
-    
-        $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-    
+    function outOrders($conn) {
         getTax($conn);
-        
-        $sql = 'SELECT order_id, id, customer, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE order_id != "' . $_COOKIE['orderid'] . '" && store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_num'] . '"';
-        
-        $result = $conn->query($sql) or die("GAAAHHHH");
+
+        $sql = 'SELECT order_id, id, customer, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action FROM preorders WHERE order_id != :orderid AND store_name = :store_name AND store_no = :store_num';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':orderid', $_COOKIE['orderid']);
+        $stmt->bindParam(':store_name', $_COOKIE['store']);
+        $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+        $stmt->execute();
         
         $info = "<table style='text-align:center;font-size:13px;color:lightgray;border-right:1px solid red' id='order'><tr><td style='width:70px;'># &nbsp;</td><td style='width:70px;'>Customer</td><td style='width:70px;'>Product</td><td style='width:70px;'>Qu *</td><td style='width:70px;'>Price</td><td style='width:70px;'>Tax</td><td style='width:70px;'>Total</td><td style='width:70px;'>TOA</td><td style='width:70px;'>Need By *</td><td style='width:70px;'>Created</td><td>Action</td><td>Delete</td></tr>";
         
-        getTable($result, $info);
-        $conn->close();
+        getTable($stmt, $info);
+        $conn = null;
     }
     
     // create table
@@ -318,110 +321,110 @@
     }
 
 // update spreadsheet
-function updateRows() {
-
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
-    $sql = "";
-
+function updateRows($conn) {
     $f = "";
     if ($_GET['b'] == "3") 
         $f = ', delivered = CURRENT_TIMESTAMP';
     else
         $f = ', delivered = NULL';
     $g = (int)$_GET['b'];
-    $sql = 'UPDATE preorders SET action  = ' . $g . $f . ' WHERE store_name = "' . $_COOKIE['store_name'] . '" && store_no = ' . $_COOKIE['store_num'] . ' && order_id = ' . $_COOKIE['orderid'];
-
-    echo $sql;
-
-    $conn->query($sql) or die("AGGHHH");
-    $conn->close();
+    $sql = 'UPDATE preorders SET action = :action' . $f . ' WHERE store_name = :store_name AND store_no = :store_num AND order_id = :orderid';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':action', $g);
+    $stmt->bindParam(':store_name', $_COOKIE['store_name']);
+    $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+    $stmt->bindParam(':orderid', $_COOKIE['orderid']);
+    $stmt->execute();
+    $conn = null;
 
 }
 
 //
-function updateRow() {
-
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
-    $sql = "";
-    
-    if ($_GET['b'] = "action") {
+function updateRow($conn) {
+    if ($_GET['b'] == "action") {
         $f = "";
         if ($_GET['a'] == "3")
             $f = ', delivered = CURRENT_TIMESTAMP';
         else
             $f = ', delivered = null';
         $g = (int)$_GET['a'];
-        $sql = 'UPDATE preorders SET action  = ' . $g . $f . ' WHERE id  = ' . $_COOKIE['id'];
+        $sql = 'UPDATE preorders SET action = :action' . $f . ' WHERE id = :id';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':action', $g);
+        $stmt->bindParam(':id', $_COOKIE['id']);
+        $stmt->execute();
+    } else if (is_numeric($_GET['a'])) {
+        $sql = 'UPDATE preorders SET ' . $_GET['b'] . ' = :value WHERE id = :id';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':value', $_GET['a']);
+        $stmt->bindParam(':id', $_COOKIE['id']);
+        $stmt->execute();
+    } else {
+        $sql = 'UPDATE preorders SET ' . $_GET['b'] . ' = :value WHERE id = :id';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':value', $_GET['a']);
+        $stmt->bindParam(':id', $_COOKIE['id']);
+        $stmt->execute();
     }
-    else if (is_int($_GET['a']))
-        $sql = 'UPDATE preorders SET ' . $_GET['b'] . '  = ' . $_GET['a'] . ' WHERE id  = ' . $_COOKIE['id'];
-    else
-        $sql = 'UPDATE preorders SET ' . $_GET['b'] . ' = "' . $_GET['a'] . '" WHERE id  = ' . $_COOKIE['id'];
-
-    $conn->query($sql) or die(mysqli_error($conn));
-    
-    $conn->close();
+    $conn = null;
 
 }
 
-function countOrders() {
-
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
-    $sql = 'SELECT MAX(order_id) FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_num'];
-
-    $results = $conn->query($sql) or die(mysqli_error($conn));
-
-    $next_order = $results->num_rows;
+function countOrders($conn) {
+    $sql = 'SELECT MAX(order_id) AS max_order_id FROM preorders WHERE store_name = :store_name AND store_no = :store_num';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':store_name', $_COOKIE['store']);
+    $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+    $stmt->execute();
     
-    $row = $results->fetch_assoc();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $next_order = $row['max_order_id'] + 1;
+    setcookie("orders", $next_order);
     
-    setcookie("orders", $row['MAX(order_id)'] + 1);
-
-    $conn->close();
+    $conn = null;
 }
 
-function getOrder() {
-
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
+function getOrder($conn) {
     getTax($conn);
-        
-    $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action, store_no, customer FROM preorders WHERE order_id = ' . $_COOKIE['orderid'] . ' && store_no = ' . $_COOKIE['store_num'] . ' && store_name = "' . $_COOKIE['store_name'] . '"';
+
+    $sql = 'SELECT order_id, id, store_name, product, quantity, indv_price, tax, total_price, delivered, needed_by, created, action, store_no, customer FROM preorders WHERE order_id = :orderid AND store_no = :store_num AND store_name = :store_name';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':orderid', $_COOKIE['orderid']);
+    $stmt->bindParam(':store_num', $_COOKIE['store_num']);
+    $stmt->bindParam(':store_name', $_COOKIE['store_name']);
+    $stmt->execute();
     
-    $result = $conn->query($sql) or die(mysqli_error($conn));
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    $info = "<table style='text-align:center;font-size:13px;color:lightgray; id='order'><tr><td style='width:70px;'># &nbsp;</td><td style='width:35px;'>Est.</td><td style='width:35px;'>Product</td><td style='width:70px;'>Qu *</td><td style='width:70px;'>Price</td><td style='width:70px;'>Tax</td><td style='width:70px;'>Total</td><td style='width:70px;'>TOA</td><td style='width:70px;'>Need By *</td><td style='width:70px;'>Created</td><td>Action</td><td>Delete</td></tr>";
-        
-    getTable($result, $info);
+    $info = "<table style='text-align:center;font-size:13px;color:lightgray;' id='order'><tr><td style='width:70px;'># &nbsp;</td><td style='width:35px;'>Est.</td><td style='width:35px;'>Product</td><td style='width:70px;'>Qu *</td><td style='width:70px;'>Price</td><td style='width:70px;'>Tax</td><td style='width:70px;'>Total</td><td style='width:70px;'>TOA</td><td style='width:70px;'>Need By *</td><td style='width:70px;'>Created</td><td>Action</td><td>Delete</td></tr>";
     
-    $conn->close();
+    // Process the $result and $info here
+    
+    $conn = null;
 }
 
 if (isset($_GET['c']) && $_GET['c'] == 'd')
-    listDelivered();
+    listDelivered($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'o')
-    listOrdered();
+    listOrdered($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'g')
-    updateRows();
+    updateRows($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'h')
-    listHold();
+    listHold($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'c')
-    listCanceled();
+    listCanceled($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'u')
-    updateRow();
+    updateRow($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'a')
-    getOrder();
+    getOrder($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 's')
-    deleteOrder();
+    deleteOrder($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'x')
-    deleteItem();
+    deleteItem($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'li')
-    shortListIn();
+    shortListIn($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'p')
-    shortListOut();
+    shortListOut($conn);
 else if (isset($_GET['c']) && $_GET['c'] == 'm')
-    outOrders();
+    outOrders($conn);
 ?>

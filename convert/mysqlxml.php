@@ -1,7 +1,6 @@
 <?php
 
-$conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
+include("db.php");
 // create database entries for any type of user (owner, manager, shoppers)
 
 $affectedRow = 0;

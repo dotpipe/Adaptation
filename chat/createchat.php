@@ -1,15 +1,19 @@
 <?php
-$con = mysqli_connect('localhost', 'rooter', '', 'adrs','3306') or die("Error: Can't connect");
 
-$results = $con->query('SELECT id, filename FROM chat WHERE 1');
+include("db.php");
+
+$sql = 'SELECT id, filename FROM chat';
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $var = [];
 $temp = 0;
 
 // recover filenames
-while ($var = $results->fetch_assoc()) {
-    if (file_exists("../xml/" . $var['filename']))
+foreach ($results as $var) {
+    if (file_exists("../xml/" . $var['filename'])) {
         continue;
-    if (!file_exists("../xml/" . $var['filename'])) {
+    } else {
         file_put_contents("../xml/" . $var['filename'], "<?xml version='1.0'?><?xml-stylesheet type='text/xsl' href='chatxml.xsl' ?><messages></messages>");
         chmod('../xml/' . $var['filename'], 0644);
     }

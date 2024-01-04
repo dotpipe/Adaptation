@@ -3,20 +3,23 @@
 if (!isset($_SESSION))
     session_start();
 
-function updateRow() { // update propery `b  to value `a` where `serial` is `d` in `advs` (advertisements) 
-
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
-
+    include("db.php");
+function updateRow($conn) { // update propery `b  to value `a` where `serial` is `d` in `advs` (advertisements) 
     $sql = "";
+    $params = array(
+        'a' => $_GET['a'],
+        'b' => $_GET['b'],
+        'd' => $_GET['d']
+    );
     
-    if (is_int($_GET['a']))
-        $sql = 'UPDATE advs SET ' . $_GET['b'] . ' = ' . $_GET['a'] . ' WHERE serial  = ' . $_GET['d'];
-    else
-        $sql = 'UPDATE advs SET ' . $_GET['b'] . ' = "' . $_GET['a'] . '" WHERE serial = ' . $_GET['d'];
-
-    $conn->query($sql) or die(mysqli_error($conn));
+    if (is_numeric($_GET['a'])) {
+        $sql = 'UPDATE advs SET ' . $_GET['b'] . ' = :a WHERE serial = :d';
+    } else {
+        $sql = 'UPDATE advs SET ' . $_GET['b'] . ' = :a WHERE serial = :d';
+    }
     
-    $conn->close();
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
 
 }
 
@@ -57,9 +60,7 @@ function listAds($res) {
 }
 
 // enter new ad from newad.php to database TODO
-function newAd() {
-    
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
+function newAd($conn) {
     
     $x = urldecode($_GET['password']);
     $y = str_getcsv(urldecode($_GET['no']),",");
@@ -81,118 +82,96 @@ function newAd() {
     }
 
     if ($i === 2 || $i === 1) {
-        $sql = 'INSERT INTO advs(store_name,slogan,description,img,total_paid,last_paid_on,flagged,start,end,serial,url,seen,zip,nums) VALUE("' . $_COOKIE['mystore'] . '","' . $_COOKIE['slogan'] . '","' . $_COOKIE['desc'] . '","' . $_COOKIE['img'] . '",0,0,0,' . $_COOKIE['start'] . ',' . $_COOKIE['end'] . ',null,"' . $_COOKIE['url'] . '",0,' . $_COOKIE['zip_code'] . ',"' . $_GET['no'] . '")';
-        $res = $conn->query($sql);
+        $sql = 'INSERT INTO advs(store_name, slogan, description, img, total_paid, last_paid_on, flagged, start, end, serial, url, seen, zip, nums) VALUES(:store_name, :slogan, :description, :img, 0, 0, 0, :start, :end, null, :url, 0, :zip_code, :no)';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':store_name', $_COOKIE['mystore']);
+        $stmt->bindParam(':slogan', $_COOKIE['slogan']);
+        $stmt->bindParam(':description', $_COOKIE['desc']);
+        $stmt->bindParam(':img', $_COOKIE['img']);
+        $stmt->bindParam(':start', $_COOKIE['start']);
+        $stmt->bindParam(':end', $_COOKIE['end']);
+        $stmt->bindParam(':url', $_COOKIE['url']);
+        $stmt->bindParam(':zip_code', $_COOKIE['zip_code']);
+        $stmt->bindParam(':no', $_GET['no']);
+        $res = $stmt->execute();
     }
     
 }
 
 // load all active ads
-function loadAds() {
-    
-    $_SESSION['ads'] = array();
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
-    
-    $sql = 'SELECT store_name, slogan, description, img, serial, url, zip FROM advs, franchise WHERE end > ' . time() . ' && start < ' . time() . ' ORDER BY start ASC';
-    
-    $res = $conn->query($sql) or die(mysqli_error($conn));
-    $sess = [];
-    if ($res->num_rows) {
-        $i = 0;
-        while ($row = $res->fetch_assoc()) {
-            foreach ($row as $k => $v) {
-                $sess[$i][$k][] = $v;
-            }
-            $i++;
-        }
-    }
+function loadAds($conn) {
+    $sql = 'SELECT store_name, slogan, description, img, serial, url, zip FROM advs, franchise WHERE end > :current_time AND start < :current_time ORDER BY start ASC';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':current_time', time(), PDO::PARAM_INT);
+    $stmt->execute();
+    $sess = $stmt->fetchAll(PDO::FETCH_ASSOC);
     listAds($sess);
 }
 
 //look at my ads
 
-function loadMyAds() {
-    
-    $_SESSION['ads'] = array();
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
-    
-    $sql = 'SELECT nums, franchise.store_name, store_no FROM franchise, ad_revs, advs WHERE ad_revs.username = "' . $_COOKIE['myemail'] . '" && (franchise.email = ad_revs.username || franchise.owner_id = ad_revs.username) && franchise.store_name = advs.store_name';
-
-    $stores = $conn->query($sql) or die(mysqli_error($conn));
-    $st_sess = $stores->fetch_assoc();
+function loadMyAds($conn) {
+    $sql = 'SELECT nums, franchise.store_name, store_no FROM franchise, ad_revs, advs WHERE ad_revs.username = :myemail AND (franchise.email = ad_revs.username OR franchise.owner_id = ad_revs.username) AND franchise.store_name = advs.store_name';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':myemail', $_COOKIE['myemail']);
+    $stmt->execute();
+    $st_sess = $stmt->fetch(PDO::FETCH_ASSOC);
     
     $stores_str = "";
-    $ec = [];
-    
     $store_nos = [];
     foreach ($st_sess as $key => $v) {
         if ($key === "nums") {
-            $store_nos = str_getcsv($st_sess['nums'],",");
-        }
-        else if ($key === "store_name")
-            $stores_str .= '(advs.store_name = "' . $v . '" && franchise.store_name = "' . $v . '") &&';
-            
-        else if ($key === "store_no") {
+            $store_nos = str_getcsv($st_sess['nums'], ",");
+        } elseif ($key === "store_name") {
+            $stores_str .= '(advs.store_name = :store_name AND franchise.store_name = :store_name) AND';
+        } elseif ($key === "store_no") {
             $stores_str .= '(';
-            foreach ($store_nos as $k)
-                $stores_str .= 'franchise.store_no = ' . $k . ' || ';
-            $stores_str = substr($stores_str,0,strlen($stores_str)-4) . ')';
-        }
-    }
-    $sql = 'SELECT serial, franchise.store_name, start, end, seen, advs.flags, url, franchise.zip, total_paid, last_paid_on, store_no, nums FROM franchise, ad_revs, advs WHERE ad_revs.username = "' . $_COOKIE['myemail'] . '" && ' . $stores_str . ' && (franchise.email = ad_revs.username || franchise.owner_id = ad_revs.username) && franchise.store_name = advs.store_name';
-    
-    $res = $conn->query($sql) or die(mysqli_error($conn));
-    $sess = [];
-    if ($res->num_rows) {
-        $i = 0;
-        while ($row = $res->fetch_assoc()) {
-            if ($row['nums'] === "0")
-            { }
-            else if (!in_array($row['store_no'], str_getcsv($row['nums'])))
-                continue;
-            foreach ($row as $k => $v) {
-                if ($k !== "nums")
-                    $sess[$i][$k][] = $v;
+            foreach ($store_nos as $k) {
+                $stores_str .= 'franchise.store_no = ' . $k . ' OR ';
             }
-            $i++;
+            $stores_str = substr($stores_str, 0, strlen($stores_str) - 4) . ')';
         }
     }
+    
+    $sql = 'SELECT serial, franchise.store_name, start, end, seen, advs.flags, url, franchise.zip, total_paid, last_paid_on, store_no, nums FROM franchise, ad_revs, advs WHERE ad_revs.username = :myemail AND ' . $stores_str . ' AND (franchise.email = ad_revs.username OR franchise.owner_id = ad_revs.username) AND franchise.store_name = advs.store_name';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':myemail', $_COOKIE['myemail']);
+    $stmt->bindParam(':store_name', $st_sess['store_name']);
+    $stmt->execute();
+    $sess = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
     listAds($sess);
 }
 // new hit
-function updSeen() {
-    
-    $_SESSION['ads'] = array();
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
-    
-    $sql = 'UPDATE advs SET seen = (seen + 1) WHERE serial = ' . $_GET['serial'];
-    
-    $res = $conn->query($sql);
+function updSeen($conn) {
+    $sql = 'UPDATE advs SET seen = (seen + 1) WHERE serial = :serial';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':serial', $_GET['serial']);
+    $stmt->execute();
 }
 
 // add hours (+/-) minus hours (spreadsheet on MyAds.php)
-function updTime() {
-    
-    $_SESSION['ads'] = array();
-    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
-    $time = int($_GET['e']);
-    $sql = 'UPDATE advs SET end = (end + ' . ($time*60*60) . ') WHERE serial = ' . $_GET['d'];
-    
-    $res = $conn->query($sql);
+function updTime($conn) {
+    $time = intval($_GET['e']);
+    $sql = 'UPDATE advs SET end = (end + :time) WHERE serial = :serial';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':time', $time*60*60, PDO::PARAM_INT);
+    $stmt->bindParam(':serial', $_GET['d']);
+    $stmt->execute();
 }
 
 setcookie("time",time());
 
 if ($_GET['c'] == 'na')
-    newAd();
+    newAd($conn);
 if ($_GET['c'] == 'la')
-    loadAds();
+    loadAds($conn);
 if ($_GET['c'] == 'us')
-    updSeen();
+    updSeen($conn);
 if ($_GET['c'] == 'uptime')
-    updTime();    
+    updTime($conn);    
 if ($_GET['c'] == 'up')
-    updateRow();
+    updateRow($conn);
 if ($_GET['c'] == 'lx')
     loadMyAds($_SESSION['ads']);
 

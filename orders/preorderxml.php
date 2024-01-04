@@ -1,57 +1,69 @@
 <?php
 
+    include("db.php");
     function getTax($conn) {
-    
-        $sql = 'SELECT EstimatedCombinedRate FROM taxes WHERE ZipCode = "' . $_COOKIE['zip_code'] . '"';
-        //echo $sql;
-        $tax = $conn->query($sql) or die(mysqli_error($conn));
-    
-        $row = $tax->fetch_assoc();
-    
+        $sql = 'SELECT EstimatedCombinedRate FROM taxes WHERE ZipCode = :zip_code';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':zip_code', $_COOKIE['zip_code']);
+        $stmt->execute();
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
         setcookie("taxes", $row['EstimatedCombinedRate']);
     
     }
 
     function countOrders($conn) {
+        setcookie("orders", 0);
 
-        setcookie("orders",0);
+        $sql = 'SELECT MAX(order_id) AS max FROM preorders WHERE store_name = :store_name AND store_no = :store_no';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':store_name', $_COOKIE['store']);
+        $stmt->bindParam(':store_no', $_COOKIE['store_no']);
+        $stmt->execute();
         
-        $sql = 'SELECT MAX(order_id) AS max FROM preorders WHERE store_name = "' . $_COOKIE['store'] . '" && store_no = ' . $_COOKIE['store_no'];
-    
-        $results = $conn->query($sql) or die("AGGHHH");
-    
-        $f = $results->fetch_assoc();
+        $f = $stmt->fetch(PDO::FETCH_ASSOC);
         
         $next_order = $f['max'];
-    
+        
         setcookie("orders", $next_order + 1);
     
     }
     
     // preorder entry into database
+    try {
     
-    $con = mysqli_connect('localhost', 'rooter', '', 'adrs','3306') or die("Error: Can't connect");
+        countOrders($conn);
+        getTax($conn);
     
-    countOrders($con);
-    getTax($con);
+        $a = str_getcsv($_GET['a']);
+        $b = str_getcsv($_GET['b']);
+        $c = $_GET['c'];
     
-    $a = str_getcsv($_GET['a']);
-    $b = str_getcsv($_GET['b']);
-    $c = $_GET['c'];
+        $i = 0;
+        $sql = "INSERT INTO preorders(customer, store_name, store_no, product, quantity, indv_price, tax, total_price, needed_by, delivered, expected, action, created, order_id) VALUES(:customer, :store_name, :store_no, :product, :quantity, 0, :taxes, 0, :needed_by, null, null, 0, CURRENT_TIMESTAMP, :orders)";
+        $stmt = $conn->prepare($sql);
     
-    $i = 0;
-    $sql = "";
-    foreach ($a as $v) {
-        if ($v === "" || $v === null) {
+        foreach ($a as $v) {
+            if ($v === "" || $v === null) {
+                $i++;
+                continue;
+            }
+    
+            $stmt->bindParam(':customer', $_COOKIE['myemail']);
+            $stmt->bindParam(':store_name', $_COOKIE['store']);
+            $stmt->bindParam(':store_no', $_COOKIE['store_no']);
+            $stmt->bindParam(':product', $v);
+            $stmt->bindParam(':quantity', $b[$i]);
+            $stmt->bindParam(':taxes', $_COOKIE['taxes']);
+            $stmt->bindParam(':needed_by', $c);
+            $stmt->bindParam(':orders', $_COOKIE['orders']);
+            $stmt->execute();
             $i++;
-            continue;
         }
-        
-        $sql = 'INSERT INTO preorders(id,customer,store_name,store_no,product,quantity,indv_price,tax,total_price,needed_by,delivered,expected,action,created,order_id,edited)';
-        $sql .= ' VALUES(null,"' . $_COOKIE['myemail'] . '","' . $_COOKIE['store'] . '",' . $_COOKIE['store_no'] . ',"' . $v . '",' . $b[$i] . ',0,' . $_COOKIE['taxes'] . ',0,' . $c . ',null,null,0,CURRENT_TIMESTAMP,' . $_COOKIE['orders'] . ',null)';
-        $i++;
-        $result = $con->query($sql) or die(mysqli_error($con));
-    }
     
-    $con->close();
+        $conn = null;
+    } catch(PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
 ?>
