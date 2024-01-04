@@ -5,7 +5,7 @@ if (!isset($_SESSION))
 
 function updateRow() { // update propery `b  to value `a` where `serial` is `d` in `advs` (advertisements) 
 
-    $conn = mysqli_connect("localhost", "r0ot3d", "", "adrs", "3306") or die("Error: Cannot create connection");
+    $conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
 
     $sql = "";
     
@@ -59,7 +59,7 @@ function listAds($res) {
 // enter new ad from newad.php to database TODO
 function newAd() {
     
-    $conn = mysqli_connect("localhost", "r0ot3d", "", "adrs") or die(mysqli_error($conn));
+    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
     
     $x = urldecode($_GET['password']);
     $y = str_getcsv(urldecode($_GET['no']),",");
@@ -91,7 +91,7 @@ function newAd() {
 function loadAds() {
     
     $_SESSION['ads'] = array();
-    $conn = mysqli_connect("localhost", "r0ot3d", "", "adrs") or die(mysqli_error($conn));
+    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
     
     $sql = 'SELECT store_name, slogan, description, img, serial, url, zip FROM advs, franchise WHERE end > ' . time() . ' && start < ' . time() . ' ORDER BY start ASC';
     
@@ -114,7 +114,7 @@ function loadAds() {
 function loadMyAds() {
     
     $_SESSION['ads'] = array();
-    $conn = mysqli_connect("localhost", "r0ot3d", "", "adrs") or die(mysqli_error($conn));
+    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
     
     $sql = 'SELECT nums, franchise.store_name, store_no FROM franchise, ad_revs, advs WHERE ad_revs.username = "' . $_COOKIE['myemail'] . '" && (franchise.email = ad_revs.username || franchise.owner_id = ad_revs.username) && franchise.store_name = advs.store_name';
 
@@ -163,7 +163,7 @@ function loadMyAds() {
 function updSeen() {
     
     $_SESSION['ads'] = array();
-    $conn = mysqli_connect("localhost", "r0ot3d", "", "adrs") or die(mysqli_error($conn));
+    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
     
     $sql = 'UPDATE advs SET seen = (seen + 1) WHERE serial = ' . $_GET['serial'];
     
@@ -174,7 +174,7 @@ function updSeen() {
 function updTime() {
     
     $_SESSION['ads'] = array();
-    $conn = mysqli_connect("localhost", "r0ot3d", "", "adrs") or die(mysqli_error($conn));
+    $conn = mysqli_connect("localhost", "rooter", "", "adrs") or die(mysqli_error($conn));
     $time = int($_GET['e']);
     $sql = 'UPDATE advs SET end = (end + ' . ($time*60*60) . ') WHERE serial = ' . $_GET['d'];
     

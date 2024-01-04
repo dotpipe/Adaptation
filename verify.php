@@ -2,7 +2,7 @@
 $x = urldecode($_POST['password']);
 $y = urldecode($_POST['email']);
 
-$conn = mysqli_connect("localhost", "r0ot3d", "", "adrs", "3306") or die("Error: Cannot create connection");
+$conn = mysqli_connect("localhost", "rooter", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 if (!isset($_SESSION))
     session_start();

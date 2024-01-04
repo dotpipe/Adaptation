@@ -1,7 +1,7 @@
 <?php
 
 function defineKeys() {
-    $conn = mysqli_connect("localhost", "r0ot3d", "", "adrs", 3306);
+    $conn = mysqli_connect("localhost", "rooter", "", "adrs", 3306);
     
     $sql = 'INSERT INTO keywords(id,keyword,definition) VALUES(null,"' . $_GET['a'] . '", "' . $_GET['c']. '")';
 
@@ -10,7 +10,7 @@ function defineKeys() {
 }
 
 function lookupKeys() {
-    $conn = mysqli_connect("localhost", "r0ot3d", "", "adrs", 3306);
+    $conn = mysqli_connect("localhost", "rooter", "", "adrs", 3306);
     
     $sql = 'SELECT keyword, definition FROM keywords WHERE keyword LIKE "' . $_GET['str'] . '%" ORDER BY keyword ASC';
     

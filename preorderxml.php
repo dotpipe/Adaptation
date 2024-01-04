@@ -30,7 +30,7 @@
     
     // preorder entry into database
     
-    $con = mysqli_connect('localhost', 'r0ot3d', '', 'adrs','3306') or die("Error: Can't connect");
+    $con = mysqli_connect('localhost', 'rooter', '', 'adrs','3306') or die("Error: Can't connect");
     
     countOrders($con);
     getTax($con);
