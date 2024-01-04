@@ -46,7 +46,7 @@ function makeMyFile($cnxn) {
 
 if ($_COOKIE['login'] != "true")
     header("Location: ./index.php");
-$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+$conn = mysqli_connect("localhost", "r0ot3d", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 setcookie("store"," from stores!");
 

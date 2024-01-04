@@ -9,7 +9,7 @@ function sanitize(&$r) {
     $r = filter_var(strip_tags($r), FILTER_SANITIZE_STRING);
 }
 
-$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+$conn = mysqli_connect("localhost", "r0ot3d", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 if (!file_exists('branches.xml'))
     file_put_contents('branches.xml', "<?xml version='1.0'?><accounts></accounts>");

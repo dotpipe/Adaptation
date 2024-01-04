@@ -1,6 +1,6 @@
 <?php
 
-$conn = mysqli_connect("localhost", "r0ot3d", "RTYfGhVbN!3$", "adrs", "3306") or die("Error: Cannot create connection");
+$conn = mysqli_connect("localhost", "r0ot3d", "", "adrs", "3306") or die("Error: Cannot create connection");
 
 // create database entries for any type of user (owner, manager, shoppers)
 
