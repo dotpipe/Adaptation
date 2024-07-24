@@ -93,7 +93,16 @@ def init_db():
                  store_name TEXT,
                  order_date DATETIME,
                  status TEXT)''')
-    
+
+    # Create HOLDS table
+    c.execute('''CREATE TABLE IF NOT EXISTS HOLDS
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 customer TEXT,
+                 product TEXT,
+                 quantity INTEGER,
+                 hold_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+                 expiry_date DATETIME)''')
+
     # Create ORDER_ITEMS table
     c.execute('''CREATE TABLE IF NOT EXISTS ORDER_ITEMS
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,

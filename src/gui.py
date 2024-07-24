@@ -1,87 +1,130 @@
 import tkinter as tk
-import webbrowser
-from deal_fetcher import fetch_hourly_deals, update_ad_views
+from tkinter import ttk, simpledialog, messagebox
+import sqlite3
+from functools import lru_cache
+from datetime import datetime, timedelta
 
-def open_deal_window():
-    deals = fetch_hourly_deals()
-    
-    window = tk.Tk()
-    window.title("Adapt - Latest Deals")
-    window.geometry("600x400")
+class AdaptGUI:
+    def __init__(self, master):
+        self.master = master
+        master.title("Adapt Shopping System")
+        self.init_ui()
+        self.cache_data()
 
-    main_frame = tk.Frame(window)
-    main_frame.pack(fill=tk.BOTH, expand=1)
+    def init_ui(self):
+        self.notebook = ttk.Notebook(self.master)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
 
-    canvas = tk.Canvas(main_frame)
-    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+        self.deals_frame = ttk.Frame(self.notebook)
+        self.order_frame = ttk.Frame(self.notebook)
+        self.preorder_frame = ttk.Frame(self.notebook)
+        self.reserve_frame = ttk.Frame(self.notebook)
+        self.hold_frame = ttk.Frame(self.notebook)
 
-    scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
-    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.notebook.add(self.deals_frame, text="Deals")
+        self.notebook.add(self.order_frame, text="Order")
+        self.notebook.add(self.preorder_frame, text="Preorder")
+        self.notebook.add(self.reserve_frame, text="Reserve")
+        self.notebook.add(self.hold_frame, text="Hold")
 
-    canvas.configure(yscrollcommand=scrollbar.set)
-    canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        self.init_all_tabs()
 
-    inner_frame = tk.Frame(canvas)
-    canvas.create_window((0, 0), window=inner_frame, anchor="nw")
+    @lru_cache(maxsize=None)
+    def cache_data(self):
+        self.all_products = self.fetch_all_products()
+        self.all_deals = self.fetch_all_deals()
 
-    for store_name, store_deals in deals.items():
-        store_frame = tk.LabelFrame(inner_frame, text=store_name, padx=5, pady=5)
-        store_frame.pack(fill=tk.X, padx=10, pady=5)
+    def init_all_tabs(self):
+        self.init_deals_tab()
+        self.init_order_tab()
+        self.init_preorder_tab()
+        self.init_reserve_tab()
+        self.init_hold_tab()
 
-        for deal in store_deals:
-            deal_frame = tk.Frame(store_frame)
-            deal_frame.pack(fill=tk.X, padx=5, pady=2)
+    def create_scrollable_frame(self, parent):
+        canvas = tk.Canvas(parent)
+        scrollbar = ttk.Scrollbar(parent, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
 
-            tk.Label(deal_frame, text=deal['slogan'], wraplength=400, font=("Arial", 12, "bold")).pack(anchor="w")
-            tk.Label(deal_frame, text=deal['description'], wraplength=400).pack(anchor="w")
-            
-            def open_url(url=deal['url']):
-                update_ad_views(store_name)
-                webbrowser.open(url)
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
 
-            tk.Button(deal_frame, text="View Deal", command=open_url).pack(anchor="e")
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
 
-    window.mainloop()
-def create_category_dropdown(parent):
-    categories = fetch_categories()  # New function to fetch categories from DB
-    var = tk.StringVar(parent)
-    var.set(categories[0])  # Set default value
-    dropdown = tk.OptionMenu(parent, var, *categories)
-    dropdown.pack()
-    return var
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
 
-def calculate_ad_price(num_zip_codes, num_ads):
-    zip_price = 1 if num_zip_codes == 1 else 2 if num_zip_codes == 2 else 5
-    ad_price = 1 if num_ads == 1 else 2 if num_ads == 2 else 5
-    return zip_price * ad_price
+        return scrollable_frame
 
-def on_category_change(*args):
-    selected_category = category_var.get()
-    update_deals_display(selected_category)
+    def init_deals_tab(self):
+        scrollable_frame = self.create_scrollable_frame(self.deals_frame)
+        for deal in self.all_deals:
+            self.create_deal_widget(scrollable_frame, deal)
 
-def create_share_button(parent, ad_id, user_id):
-    def on_share():
-        platform = simpledialog.askstring("Share", "Enter sharing platform:")
-        if platform:
-            share_ad(ad_id, user_id, platform)
-            messagebox.showinfo("Shared", f"Ad shared on {platform}")
-    
-    return tk.Button(parent, text="Share", command=on_share)
+    def init_order_tab(self):
+        scrollable_frame = self.create_scrollable_frame(self.order_frame)
+        for product in self.all_products:
+            self.create_product_widget(scrollable_frame, product, "Order")
 
-def fetch_deals_by_category(category_id, zip_code):
-    with get_db_connection() as connection:
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT a.*, f.STORE_NAME 
-                FROM ADVS a
-                JOIN FRANCHISE f ON a.STORE_NO = f.STORE_NO
-                WHERE f.category_id = %s AND a.ZIP = %s
-                AND a.START <= NOW() AND a.END >= NOW()
-            """, (category_id, zip_code))
-            return cursor.fetchall()
+    def init_preorder_tab(self):
+        scrollable_frame = self.create_scrollable_frame(self.preorder_frame)
+        for product in self.all_products:
+            if product['ACTION'] == 0:
+                self.create_product_widget(scrollable_frame, product, "Preorder")
 
-category_var = create_category_dropdown(window)
-category_var.trace('w', on_category_change)
+    def init_reserve_tab(self):
+        scrollable_frame = self.create_scrollable_frame(self.reserve_frame)
+        for product in self.all_products:
+            if product['ACTION'] == 0 and product['QUANTITY'] > 0:
+                self.create_product_widget(scrollable_frame, product, "Reserve")
 
-if __name__ == "__main__":
-    open_deal_window()
+    def init_hold_tab(self):
+        scrollable_frame = self.create_scrollable_frame(self.hold_frame)
+        for product in self.all_products:
+            if product['ACTION'] == 0 and product['QUANTITY'] > 0:
+                self.create_product_widget(scrollable_frame, product, "Hold")
+
+    def create_deal_widget(self, parent, deal):
+        deal_frame = ttk.Frame(parent)
+        deal_frame.pack(pady=5, padx=10, fill="x")
+        ttk.Label(deal_frame, text=deal['STORE_NAME'], font=('Helvetica', 10, 'bold')).pack(side="left")
+        ttk.Label(deal_frame, text=deal['SLOGAN']).pack(side="left", padx=10)
+        ttk.Button(deal_frame, text="View", command=lambda: self.view_deal(deal)).pack(side="right")
+
+    def create_product_widget(self, parent, product, action):
+        product_frame = ttk.Frame(parent)
+        product_frame.pack(pady=5, padx=10, fill="x")
+        ttk.Label(product_frame, text=product['PRODUCT'], font=('Helvetica', 10, 'bold')).pack(side="left")
+        ttk.Label(product_frame, text=f"${product['INDV_PRICE']:.2f}").pack(side="left", padx=10)
+        ttk.Button(product_frame, text=action, command=lambda: self.handle_action(action, product)).pack(side="right")
+
+    def handle_action(self, action, product):
+        if action == "Order":
+            self.order_item(product)
+        elif action == "Preorder":
+            self.preorder_item(product)
+        elif action == "Reserve":
+            self.reserve_item(product)
+        elif action == "Hold":
+            self.hold_item(product)
+
+    def fetch_all_products(self):
+        with sqlite3.connect('adapt.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM PREORDERS")
+            return [dict(zip([column[0] for column in cursor.description], row)) for row in cursor.fetchall()]
+
+    def fetch_all_deals(self):
+        with sqlite3.connect('adapt.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM ADVS WHERE START <= datetime('now') AND END >= datetime('now')")
+            return [dict(zip([column[0] for column in cursor.description], row)) for row in cursor.fetchall()]
+
+    # Implement order_item, preorder_item, reserve_item, hold_item, and view_deal methods here
+
+root = tk.Tk()
+gui = AdaptGUI(root)
+root.mainloop()
