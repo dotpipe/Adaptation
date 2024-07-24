@@ -56,6 +56,8 @@ def update_ad_views(store_name):
                 connection.commit()
     except Exception as e:
         print(f"Error updating ad views: {e}")
+
+# You can add more functions here to interact with other tables as needed
 def fetch_deals_by_category(category_id, user_location):
     conn = get_db_connection()
     c = conn.cursor()
