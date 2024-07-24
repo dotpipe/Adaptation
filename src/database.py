@@ -76,7 +76,6 @@ def init_db():
                     zip_codes TEXT,
                     FOREIGN KEY (store_id) REFERENCES FRANCHISE(store_id))''')
     # Modify FRANCHISE table
-    c.execute('''ALTER TABLE FRANCHISE ADD COLUMN category_id INTEGER REFERENCES CATEGORIES(category_id)''')
     c.execute('''ALTER TABLE FRANCHISE ADD COLUMN latitude REAL''')
     c.execute('''ALTER TABLE FRANCHISE ADD COLUMN longitude REAL''')
     c.execute('''ALTER TABLE FRANCHISE ADD COLUMN distribution_radius REAL''')
