@@ -75,14 +75,6 @@ def init_db():
                     price_tier INTEGER,
                     zip_codes TEXT,
                     FOREIGN KEY (store_id) REFERENCES FRANCHISE(store_id))''')
-    # Modify FRANCHISE table
-    c.execute('''ALTER TABLE FRANCHISE ADD COLUMN latitude REAL''')
-    c.execute('''ALTER TABLE FRANCHISE ADD COLUMN longitude REAL''')
-    c.execute('''ALTER TABLE FRANCHISE ADD COLUMN distribution_radius REAL''')
-    
-    # Modify ADVS table
-    c.execute('''ALTER TABLE ADVS ADD COLUMN price_tier INTEGER''')
-    c.execute('''ALTER TABLE ADVS ADD COLUMN zip_codes TEXT''')
     
     # Create RESERVATIONS table
     c.execute('''CREATE TABLE IF NOT EXISTS RESERVATIONS

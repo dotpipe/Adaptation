@@ -56,5 +56,59 @@ def update_ad_views(store_name):
                 connection.commit()
     except Exception as e:
         print(f"Error updating ad views: {e}")
+def fetch_deals_by_category(category_id, user_location):
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("""
+        SELECT a.*, f.latitude, f.longitude, f.distribution_radius
+        FROM ADVS a
+        JOIN FRANCHISE f ON a.store_id = f.store_id
+        WHERE f.category_id = ? AND a.start <= datetime('now') AND a.end >= datetime('now')
+    """, (category_id,))
+    all_deals = c.fetchall()
+    conn.close()
 
-# You can add more functions here to interact with other tables as needed
+    nearby_deals = [deal for deal in all_deals if is_in_range(user_location, (deal['latitude'], deal['longitude']), deal['distribution_radius'])]
+    return nearby_deals
+
+def is_in_range(user_location, store_location, radius):
+    return distance(user_location, store_location).miles <= radius
+
+def get_hot_deals(user_id, user_location):
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("""
+        SELECT a.*, f.latitude, f.longitude, f.distribution_radius
+        FROM ADVS a
+        JOIN FRANCHISE f ON a.store_id = f.store_id
+        JOIN HOTLISTS h ON h.item LIKE '%' || a.description || '%'
+        WHERE h.user_id = ? AND a.start <= datetime('now') AND a.end >= datetime('now')
+    """, (user_id,))
+    hot_deals = c.fetchall()
+    conn.close()
+
+    nearby_hot_deals = [deal for deal in hot_deals if is_in_range(user_location, (deal['latitude'], deal['longitude']), deal['distribution_radius'])]
+    return nearby_hot_deals
+
+def update_deal_views(deal_id):
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("UPDATE ADVS SET seen = seen + 1 WHERE id = ?", (deal_id,))
+    conn.commit()
+    conn.close()
+
+def get_trending_deals(user_location):
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("""
+        SELECT a.*, f.latitude, f.longitude, f.distribution_radius
+        FROM ADVS a
+        JOIN FRANCHISE f ON a.store_id = f.store_id
+        ORDER BY a.seen DESC
+        LIMIT 10
+    """)
+    trending_deals = c.fetchall()
+    conn.close()
+
+    nearby_trending_deals = [deal for deal in trending_deals if is_in_range(user_location, (deal['latitude'], deal['longitude']), deal['distribution_radius'])]
+    return nearby_trending_deals
