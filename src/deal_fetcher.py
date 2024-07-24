@@ -1,6 +1,6 @@
 import pymysql
 from datetime import datetime
-
+from geopy.distance import distance
 # Assume these are imported from a config file
 DB_HOST = 'remote_host'
 DB_USER = 'username'
