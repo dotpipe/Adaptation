@@ -4,6 +4,7 @@ from chatterbot.trainers import ChatterBotCorpusTrainer
 chatbot = ChatBot('AdaptBot')
 trainer = ChatterBotCorpusTrainer(chatbot)
 trainer.train("chatterbot.corpus.english")
+trainer.train("corpus/adapt_corpus.yml")
 
 def get_bot_response(user_input):
     return str(chatbot.get_response(user_input))

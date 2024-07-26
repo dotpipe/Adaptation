@@ -1,130 +1,101 @@
 import tkinter as tk
-from tkinter import ttk, simpledialog, messagebox
-import sqlite3
-from functools import lru_cache
-from datetime import datetime, timedelta
+from tkinter import ttk, messagebox
+from src.cartmanager import CartManager
+from src.chatbot import get_bot_response
 
-class AdaptGUI:
+class AdaptApp:
     def __init__(self, master):
         self.master = master
-        master.title("Adapt Shopping System")
-        self.init_ui()
-        self.cache_data()
+        self.master.title("Adapt Shopping Assistant")
+        self.cart_manager = CartManager('adapt.db', 'https://api.adapt.com/cart')
+        
+        self.create_widgets()
 
-    def init_ui(self):
+    def create_widgets(self):
+        # Create a notebook for tabbed interface
         self.notebook = ttk.Notebook(self.master)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
+        self.notebook.pack(expand=True, fill='both')
 
-        self.deals_frame = ttk.Frame(self.notebook)
-        self.order_frame = ttk.Frame(self.notebook)
-        self.preorder_frame = ttk.Frame(self.notebook)
-        self.reserve_frame = ttk.Frame(self.notebook)
-        self.hold_frame = ttk.Frame(self.notebook)
+        # Cart Tab
+        self.cart_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.cart_frame, text='Cart')
+        self.create_cart_widgets()
 
-        self.notebook.add(self.deals_frame, text="Deals")
-        self.notebook.add(self.order_frame, text="Order")
-        self.notebook.add(self.preorder_frame, text="Preorder")
-        self.notebook.add(self.reserve_frame, text="Reserve")
-        self.notebook.add(self.hold_frame, text="Hold")
+        # Chat Tab
+        self.chat_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.chat_frame, text='Support Chat')
+        self.create_chat_widgets()
 
-        self.init_all_tabs()
+        # Settings Tab
+        self.settings_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.settings_frame, text='Settings')
+        self.create_settings_widgets()
 
-    @lru_cache(maxsize=None)
-    def cache_data(self):
-        self.all_products = self.fetch_all_products()
-        self.all_deals = self.fetch_all_deals()
+    def create_cart_widgets(self):
+        # Add to Cart
+        ttk.Button(self.cart_frame, text="Add Item", command=self.add_item).pack(pady=5)
+        
+        # View Cart
+        ttk.Button(self.cart_frame, text="View Cart", command=self.view_cart).pack(pady=5)
+        
+        # Remove from Cart
+        ttk.Button(self.cart_frame, text="Remove Item", command=self.remove_item).pack(pady=5)
+        
+        # Mark as Received
+        ttk.Button(self.cart_frame, text="Mark as Received", command=self.mark_received).pack(pady=5)
+        
+        # Manual Sync
+        ttk.Button(self.cart_frame, text="Manual Sync", command=self.manual_sync).pack(pady=5)
 
-    def init_all_tabs(self):
-        self.init_deals_tab()
-        self.init_order_tab()
-        self.init_preorder_tab()
-        self.init_reserve_tab()
-        self.init_hold_tab()
+    def create_chat_widgets(self):
+        self.chat_log = tk.Text(self.chat_frame, state='disabled')
+        self.chat_log.pack(expand=True, fill='both')
+        
+        self.input_field = ttk.Entry(self.chat_frame)
+        self.input_field.pack(fill='x', pady=5)
+        
+        ttk.Button(self.chat_frame, text="Send", command=self.send_message).pack()
 
-    def create_scrollable_frame(self, parent):
-        canvas = tk.Canvas(parent)
-        scrollbar = ttk.Scrollbar(parent, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
+    def create_settings_widgets(self):
+        ttk.Label(self.settings_frame, text="Cloud API URL:").pack(pady=5)
+        self.api_url_var = tk.StringVar(value=self.cart_manager.cloud_api_url)
+        ttk.Entry(self.settings_frame, textvariable=self.api_url_var).pack(pady=5)
+        ttk.Button(self.settings_frame, text="Update API URL", command=self.update_api_url).pack(pady=5)
 
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
+    def add_item(self):
+        # Implement add item functionality
+        pass
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
+    def view_cart(self):
+        cart = self.cart_manager.get_cart()
+        messagebox.showinfo("Cart Contents", str(cart))
 
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+    def remove_item(self):
+        # Implement remove item functionality
+        pass
 
-        return scrollable_frame
+    def mark_received(self):
+        # Implement mark as received functionality
+        pass
 
-    def init_deals_tab(self):
-        scrollable_frame = self.create_scrollable_frame(self.deals_frame)
-        for deal in self.all_deals:
-            self.create_deal_widget(scrollable_frame, deal)
+    def manual_sync(self):
+        self.cart_manager.manual_update()
+        messagebox.showinfo("Sync", "Manual sync completed")
 
-    def init_order_tab(self):
-        scrollable_frame = self.create_scrollable_frame(self.order_frame)
-        for product in self.all_products:
-            self.create_product_widget(scrollable_frame, product, "Order")
+    def send_message(self):
+        user_input = self.input_field.get()
+        bot_response = get_bot_response(user_input)
+        self.chat_log.config(state='normal')
+        self.chat_log.insert(tk.END, f"You: {user_input}\n")
+        self.chat_log.insert(tk.END, f"AdaptBot: {bot_response}\n")
+        self.chat_log.config(state='disabled')
+        self.input_field.delete(0, tk.END)
 
-    def init_preorder_tab(self):
-        scrollable_frame = self.create_scrollable_frame(self.preorder_frame)
-        for product in self.all_products:
-            if product['ACTION'] == 0:
-                self.create_product_widget(scrollable_frame, product, "Preorder")
-
-    def init_reserve_tab(self):
-        scrollable_frame = self.create_scrollable_frame(self.reserve_frame)
-        for product in self.all_products:
-            if product['ACTION'] == 0 and product['QUANTITY'] > 0:
-                self.create_product_widget(scrollable_frame, product, "Reserve")
-
-    def init_hold_tab(self):
-        scrollable_frame = self.create_scrollable_frame(self.hold_frame)
-        for product in self.all_products:
-            if product['ACTION'] == 0 and product['QUANTITY'] > 0:
-                self.create_product_widget(scrollable_frame, product, "Hold")
-
-    def create_deal_widget(self, parent, deal):
-        deal_frame = ttk.Frame(parent)
-        deal_frame.pack(pady=5, padx=10, fill="x")
-        ttk.Label(deal_frame, text=deal['STORE_NAME'], font=('Helvetica', 10, 'bold')).pack(side="left")
-        ttk.Label(deal_frame, text=deal['SLOGAN']).pack(side="left", padx=10)
-        ttk.Button(deal_frame, text="View", command=lambda: self.view_deal(deal)).pack(side="right")
-
-    def create_product_widget(self, parent, product, action):
-        product_frame = ttk.Frame(parent)
-        product_frame.pack(pady=5, padx=10, fill="x")
-        ttk.Label(product_frame, text=product['PRODUCT'], font=('Helvetica', 10, 'bold')).pack(side="left")
-        ttk.Label(product_frame, text=f"${product['INDV_PRICE']:.2f}").pack(side="left", padx=10)
-        ttk.Button(product_frame, text=action, command=lambda: self.handle_action(action, product)).pack(side="right")
-
-    def handle_action(self, action, product):
-        if action == "Order":
-            self.order_item(product)
-        elif action == "Preorder":
-            self.preorder_item(product)
-        elif action == "Reserve":
-            self.reserve_item(product)
-        elif action == "Hold":
-            self.hold_item(product)
-
-    def fetch_all_products(self):
-        with sqlite3.connect('adapt.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM PREORDERS")
-            return [dict(zip([column[0] for column in cursor.description], row)) for row in cursor.fetchall()]
-
-    def fetch_all_deals(self):
-        with sqlite3.connect('adapt.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM ADVS WHERE START <= datetime('now') AND END >= datetime('now')")
-            return [dict(zip([column[0] for column in cursor.description], row)) for row in cursor.fetchall()]
-
-    # Implement order_item, preorder_item, reserve_item, hold_item, and view_deal methods here
+    def update_api_url(self):
+        new_url = self.api_url_var.get()
+        self.cart_manager.cloud_api_url = new_url
+        messagebox.showinfo("Settings", "API URL updated successfully")
 
 root = tk.Tk()
-gui = AdaptGUI(root)
+app = AdaptApp(root)
 root.mainloop()

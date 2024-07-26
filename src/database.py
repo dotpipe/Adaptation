@@ -117,7 +117,11 @@ def init_db():
                  user_id INTEGER,
                  item TEXT,
                  FOREIGN KEY (user_id) REFERENCES USER(user_id))''')
-    
+
+    c.execute('''ALTER TABLE FRANCHISE
+             ADD COLUMN central_latitude REAL,
+             ADD COLUMN central_longitude REAL''')
+
     conn.commit()
     conn.close()
 def share_ad(ad_id, user_id, platform):

@@ -1,0 +1,31 @@
+categories:
+- adapt_usage
+conversations:
+- - How do I add an item to my cart?
+  - To add an item to your cart, click on the "Add Item" button in the Cart tab. Enter the item details when prompted.
+- - How can I view my cart contents?
+  - You can view your cart contents by clicking the "View Cart" button in the Cart tab. This will display all items currently in your cart.
+- - How do I remove an item from my cart?
+  - To remove an item, click on the "Remove Item" button in the Cart tab. Select the item you wish to remove when prompted.
+- - What does the "Mark as Received" button do?
+  - The "Mark as Received" button allows you to indicate that you've received an item from your order. Click it and select the item you've received.
+- - How often does my cart sync with the cloud?
+  - Your cart automatically syncs with the cloud every 3 hours. You can also manually sync by clicking the "Manual Sync" button in the Cart tab.
+- - Where can I find the support chat?
+  - The support chat is available in the "Support Chat" tab. You can type your questions there and receive assistance.
+- - How do I update the cloud API URL?
+  - To update the cloud API URL, go to the Settings tab. Enter the new URL in the provided field and click "Update API URL".
+- - What happens when I click "Manual Sync"?
+  - Clicking "Manual Sync" immediately synchronizes your local cart data with the cloud, ensuring all your information is up to date.
+- - Is this shopping assistant free to use?
+  - Yes, the Adapt Shopping Assistant is completely free for all users. We believe in providing value without any cost to our shoppers.
+- - How does Adapt make money if the app is free?
+  - Adapt generates revenue through advertisements. This allows us to keep the app free for all users while supporting our operations.
+- - Can I chat with stores directly through this app?
+  - Absolutely! We provide a feature to chat directly with stores. You can find this option in the "Store Chat" tab. It's a great way to get specific information about products or services.
+- - How do I start a chat with a store?
+  - To chat with a store, go to the "Store Chat" tab, select the store you want to communicate with from the list, and start typing your message. It's that simple!
+- - Are there any hidden costs in using this app?
+  - Not at all. The Adapt Shopping Assistant is completely free to use. There are no hidden costs or premium features that require payment.
+- - Will I see ads while using the app?
+  - Yes, you will see some advertisements while using the app. These ads allow us to keep the app free for everyone while maintaining and improving our services.
