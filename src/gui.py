@@ -7,7 +7,7 @@ class AdaptApp:
     def __init__(self, master):
         self.master = master
         self.master.title("Adapt Shopping Assistant")
-        self.cart_manager = CartManager('adapt.db', 'https://api.adapt.com/cart')
+        self.cart_manager = CartManager('adapt.db', 'https://dotcomdumb.hopto.org/cart')
         
         self.create_widgets()
 
